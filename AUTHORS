@@ -1,0 +1,21 @@
+libscampi was originally created in 2011 by Joey Leingang
+of Arizona Public Media in the University of Arizona (Tucson, AZ)
+
+The PRIMARY AUTHOR(S) are (and/or have been):
+
+    * Joseph Leingang <leingang@email.arizona.edu>
+    
+And here is a list of CONTRIBUTOR(S) AND EXTREMELY HELPFUL PEOPLE
+
+    * Jason Katterhenry <jasonk@arizona.edu>
+    
+A big THANK YOU  goes to:
+
+    Hector Gonzalez for steering the ship that made libazpm.
+    
+    The Django Project and the Django Software Foundation for creating the
+    framework that made it all possible.
+    
+    The #django IRC channel on irc.freenode.net for answering silly questions.
+    
+    Guido van Rossum for creating python.

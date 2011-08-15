@@ -8,24 +8,43 @@ from django.template.defaultfilters import slugify
 
 from reversion import revision
 
-from .models import Article, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
+from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
+from .forms import ArticleTranslationForm
+
+class ArticleTranslationInline(admin.StackedInline):
+    model = ArticleTranslation
+    fieldsets = (
+        ('Dialect', {'fields': ['language']}),
+        ('Discourse', {'fields': ('headline', 'sub_headline', 'body')}),
+    )
+    extra = 1
+    min_num = 1
+    form = ArticleTranslationForm
 
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
-    list_display = ['headline','sub_headline','who_made_me']
+    list_display = ['en_headline','en_sub_headline','who_made_me']
     search_fields = ['headline']
     fieldsets = (
         ('Meta Data', {'fields': ('author', 'contributors')}),
-        ('Core', {'fields': ('headline','sub_headline', 'body')}),
         ('Inline Media', {'fields': (('image_inlines', 'video_inlines', 'audio_inlines'), ('document_inlines', 'object_inlines', 'external_inlines')), 'classes': ('collapse',)})
     )
     raw_id_fields = ('contributors','image_inlines', 'video_inlines', 'audio_inlines', 'document_inlines', 'object_inlines', 'external_inlines')
     readonly_fields = ('author',)
+    inlines = [ArticleTranslationInline]
     
     def save_model(self, request, obj, form, change):
         if not change:
             obj.author = request.user           
         obj.save()
+        
+    def en_headline(self, cls):
+        return cls.headline_en
+    en_headline.short_description = u"Headline [en]"
+    
+    def en_sub_headline(self, cls):
+        return cls.sub_headline_en
+    en_sub_headline.short_description = u"Sub Headline [en]"
 
     @revision.create_on_success
     def save_formset(self, request, form, formset, change):

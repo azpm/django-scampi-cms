@@ -1,0 +1,12 @@
+- fields: {code: en, name: English}
+  model: multilingual.language
+  pk: 1
+- fields: {code: es, name: Spanish}
+  model: multilingual.language
+  pk: 2
+- fields: {code: de, name: German}
+  model: multilingual.language
+  pk: 3
+- fields: {code: fr, name: French}
+  model: multilingual.language
+  pk: 4

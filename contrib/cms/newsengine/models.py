@@ -13,16 +13,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.comments.moderation import moderator
 
 #libscampi contributed packages
+from libscampi.contrib.multilingual.models import Language, MultilingualModel
 from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External, ImagePlaylist, VideoPlaylist, AudioPlaylist, DocumentPlaylist, ObjectPlaylist, ImageTypeOverride, VideoTypeOverride, AudioTypeOverride, DocumentTypeOverride, ObjectTypeOverride
 from libscampi.contrib.cms.conduit import picker
 from libscampi.contrib.cms.newsengine.managers import PublishedManager, CategoryGenera
 from libscampi.contrib.cms.newsengine.commenting import StoryModerator
     
-class Article(models.Model):
-    contributors = models.ManyToManyField(User, related_name = "contributors", null = True, blank = True, limit_choices_to={'is_staff':True})
-    creation_date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, editable = False, null = True)
-    modified = models.DateTimeField(auto_now=True)
+class ArticleTranslation(models.Model):
+    language = models.ForeignKey(Language)
+    model = models.ForeignKey('Article', related_name = 'translations')
     
     headline = models.CharField(_('Article Title'), max_length = 255, 
             help_text = _("Article Title. No markup allowed."))
@@ -30,6 +29,20 @@ class Article(models.Model):
             help_text = _("Will be truncated to 30 words when viewed as a spotlight.  No markup allowed."))
     body = models.TextField(null = True, blank = True,
             help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
+            
+    class Meta:
+        unique_together = ('language', 'model)
+        verbose_name = 'Article Translation'
+        verbose_name_plural = 'Article Translations'
+    
+    def __unicode__(self):
+        return u"%" % self.headline
+    
+class Article(MultilingualModel):
+    contributors = models.ManyToManyField(User, related_name = "contributors", null = True, blank = True, limit_choices_to={'is_staff':True})
+    creation_date = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(User, editable = False, null = True)
+    modified = models.DateTimeField(auto_now=True)
     
     image_inlines = models.ManyToManyField(Image, blank = True, help_text = "Images (inline)")
     video_inlines = models.ManyToManyField(Video, blank = True, help_text = "Videos (inline)")
@@ -39,6 +52,7 @@ class Article(models.Model):
     external_inlines = models.ManyToManyField(External, blank = True, help_text = "Externals (inline)")
     
     class Meta:
+        translation = ArticleTranslation
         ordering = ('-creation_date',)
         verbose_name = "Article"
         verbose_name_plural = "Articles"

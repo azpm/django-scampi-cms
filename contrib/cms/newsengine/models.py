@@ -1,0 +1,175 @@
+import reversion
+import django_filters
+from datetime import datetime
+
+from taggit.managers import TaggableManager
+
+from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.comments.moderation import moderator
+
+#libscampi contributed packages
+from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External, ImagePlaylist, VideoPlaylist, AudioPlaylist, DocumentPlaylist, ObjectPlaylist, ImageTypeOverride, VideoTypeOverride, AudioTypeOverride, DocumentTypeOverride, ObjectTypeOverride
+from libscampi.contrib.cms.conduit import picker
+from libscampi.contrib.cms.newsengine.managers import PublishedManager, CategoryGenera
+from libscampi.contrib.cms.newsengine.commenting import StoryModerator
+    
+class Article(models.Model):
+    contributors = models.ManyToManyField(User, related_name = "contributors", null = True, blank = True, limit_choices_to={'is_staff':True})
+    creation_date = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(User, editable = False, null = True)
+    modified = models.DateTimeField(auto_now=True)
+    
+    headline = models.CharField(_('Article Title'), max_length = 255, 
+            help_text = _("Article Title. No markup allowed."))
+    sub_headline = models.CharField(_('Article Tagline'), max_length = 255, 
+            help_text = _("Will be truncated to 30 words when viewed as a spotlight.  No markup allowed."))
+    body = models.TextField(null = True, blank = True,
+            help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
+    
+    image_inlines = models.ManyToManyField(Image, blank = True, help_text = "Images (inline)")
+    video_inlines = models.ManyToManyField(Video, blank = True, help_text = "Videos (inline)")
+    audio_inlines = models.ManyToManyField(Audio, blank = True, help_text = "Audios (inline)")
+    document_inlines = models.ManyToManyField(Document, blank = True, help_text = "Documents (inline)")
+    object_inlines = models.ManyToManyField(Object, blank = True, help_text = "Objects (inline)")
+    external_inlines = models.ManyToManyField(External, blank = True, help_text = "Externals (inline)")
+    
+    class Meta:
+        ordering = ('-creation_date',)
+        verbose_name = "Article"
+        verbose_name_plural = "Articles"
+    
+    def who_made_me(self):
+        return self.author.get_full_name()
+    who_made_me.short_description = "Creating Editor"
+    
+    def __unicode__(self):
+        return u"%s" % self.headline
+  
+class StoryCategory(models.Model):
+    title = models.CharField(max_length = 100)
+    keyname =  models.SlugField(max_length = 100, db_index = True)
+    
+    browsable = models.BooleanField(default=True)
+    seen = models.PositiveIntegerField(default = 0, editable = False)
+    shared = models.PositiveIntegerField(default = 0, editable = False)
+    
+    description = models.TextField(blank = True)
+    
+    objects = models.Manager()
+    genera = CategoryGenera()
+    
+    class Meta:
+        ordering = ('keyname',)
+        verbose_name = "Story Category"
+        verbose_name_plural = "Story Categories"
+    
+    def __unicode__(self):
+        return u"%s" % self.title
+    
+class Story(models.Model):
+    article = models.ForeignKey(Article)
+    categories = models.ManyToManyField(StoryCategory)
+    author = models.ForeignKey(User, limit_choices_to={'is_staff':True})
+    creation_date = models.DateTimeField(verbose_name = "Creation Date", auto_now_add=True)    
+    modified = models.DateTimeField(auto_now=True)
+    peers = models.ManyToManyField('self', related_name='related_stories', null = True, blank = True)
+    
+    seen = models.PositiveIntegerField(default = 0, editable = False)
+    shared = models.PositiveIntegerField(default = 0, editable = False)
+    
+    tags = TaggableManager()
+    
+    image_playlist = models.ForeignKey(ImagePlaylist, null = True, blank = True)
+    video_playlist = models.ForeignKey(VideoPlaylist, null = True, blank = True)
+    audio_playlist = models.ForeignKey(AudioPlaylist, null = True, blank = True)
+    document_playlist = models.ForeignKey(DocumentPlaylist, null = True, blank = True)
+    object_playlist = models.ForeignKey(ObjectPlaylist, null = True, blank = True)
+
+    class Meta:
+        ordering = ('-creation_date',)
+        verbose_name = "Story"
+        verbose_name_plural = "Stories"
+        
+    def __unicode__(self):
+        return u"%s" % self.article
+    
+#moderate publish comments
+moderator.register(Story, StoryModerator)
+    
+class PublishCategory(models.Model):
+    keyname = models.SlugField(max_length = 100, db_index = True)
+    title = models.CharField(max_length = 100)
+    description = models.TextField(blank = True)
+    
+    class Meta:
+        verbose_name = "Publishing Word"
+        verbose_name_plural = "Publishing Words"
+        
+    def __unicode__(self):
+        return u"[%s] %s" % (self.keyname, self.title)
+    
+class Publish(models.Model):
+    story = models.ForeignKey(Story)
+    site = models.ForeignKey(Site, limit_choices_to = {'realm__direct_link': False}, null = True, blank = True)
+    thumbnail = models.ForeignKey(Image, null = True, blank = True)
+    approved_by = models.ForeignKey(User, null = True)
+    start = models.DateTimeField(null = True, db_index = True)
+    end = models.DateTimeField(null = True, blank = True, db_index = True)
+    category = models.ForeignKey(PublishCategory, null = True, verbose_name="Kind")
+    published = models.BooleanField(default = False, db_index = True)       
+    
+    slug = models.SlugField(max_length = 255, null = True, unique_for_date = start)
+    seen = models.BooleanField(default = False, editable = False)
+    
+    objects = models.Manager()
+    active = PublishedManager()
+    
+    class Meta:
+        verbose_name = "Published Story"
+        verbose_name_plural = "Published Stories"
+        ordering = ('-start',)
+    
+    def __unicode__(self):
+        return "%s > %s" % (self.site, self.story.article.headline)
+        
+    def get_absolute_url(self):
+        return "%s/%d/%d/%d/%s/" % (self.category.keyname, self.start.year, self.start.month, self.start.day, self.slug)
+
+    @property
+    def comments_enabled(self):
+        delta = datetime.now() - self.start
+        return delta.days < 30
+
+class PublishInlineMediaOverride(models.Model):
+    publish = models.OneToOneField(Publish)
+    image_inlines = models.ManyToManyField(ImageTypeOverride)
+    video_inlines = models.ManyToManyField(VideoTypeOverride)
+    audio_inlines = models.ManyToManyField(AudioTypeOverride)
+    document_inlines = models.ManyToManyField(DocumentTypeOverride)
+    object_inlines = models.ManyToManyField(ObjectTypeOverride)
+    
+    class Meta:
+        verbose_name = "Publish Inline Media Override"
+        verbose_name_plural = "Publish Inline Media Overrides"
+
+class PublishPicking(django_filters.FilterSet):
+    start = django_filters.filters.DateRangeFilter(lookup_type=('lt','gt','lte','gte'))
+    end = django_filters.filters.DateRangeFilter(name="end", lookup_type=('lt','gt','lte','gte'))
+    ignores = django_filters.filters.BooleanFilter(name="end", label="Ignore Blank End Times?", lookup_type='isnull')
+    class Meta:
+        model = Publish
+        fields = ['site','start','end','category','published','story__categories']
+    
+    @staticmethod
+    def static_chain(qs):
+        return qs.distinct()
+
+#picking
+picker.manifest.register(Publish, PublishPicking)
+#revisioning
+reversion.register(Article, fields=('pk','sub_headline','body'), format="yaml")

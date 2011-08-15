@@ -31,7 +31,7 @@ class ArticleTranslation(models.Model):
             help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
             
     class Meta:
-        unique_together = ('language', 'model)
+        unique_together = ('language', 'model')
         verbose_name = 'Article Translation'
         verbose_name_plural = 'Article Translations'
     

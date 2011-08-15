@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
 #libazpm stuff
-from libscampi.core.fields import PickledObjectField 
+from libscampi.core.fields import PickleField 
 from libscampi.contrib.cms.conduit.utils import coerce_filters
 from libscampi.contrib.cms.conduit.picker import manifest
 
@@ -33,8 +33,8 @@ class DynamicPicker(PickerBase):
     template = models.ForeignKey(PickerTemplate)
     max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time"))
     content = models.ForeignKey(ContentType, verbose_name = _("Content Source"), help_text = _("What model will populate this picker?"))
-    include_filters = PickledObjectField(editable = False, compress = True)
-    exclude_filters = PickledObjectField(editable = False, compress = True)
+    include_filters = PickleField(editable = False, compress = True)
+    exclude_filters = PickleField(editable = False, compress = True)
     
     class Meta:
         verbose_name = "Dynamic Content Picker"

@@ -96,7 +96,7 @@ class Story(models.Model):
     seen = models.PositiveIntegerField(default = 0, editable = False)
     shared = models.PositiveIntegerField(default = 0, editable = False)
     
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
     
     image_playlist = models.ForeignKey(ImagePlaylist, null = True, blank = True)
     video_playlist = models.ForeignKey(VideoPlaylist, null = True, blank = True)

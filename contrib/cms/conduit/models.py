@@ -33,7 +33,7 @@ class PickerBase(models.Model):
 class DynamicPicker(PickerBase):
     name = models.CharField(max_length = 50, help_text = _("Picker Name"))
     keyword = models.SlugField(max_length = 50, help_text = _("Picker Slug/URL Reference"))
-    description = models.CharField(max_length = 200, null = True, Blank = True)
+    description = models.CharField(max_length = 200, null = True, blank = True)
     commune = models.ForeignKey(Commune)
     template = models.ForeignKey(PickerTemplate)
     max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time"))
@@ -44,6 +44,8 @@ class DynamicPicker(PickerBase):
     class Meta:
         verbose_name = "Dynamic Content Picker"
         verbose_name_plural = "Dynamic Content Pickers"
+        
+        unique_together = ('commune', 'keyword')
         
     def __unicode__(self):
         return self.name

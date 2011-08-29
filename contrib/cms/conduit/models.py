@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from libscampi.core.fields import PickleField 
 from libscampi.contrib.cms.conduit.utils import coerce_filters
 from libscampi.contrib.cms.conduit.picker import manifest
-from libscampi.contrib.cms.communism.models import Commune
+from libscampi.contrib.cms.communism.models import *
 
 class PickerTemplate(models.Model):
     name =  models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)

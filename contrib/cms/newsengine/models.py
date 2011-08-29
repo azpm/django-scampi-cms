@@ -1,4 +1,3 @@
-import reversion
 import django_filters
 from datetime import datetime
 
@@ -185,5 +184,3 @@ class PublishPicking(django_filters.FilterSet):
 
 #picking
 picker.manifest.register(Publish, PublishPicking)
-#revisioning
-reversion.register(Article, fields=('pk','sub_headline','body'), format="yaml")

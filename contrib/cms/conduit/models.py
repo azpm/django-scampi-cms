@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from libscampi.core.fields import PickleField 
 from libscampi.contrib.cms.conduit.utils import coerce_filters
 from libscampi.contrib.cms.conduit.picker import manifest
+from libscampi.contrib.cms.communism.models import Commune
 
 class PickerTemplate(models.Model):
     name =  models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
@@ -30,6 +31,10 @@ class PickerBase(models.Model):
 
     
 class DynamicPicker(PickerBase):
+    name = models.CharField(max_length = 50, help_text = _("Picker Name"))
+    keyword = models.SlugField(max_length = 50, help_text = _("Picker Slug/URL Reference"))
+    description = models.CharField(max_length = 200, null = True, Blank = True)
+    commune = models.ForeignKey(Commune)
     template = models.ForeignKey(PickerTemplate)
     max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time"))
     content = models.ForeignKey(ContentType, verbose_name = _("Content Source"), help_text = _("What model will populate this picker?"))

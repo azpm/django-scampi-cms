@@ -11,7 +11,7 @@ from django.db.models import Q, Max
 
 from libscampi.contrib.cms.communism.models import *
 from libscampi.contrib.cms.newsengine.models import Publish, PublishCategory
-from libazpm.contrib.cms.pages import Page, html_link_refs
+from libscampi.contrib.cms.pages import Page, html_link_refs
 
 def get_cached_htmlrefs(commune):
     if type(commune) is not Commune:

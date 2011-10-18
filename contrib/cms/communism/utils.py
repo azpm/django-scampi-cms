@@ -1,3 +1,6 @@
+from django.core.cache import cache
+from django.template.defaultfilters import slugify
+
 """
 Theme Helpers and Utility functions
 """
@@ -31,3 +34,10 @@ def section_path_up(cls, glue):
     if elements[0].extends is not None:
         return section_path_up([elements[0].extends]+elements, glue)
     return glue.join([z.keyname for z in elements])
+    
+
+#updates the cache whenever you save a namedboxtemplate
+def cache_namedbox_template(sender, instance, **kwargs):
+    cache_key = "nb-template-%s" % slugify(instance.name)
+    tpl = instance.content
+    cache.set(cache_key, tpl)

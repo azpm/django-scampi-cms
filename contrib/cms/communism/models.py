@@ -13,7 +13,7 @@ from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orp
 
 #local imports
 from .managers import localised_section_manager, localised_element_manager
-from .utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up
+from .utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up, cache_namedbox_template
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
 
@@ -305,6 +305,8 @@ class NamedBoxTemplate(models.Model):
         
     def __unicode__(self):
         return self.name
+        
+models.signals.post_save.connect(cache_namedbox_template, sender=NamedBoxTemplate)
         
 #A named box merely provides a styled box to hold content, that content comes from a conduit.models.picker
 class NamedBox(models.Model):

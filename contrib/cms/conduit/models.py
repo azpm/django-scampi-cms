@@ -56,18 +56,19 @@ class DynamicPicker(PickerBase):
                     coerce_filters(f)
                     qs = qs.filter(**f)
             else:
-            f = self.include_filters
-            coerce_filters(f)
-            qs = qs.filter(**f)
+                f = self.include_filters
+                coerce_filters(f)
+                qs = qs.filter(**f)
+        
         if self.exclude_filters:
             if isinstance(self.exclude_filters, list):
                 for f in self.exclude_filters:
                     coerce_filters(f)
                     qs = qs.exclude(**f)
             else:
-            f = self.exclude_filters
-            coerce_filters(f)
-            qs = qs.exclude(**f)
+                f = self.exclude_filters
+                coerce_filters(f)
+                qs = qs.exclude(**f)
         
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):
             qs = fs.static_chain(qs)        

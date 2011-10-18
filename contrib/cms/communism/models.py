@@ -351,7 +351,7 @@ class NamedBox(models.Model):
     picker = property(_picker)
     
 #handle mapping pickers to communes        
-models.signals.post_init.connect(map_picker_to_commune, sender=NamedBox)
+models.signals.post_save.connect(map_picker_to_commune, sender=NamedBox)
 models.signals.post_delete.connect(unmap_orphan_picker, sender=NamedBox)
 
 """

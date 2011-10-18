@@ -23,7 +23,6 @@ class PickerTemplate(models.Model):
 
 class PickerBase(models.Model):
     name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
-    precedence = models.PositiveSmallIntegerField(_("Order hint for picker graph"), default = 0)
     class Meta:
         abstract = True
         ordering = ['precedence']
@@ -75,12 +74,6 @@ class DynamicPicker(PickerBase):
         if self.max_count > 0:
             return qs[:self.max_count]
         return qs
-    
-    #def _get_objects(self):
-        
-    #picked = property(_get_objects)
-
-
         
 class StaticPicker(PickerBase):
     content = models.TextField(_("Content"), help_text = _("Markdown friendly"))

@@ -15,9 +15,9 @@ class PickerGraph(object):
         collection = cache.get(cached_collection_key, {})
             
         if not collection:    
-            statics = StaticPicker.objects.filter(namedbox__slice__commune = self.commune, namedbox__active = True).order_by('precedence')
+            statics = StaticPicker.objects.filter(namedbox__slice__commune = self.commune, namedbox__active = True)
             
-            dynamics = DynamicPicker.objects.filter(namedbox__slice__commune = self.commune, namedbox__active = True).order_by('precedence')
+            dynamics = DynamicPicker.objects.filter(namedbox__slice__commune = self.commune, namedbox__active = True)
             
             
             for static in statics:

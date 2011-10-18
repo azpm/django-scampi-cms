@@ -285,7 +285,7 @@ respectively
 class Slice(models.Model):
     name = models.CharField(_("Reference Name"), max_length = 100)
     commune = models.ForeignKey(Commune)
-    display_order = models.PositiveSmallIntegerField(_("Display Order")) 
+    display_order = models.PositiveSmallIntegerField(_("Display Order"), help_text = u"1-Ordered") 
     
     class Meta:
         unique_together = ('commune', 'display_order')
@@ -317,8 +317,8 @@ class NamedBox(models.Model):
     #structural
     slice = models.ForeignKey(Slice)
     gridx = models.PositiveSmallIntegerField("Column", choices = column_choices)
-    gridy = models.PositiveSmallIntegerField("Sub Slice")
-    display_order = models.PositiveSmallIntegerField("Display Order")
+    gridy = models.PositiveSmallIntegerField("Sub Slice", help_text = u"1-Ordered")
+    display_order = models.PositiveSmallIntegerField("Display Order", help_text = u"1-Ordered")
     
     #display
     name = models.CharField(_("Reference Name"), max_length = 100)

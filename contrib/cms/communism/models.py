@@ -295,12 +295,16 @@ class Slice(models.Model):
     
     
 class NamedBoxTemplate(models.Model):
-    name = models.CharField(_("Reference Name"), max_length=50, index=True)
+    name = models.CharField(_("Reference Name"), max_length=50, db_index=True)
     description = models.TextField(blank = True)
     content = models.TextField()
     
     class Meta:
         verbose_name = u"NamedBox Template"
+        verbose_name_plural = u"NamedBox Templates"
+        
+    def __unicode__(self):
+        return self.name
         
 #A named box merely provides a styled box to hold content, that content comes from a conduit.models.picker
 class NamedBox(models.Model):

@@ -86,10 +86,8 @@ class BaseHierarchyElementAdmin(admin.ModelAdmin):
 class CommuneAdmin(BaseHierarchyElementAdmin):
     fieldsets = (
         ('General', {'fields': ('name', 'description', 'theme')}),
-        ('Archives', {'fields': ('archive_categories',)}),
     )
-    filter_horizontal = ('archive_categories',)
-    #list_filter = ('section__realm__site',)
+    
     inlines = (SectionInline, SliceInline)
        
 class ApplicationAdmin(BaseHierarchyElementAdmin):   

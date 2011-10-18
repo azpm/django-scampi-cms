@@ -1,5 +1,5 @@
 from django import forms
-from .models import Article
+from .models import ArticleTranslation
 
 class ArticleTranslationForm(forms.ModelForm):
     headline = forms.CharField(widget = forms.TextInput(attrs={'size': 80}))
@@ -7,5 +7,5 @@ class ArticleTranslationForm(forms.ModelForm):
     body = forms.CharField(widget = forms.Textarea(attrs={'cols': 120, 'rows': 30}))
     
     class Meta:
-        model = Article
+        model = ArticleTranslation
         fields = ('language', 'headline', 'sub_headline', 'body')

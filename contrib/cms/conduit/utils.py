@@ -5,6 +5,8 @@ from django.db.models.sql.constants import QUERY_TERMS
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
+from django.core.exceptions import DoesNotExist
+
 DATE_RANGE_COERCION = {
     '-today': lambda name, lookup: {'%s__%s' % (name, lookup): datetime.now()},
     '-past7days': lambda name, lookup: {'%s__%s' % (name, lookup): datetime.now() - timedelta(days=7)},
@@ -101,6 +103,7 @@ def coerce_filters(filters):
             except (ValueError, KeyError, TypeError):
                 continue
                 
+                
 #map a picker (static or dynamic) to a commune
 def map_picker_to_commune(sender, instance, **kwargs):
     commune = instance.slice.commune
@@ -108,11 +111,15 @@ def map_picker_to_commune(sender, instance, **kwargs):
     #give no fucks, set the commune even if it hasn't changed
     if instance.content:
         instance.content.commune = commune
-        instance.content.save()
+        instance.content.save()        
         
-    if instance.staticpicker:
-        instance.staticpicker.commune = commune
-        instance.staticpicker.save()
+    try:
+        picker = instance.staticpicker
+    except DoesNotExist:
+        pass
+    else:
+        picker.commune = commune
+        picker.save()
                 
 def unmap_orphan_picker(sender, instance, **kwargs):  
     #give no fucks, unset the commune
@@ -120,9 +127,13 @@ def unmap_orphan_picker(sender, instance, **kwargs):
         instance.content.commune = None
         instance.content.save()
         
-    if instance.staticpicker:
-        instance.staticpicker.commune = None
-        instance.staticpicker.save()
+    try:
+        picker = instance.staticpicker
+    except DoesNotExist:
+        pass
+    else:
+        picker.commune = None
+        picker.save()
 
 
 

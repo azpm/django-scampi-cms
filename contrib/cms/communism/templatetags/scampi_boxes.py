@@ -22,7 +22,9 @@ class namedbox_node(template.Node):
             cached_tpl = namedbox.template.content
             cache.set(cached_tpl_key, cached_tpl)
         
-        return render_to_string(cached_tpl, {'box': namedbox}, context)
+        tpl = template.Template(cached_tpl)
+        
+        return render_to_string(tpl, {'box': namedbox}, context)
         
 def render_namedbox(parser, token):
     try:

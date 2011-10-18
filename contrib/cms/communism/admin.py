@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.contrib.contenttypes import generic
 
 from libscampi.contrib.cms.conduit.admin import StaticPickerInlineAdmin
-from libscampi.contrib.cms.communism.models import *
+
+#local imports
+from .models import *
+from .utils import section_path_up
 
 class RealmAdmin(admin.ModelAdmin):
     list_display = ('site', 'name', 'keyname', 'display_order', 'active', 'secure', 'searchable', 'search_collection')

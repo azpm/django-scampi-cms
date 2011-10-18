@@ -8,12 +8,15 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.sites.models import Site
 
-from libscampi.contrib.cms.communism.managers import localised_section_manager, localised_element_manager
-from libscampi.contrib.cms.conduit.graph import PickerGraph
+#scampi imports
+from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orphan_picker
 
-__all__ = ['Theme','StyleSheet','Javascript','Realm','section_path_up',
-    'RealmNotification','Section','Commune','Slice',
-    'BoxKind','NamedBox','Application']
+#local imports
+from .managers import localised_section_manager, localised_element_manager
+from .utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up
+
+__all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','BoxKind','NamedBox','Application']
+
 
 """
 Define a theme
@@ -21,9 +24,6 @@ Define a theme
 This will have to be properly fleshed out for a real release
 of this software as a commercial/opensource CMS
 """
-def theme_banner_decorator(cls, f):
-    return "%s/img/banner/%s" % (cls.keyname, f)
-
 class Theme(models.Model):
     name = models.CharField(_("Reference Name"), max_length = 100)
     keyname = models.SlugField(_("Internal Identifier"), max_length = 20, unique = True)
@@ -32,13 +32,6 @@ class Theme(models.Model):
     def __unicode__(self):
         return "%s" % self.name
         
-# put theme stylesheets in the right spot
-def theme_style_decorator(cls, f):
-    return "%s/css/%s" % (cls.theme.keyname, f)
-# put theme javascripts in the right spot    
-def theme_script_decorator(cls, f):
-    return "%s/js/%s" % (cls.theme.keyname, f)
-
 # provides an abstract html link reference
 class HtmlLinkRef(models.Model):
     name = models.CharField(max_length = 50)
@@ -61,7 +54,9 @@ class Javascript(HtmlLinkRef):
     class Meta:
         verbose_name = "Theme Javacript"
         verbose_name_plural = "Theme Javascripts"
-
+        
+#allow for externally hosted javascripts (like google code)        
+models.signals.post_init.connect(overrive_js_file_url, sender=Javascript)
 
 # Theme Stylesheet
 class StyleSheet(HtmlLinkRef):
@@ -77,18 +72,6 @@ class StyleSheet(HtmlLinkRef):
     class Meta:
         verbose_name = "Theme Stylesheet"
         verbose_name_plural = "Theme Stylesheets"
-
-"""
-this is not as cool looking though
-"""
-class external_file_funtime(object):
-    def __init__(self, url):
-        self.url = url
-
-def overrive_js_file_url(sender, instance, **kwargs):
-    if instance.external and not instance.file:
-        instance.file = external_file_funtime(instance.external)
-models.signals.post_init.connect(overrive_js_file_url, sender=Javascript)
 
 """
 The meat of the CMS hierarchy follows:
@@ -165,11 +148,6 @@ class Realm(models.Model):
         else:
             return "#"
             
-def section_path_up(cls, glue):
-    elements = cls[:]
-    if elements[0].extends is not None:
-        return section_path_up([elements[0].extends]+elements, glue)
-    return glue.join([z.keyname for z in elements])
 
 class RealmNotification(models.Model):
     realm = models.ForeignKey(Realm)
@@ -274,7 +252,7 @@ Column #3 is the right most column and can have content that spans 1 column
 """
 class Commune(BaseHierarchyElement):
     theme = models.ForeignKey(Theme)
-    archive_categories = models.ManyToManyField("newsengine.StoryCategory", verbose_name = _("Archival Categories"), blank = True, help_text = _("Restrict all Published Story Archives to these categories"))
+    
     class Meta:
         verbose_name = "CMS Page"
         verbose_name_plural = "CMS Pages"
@@ -290,10 +268,6 @@ class Commune(BaseHierarchyElement):
     def _commune_override_template(self):
         return "%s/commune/%s/%s.html" % (self.theme.keyname, self.realm.keyname, self.keyname)
     override_template = property(_commune_override_template)
-    
-    def _picker_object_graph(self):
-        return PickerGraph(self)
-    pickergraph = property(_picker_object_graph)
 
 """
 Slices and Named Boxes correspond directly with template idioms:
@@ -395,6 +369,10 @@ class NamedBox(models.Model):
             return True
         return False
     fw = property(_full_wide)
+    
+#handle mapping pickers to communes        
+models.signals.post_init.connect(map_picker_to_commune, sender=NamedBox)
+models.signals.post_delete.connect(unmap_orphan_picker, sender=NamedBox)
 
 """
 Application is a pre-existing DJANGO application with it's own urls, views, models, etc.

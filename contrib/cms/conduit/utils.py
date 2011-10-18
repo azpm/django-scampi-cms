@@ -100,4 +100,30 @@ def coerce_filters(filters):
                 filters.update(newfilter)
             except (ValueError, KeyError, TypeError):
                 continue
+                
+#map a picker (static or dynamic) to a commune
+def map_picker_to_commune(sender, instance, **kwargs):
+    commune = instance.slice.commune
+    
+    #give no fucks, set the commune even if it hasn't changed
+    if instance.content:
+        instance.content.commune = commune
+        instance.content.save()
+        
+    if instance.staticpicker:
+        instance.staticpicker.commune = commune
+        instance.staticpicker.save()
+                
+def unmap_orphan_picker(sender, instance, **kwargs):  
+    #give no fucks, unset the commune
+    if instance.content:
+        instance.content.commune = None
+        instance.content.save()
+        
+    if instance.staticpicker:
+        instance.staticpicker.commune = None
+        instance.staticpicker.save()
+
+
+
             

@@ -14,7 +14,8 @@ class PickerGraph(object):
         cached_collection_key = 'commune_picker_collection_%s' % self.commune.pk
         collection = cache.get(cached_collection_key, {})
             
-        if not collection:    
+        if not collection:
+            #statics = Commune.
             statics = StaticPicker.objects.filter(namedbox__slice__commune = self.commune, namedbox__active = True)
             
             dynamics = DynamicPicker.objects.filter(namedbox__slice__commune = self.commune, namedbox__active = True)

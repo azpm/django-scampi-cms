@@ -23,8 +23,12 @@ class namedbox_node(template.Node):
             cache.set(cached_tpl_key, cached_tpl)
         
         tpl = template.Template(cached_tpl)
+        c = template.Context(context.render_context)
         
-        return render_to_string(tpl, {'box': namedbox}, context)
+        return tpl.render(c)
+        
+        
+        #return render_to_string(tpl, {'box': namedbox}, context)
         
 def render_namedbox(parser, token):
     try:

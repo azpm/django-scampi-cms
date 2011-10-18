@@ -28,8 +28,6 @@ class PickerBase(models.Model):
     name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
     commune = models.ForeignKey(Commune, null = True, blank = True, related_name = "%(class)s_related")
     
-    
-    
     class Meta:
         abstract = True
         ordering = ['precedence']

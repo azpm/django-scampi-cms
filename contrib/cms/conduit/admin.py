@@ -21,13 +21,17 @@ class PickerTemplateAdmin(admin.ModelAdmin):
         (None, {'fields': ['content']}),
     )
     save_as = True
+    
+
 
 class DynamicPickerAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('Designation', {'fields': ('name',)}),
+        ('Designation', {'fields': ('name', 'commune')}),
         ('Display', {'fields': ('template',)}),
         ('Selectors', {'fields': ('content', 'max_count')}), 
     )
+    
+    readonly_fields = ('commune',)
     
     class Media:
         js = (
@@ -37,7 +41,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         )
 
     def get_form(self, request, obj=None, **kwargs):
-            self.form = DynamicPickerForm
+        self.form = DynamicPickerForm
         return super(DynamicPickerAdmin, self).get_form(request, obj, **kwargs)
         
     def save_model(self, request, obj, form, change):

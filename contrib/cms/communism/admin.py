@@ -51,23 +51,19 @@ class SliceInline(admin.TabularInline):
     )
     model = Slice
     extra = 1
-    
-class BoxKindAdmin(admin.ModelAdmin):
-    list_display = ('colorhint','cssclass')
-    fieldsets = (
-        ('Basic', {'fields': ('colorhint', 'cssclass')}),
-    )
-    search_fields = ('colorhint',)
+
+class NamedBoxTemplateAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    fields = ('name', 'description', 'content')
 
 class BoxAdmin(admin.ModelAdmin):
-    list_display = ('name', 'keyname', 'display_name', 'display_boxtop', 'slice', 'gridx', 'gridy', 'display_order')
-    #list_filter = ('slice',)
+    list_display = ('name', 'keyname', 'display_name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
     list_display_links = ('name',)
-    list_editable = ('display_name', 'display_boxtop', 'gridx', 'gridy', 'display_order')
+    list_editable = ('display_name', 'template', 'gridx', 'gridy', 'display_order')
     raw_id_fields = ['slice','content']
     fieldsets = (
         ('General', {'fields': ('slice', ('name', 'keyname', 'active'))}),
-        ('Display', {'fields': ('display_name', 'display_boxtop', 'kind', 'width_hint')}),
+        ('Display', {'fields': ('display_name', 'template')}),
         ('Arrangement', {'fields': ('gridx', 'gridy', 'display_order')}),
         ('Dynamic Content', {'fields': ('content',), 'description': "Dynamic Content takes precedence over static!"})
     )
@@ -110,6 +106,6 @@ admin.site.register(RealmNotification, RealmNotificationAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(Slice, SliceAdmin)
 admin.site.register(NamedBox, BoxAdmin)
-admin.site.register(BoxKind, BoxKindAdmin)
+admin.site.register(NamedBoxTemplate, NamedBoxTemplateAdmin)
 admin.site.register(Commune, CommuneAdmin)
 admin.site.register(Application, ApplicationAdmin)

@@ -15,7 +15,7 @@ from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orp
 from .managers import localised_section_manager, localised_element_manager
 from .utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up
 
-__all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','BoxKind','NamedBox','Application']
+__all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
 
 
 """
@@ -278,16 +278,14 @@ Slices and Named Boxes correspond directly with template idioms:
 
 and
 
-<div class="content-{{type}}">
-
-</div>
+{{ NamedBoxTemplate }}
 
 respectively
 """
 class Slice(models.Model):
-    name = models.CharField("Reference Name", max_length = 100)
+    name = models.CharField(_("Reference Name"), max_length = 100)
     commune = models.ForeignKey(Commune)
-    display_order = models.PositiveSmallIntegerField("Display Order") 
+    display_order = models.PositiveSmallIntegerField(_("Display Order")) 
     
     class Meta:
         unique_together = ('commune', 'display_order')
@@ -295,42 +293,39 @@ class Slice(models.Model):
     def __unicode__(self):
         return "%s > %s > #%d" % (self.commune.realm, self.commune.keyname, self.display_order)
     
-class BoxKind(models.Model):
-    colorhint = models.CharField("Box Top Color Hint", max_length = 20, default = "No Color")
-    cssclass = models.CharField("Box Top CSS", max_length = 20, null = True, blank = True)
+    
+class NamedBoxTemplate(models.Model):
+    name = models.CharField(_("Reference Name"), max_length=50, index=True)
+    description = models.TextField(blank = True)
+    content = models.TextField()
     
     class Meta:
-        verbose_name = u"Box Kind"
-        verbose_name_plural = u"Box Kinds"
+        verbose_name = u"NamedBox Template"
         
-    def __unicode__(self):
-        return u"%s" % self.colorhint
-        
-# A named box merely provides a styled box to hold content, that content comes from a conduit.models.picker
+#A named box merely provides a styled box to hold content, that content comes from a conduit.models.picker
 class NamedBox(models.Model):
     column_choices = (
         (1, 'Column #1'),
         (2, 'Column #2'),
         (3, 'Column #3'),
     )
-    box_type_choices = (
-        ('content-sw', 'Single Width'),
-        ('content-dw', 'Double Width'),
-        ('content-fw', 'Full Width')
-    )
-    
-    name = models.CharField("Reference Name", max_length = 100)
-    display_name = models.CharField("Displayed Box Title", max_length = 50, null = True, blank = True)
-    display_boxtop = models.BooleanField("Show Box Top", default = True)
-    keyname = models.SlugField("Template/HTML Identifier", max_length = 20)
-    kind = models.ForeignKey(BoxKind)   
+   
+    #structural
     slice = models.ForeignKey(Slice)
     gridx = models.PositiveSmallIntegerField("Column", choices = column_choices)
     gridy = models.PositiveSmallIntegerField("Sub Slice")
     display_order = models.PositiveSmallIntegerField("Display Order")
-    content = models.ForeignKey("conduit.DynamicPicker", null = True, blank = True)
+    
+    #display
+    name = models.CharField(_("Reference Name"), max_length = 100)
+    display_name = models.CharField(_("Optional Box Title"), help_text = u"", max_length = 50, blank = True)
+    template = models.ForeignKey(NamedBoxTemplate)
+    
+    #reference
+    keyname = models.SlugField("Template/HTML Identifier", max_length = 20)
     active = models.BooleanField(default = True, db_index=True)
-    width_hint = models.CharField(choices = box_type_choices, max_length = 10)
+    
+    content = models.ForeignKey("conduit.DynamicPicker", null = True, blank = True)
     
     class Meta:
         unique_together = (('slice', 'gridx', 'gridy', 'display_order'), ('slice', 'keyname'))
@@ -350,25 +345,6 @@ class NamedBox(models.Model):
         else:
             return None
     picker = property(_picker)
-    
-    def _single_wide(self):
-        if self.width_hint == 'content-sw':
-            return True
-        return False
-    sw = property(_single_wide)
-    
-    
-    def _double_wide(self):
-        if self.width_hint == 'content-dw':
-            return True
-        return False
-    dw = property(_double_wide)
-    
-    def _full_wide(self):
-        if self.width_hint == 'content-fw':
-            return True
-        return False
-    fw = property(_full_wide)
     
 #handle mapping pickers to communes        
 models.signals.post_init.connect(map_picker_to_commune, sender=NamedBox)

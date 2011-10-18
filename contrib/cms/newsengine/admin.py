@@ -6,8 +6,6 @@ from django.contrib.auth.models import User
 from django.core.mail import mail_admins
 from django.template.defaultfilters import slugify
 
-from reversion import revision
-
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
 from .forms import ArticleTranslationForm
 
@@ -45,10 +43,6 @@ class ArticleAdmin(admin.ModelAdmin):
     def en_sub_headline(self, cls):
         return cls.sub_headline_en
     en_sub_headline.short_description = u"Sub Headline [en]"
-
-    @revision.create_on_success
-    def save_formset(self, request, form, formset, change):
-        return super(ArticleAdmin, self).save_formset(request, form, formset, change)
     
     """
     In addition to showing a user's username in related fields, show their full

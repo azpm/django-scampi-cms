@@ -3,8 +3,11 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
-#libazpm stuff
+#scampu stuff
 from libscampi.core.fields import PickledObjectField 
+from libscampi.contrib.cms.communism.models import Commune
+
+#local imports
 from libscampi.contrib.cms.conduit.utils import coerce_filters
 from libscampi.contrib.cms.conduit.picker import manifest
 

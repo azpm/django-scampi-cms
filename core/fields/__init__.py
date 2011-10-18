@@ -11,7 +11,7 @@ try:
     add_introspection_rules([], ["^libscampi\.core\.fields\.crypto\.EncryptedFloatField"])
 
     #south introspection: pickling
-    add_introspection_rules([], ["^libscampi\.core\.fields\.pickle\.PickleField"])
+    add_introspection_rules([], ["^libscampi\.core\.fields\.pickle\.PickledObjectField"])
 
     #south introspection: UUID
     add_introspection_rules([], ["^libscampi\.core\.fields\.uuid\.UUIDField"])
@@ -20,5 +20,5 @@ except ImportError:
     pass
 
 from .uuid import UUIDField
-from .pickle import PickleField
+from .pickle import PickledObjectField
 from .crypto import EncryptedTextField, EncryptedCharField, EncryptedDateField, EncryptedDateTimeField, EncryptedIntField, EncryptedLongField, EncryptedFloatField

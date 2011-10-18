@@ -49,7 +49,7 @@ def dbsafe_decode(value, compress_object=False):
     return value
 
 
-class PickleField(models.Field):
+class PickledObjectField(models.Field):
     """
     A field that will accept *any* python object and store it in the
     database. PickledObjectField will optionally compress its values if
@@ -66,7 +66,7 @@ class PickleField(models.Field):
         self.compress = kwargs.pop('compress', False)
         self.protocol = kwargs.pop('protocol', DEFAULT_PROTOCOL)
         kwargs.setdefault('editable', False)
-        super(PickleField, self).__init__(*args, **kwargs)
+        super(PickledObjectField, self).__init__(*args, **kwargs)
 
     def get_default(self):
         """
@@ -85,7 +85,7 @@ class PickleField(models.Field):
                 return self.default()
             return self.default
         # If the field doesn't have a default, then we punt to models.Field.
-        return super(PickleField, self).get_default()
+        return super(PickledObjectField, self).get_default()
 
     def to_python(self, value):
         """
@@ -140,4 +140,4 @@ class PickleField(models.Field):
             raise TypeError('Lookup type %s is not supported.' % lookup_type)
         # The Field model already calls get_db_prep_value before doing the
         # actual lookup, so all we need to do is limit the lookup types.
-        return super(PickleField, self).get_db_prep_lookup(lookup_type, value)
+        return super(PickledObjectField, self).get_db_prep_lookup(lookup_type, value)

@@ -45,6 +45,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
         if obj:
             return ('commune', 'content')
+        
+        return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
     
     #provide the JS for the picking filter magic
     class Media:

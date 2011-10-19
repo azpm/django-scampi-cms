@@ -13,7 +13,7 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, Page):
         assert False
 
 
-class PickedStoryIndex(ArchiveIndexView, NewsEngineArchivePage):
+class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
     pass
 
 """

@@ -6,7 +6,10 @@ from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 from .mixins import PublishStoryMixin
 
 class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, Page):
-    pass
+    
+    def get_queryset(self):
+        f = self.picker.Archive
+        assert False
 
 
 class PickedStoryIndex(ArchiveIndexView, NewsEngineArchivePage):

@@ -4,7 +4,7 @@ from libscampi.contrib.cms.views.base import Page
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 
 class PickedStoryIndex(Page, PickerMixin, ArchiveIndexView):
-    
+    pass
 
 """
 class PickedStoryYearArchive(Page, PickerArchiveMixin, YearArchiveView):

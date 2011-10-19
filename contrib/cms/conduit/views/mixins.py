@@ -22,8 +22,8 @@ class PickerMixin(object):
         return super(PickerMixin, self).get(request, *args, **kwargs)
     
     def get_context_data(self, *args, **kwargs):
-        context = Super(PickerMixin, self).get_context_data(*args, **kwargs)
-        assert False
+        context = super(PickerMixin, self).get_context_data(*args, **kwargs)
+        
         context['picker-id'] = picker
         return context
             

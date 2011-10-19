@@ -1,11 +1,11 @@
 from django.views.generic.dates import *
 
-from libscampi.contrib.cms.views.base import Page
+from libscampi.contrib.cms.views.base import Page, PageNoView
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 
 from .mixins import PublishStoryMixin
 
-class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, Page):
+class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
     
     def get_queryset(self):
         assert False

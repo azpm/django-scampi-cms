@@ -10,7 +10,7 @@ from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from .models import DynamicPicker, StaticPicker, PickerTemplate
-from .forms import DynamicPickerForm, DynamicPickerFormForInstance
+from .forms import DynamicPickerForm
 from .picker import manifest
 from .utils import build_filters, coerce_filters
 
@@ -64,8 +64,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
 
     #again, special form for creating vs changing
     def get_form(self, request, obj=None, **kwargs):
-        if obj:
-            self.form = DynamicPickerForm
+        self.form = DynamicPickerForm
+        
         return super(DynamicPickerAdmin, self).get_form(request, obj, **kwargs)
         
     #provide the serialization of the inclusion and exclusion filters

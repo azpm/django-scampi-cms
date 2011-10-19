@@ -3,7 +3,13 @@ from django.views.generic.dates import *
 from libscampi.contrib.cms.views.base import Page
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 
-class PickedStoryIndex(PickerMixin, Page):
+from .mixins import PublishStoryMixin
+
+class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, Page):
+    pass
+
+
+class PickedStoryIndex(ArchiveIndexView, NewsEngineArchivePage):
     pass
 
 """

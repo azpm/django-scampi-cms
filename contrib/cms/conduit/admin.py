@@ -37,7 +37,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         (_('Picking'), {'fields': ('content', 'max_count')}),
     )
     
-    class get_readonly_fields(self, request, obj=None):
+    def get_readonly_fields(self, request, obj=None):
         """
         commune is always readonly
         content can only be set once

@@ -7,7 +7,7 @@ from django.core.context_processors import csrf
 from django.utils import simplejson
 from django.conf import settings
 from django.forms.formsets import formset_factory
-
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from .models import DynamicPicker, StaticPicker, PickerTemplate
 from .forms import DynamicPickerForm, DynamicPickerFormForInstance
@@ -28,11 +28,25 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Designation', {'fields': ('name', 'commune')}),
         ('Display', {'fields': ('template',)}),
-        ('Selectors', {'fields': ('content', 'max_count')}), 
+        ('Picking', {'fields': ('content', 'max_count')}), 
     )
     
-    readonly_fields = ('commune',)
+    add_fieldsets = (
+        (_('Designation'), {'fields': ('name', )}),
+        (_('Display'), {'fields': ('template', )}),
+        (_('Picking'), {'fields': ('content', 'max_count')}),
+    )
     
+    class get_readonly_fields(self, request, obj=None):
+        """
+        commune is always readonly
+        content can only be set once
+        """
+        
+        if obj:
+            return ('commune', 'content')
+    
+    #provide the JS for the picking filter magic
     class Media:
         js = (
             'https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js',
@@ -40,10 +54,19 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             settings.MASTER_MEDIA_URL+'admin/js/conduit.pickers.js',
         )
 
+    #we have the "adding a picker" form and the "changing the picker" form
+    def get_fieldsets(self, request, obj=None):
+        if not obj:
+            return self.add_fieldsets
+        return super(DynamicPickerAdmin, self).get_fieldsets(request, obj)
+
+    #again, special form for creating vs changing
     def get_form(self, request, obj=None, **kwargs):
-        self.form = DynamicPickerForm
+        if obj:
+            self.form = DynamicPickerForm
         return super(DynamicPickerAdmin, self).get_form(request, obj, **kwargs)
         
+    #provide the serialization of the inclusion and exclusion filters
     def save_model(self, request, obj, form, change):
         content_model = obj.content.model_class()
         
@@ -70,6 +93,17 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
         obj.save()
         
+    def response_add(self, request, obj, post_url_continue='../%s'):
+        """
+        This method provides similar functionality to the User admin in django
+        so that after a picker is created you are given the ability to build filters
+        """
+        if '_addanother' not in request.POST and '_popup' not in request.POST:
+            request.POST['_coninue'] = 1
+        
+        return super(DynamicPickerAdmin, self).response_add(request, obj, post_url_continue)
+        
+    #override the urls method to add our picking form fields return
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
         urls = super(DynamicPickerAdmin, self).get_urls()

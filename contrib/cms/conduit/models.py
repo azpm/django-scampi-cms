@@ -35,7 +35,7 @@ class PickerBase(models.Model):
     
 class DynamicPicker(PickerBase):
     template = models.ForeignKey(PickerTemplate)
-    max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time"))
+    max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time"), default = 0)
     content = models.ForeignKey(ContentType, verbose_name = _("Content Source"), help_text = _("What model will populate this picker?"))
     include_filters = PickledObjectField(editable = False, compress = True)
     exclude_filters = PickledObjectField(editable = False, compress = True)

@@ -20,4 +20,10 @@ class PickerMixin(object):
             raise Http404
             
         return super(PickerMixin, self).get(request, *args, **kwargs)
+    
+    def get_context_data(self, *args, **kwargs):
+        context = Super(PickerMixin, self).get_context_data(*args, **kwargs)
+        
+        context.update({'picker-id': picker})
+        return context
             

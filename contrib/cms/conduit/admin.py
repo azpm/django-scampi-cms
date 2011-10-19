@@ -70,28 +70,32 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
     #provide the serialization of the inclusion and exclusion filters
     def save_model(self, request, obj, form, change):
-        content_model = obj.content.model_class()
         
-        picking_filterset = manifest.get_registration_info(content_model)()
+        #basically only do something if we are "changing" e.g. the picking fields are available
+        if change:
+            content_model = obj.content.model_class()
         
-        factory = formset_factory(picking_filterset.form.__class__)
-        inclusion = factory(request.POST, prefix="incl")
-        exclusion = factory(request.POST, prefix="excl")
+            picking_filterset = manifest.get_registration_info(content_model)()
+            
+            factory = formset_factory(picking_filterset.form.__class__)
+            inclusion = factory(request.POST, prefix="incl")
+            exclusion = factory(request.POST, prefix="excl")
 
-        inclusion_fs = []
-        if inclusion.is_valid():
-            for form in inclusion:
-                setattr(picking_filterset, '_form', form)
-                inclusion_fs.append(build_filters(picking_filterset))
-                
-        exclusion_fs = []
-        if exclusion.is_valid():
-            for form in exclusion:
-                setattr(picking_filterset, '_form', form)
-                exclusion_fs.append(build_filters(picking_filterset))
-                
-        obj.include_filters = inclusion_fs
-        obj.exclude_filters = exclusion_fs
+            inclusion_fs = []
+            if inclusion.is_valid():
+                for form in inclusion:
+                    setattr(picking_filterset, '_form', form)
+                    inclusion_fs.append(build_filters(picking_filterset))
+                    
+            exclusion_fs = []
+            if exclusion.is_valid():
+                for form in exclusion:
+                    setattr(picking_filterset, '_form', form)
+                    exclusion_fs.append(build_filters(picking_filterset))
+                    
+            obj.include_filters = inclusion_fs
+            obj.exclude_filters = exclusion_fs
+            
         
         obj.save()
         

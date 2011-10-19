@@ -2,9 +2,11 @@ from django.conf.urls.defaults import *
 from django.views.decorators.cache import cache_page
 
 from libscampi.contrib.cms.communism.views import view_commune, primary_section
+from libscampi.contirb.cms.newsengine.views import story_archive
 #from libscampi.contrib.cms.communism.views import story_detail, story_archive_day, story_archive_month, story_archive_year, story_archive, view_commune, primary_section
 
 urlpatterns = patterns('libscampi.contrib.cms.communism.views',
+    url(r'^(?P<keyname>[\w\.\-]+)/(?P<picker>[\w/-]+)/$', story_archive, name="published-story-archive"),
     url(r'^(?P<keyname>[\w\.\-]+)/$', view_commune, name="view-commune"),
     url(r'^$', primary_section, name="primary-section"),
 )

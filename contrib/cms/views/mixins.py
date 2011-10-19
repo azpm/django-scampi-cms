@@ -44,10 +44,7 @@ class html_link_refs(collections.MutableSet):
         self.elements = []
     
 class CSSMixin(object):
-    def get_context_data(self, *args, **kwargs):
-        #get the existing context
-        context = super(CSSMixin, self).get_context_data(*args, **kwargs)
-        
+    def get_stylesheets(self):
         #try to get the cached css for this commune
         cached_css_key = 'commune_css_%s' % self.commune.pk
         styles = cache.get(cached_css_key, None)
@@ -65,6 +62,14 @@ class CSSMixin(object):
         css_collection = html_link_refs()
         for style in styles:
             css_collection.add(style)
+            
+        return css_collection
+
+    def get_context_data(self, *args, **kwargs):
+        #get the existing context
+        context = super(CSSMixin, self).get_context_data(*args, **kwargs)
+        
+        css = self.get_stylesheets()
         
         #add the collection to the context
         if 'page' in context:
@@ -81,10 +86,7 @@ class CSSMixin(object):
         return context
     
 class JScriptMixin(object):
-    def get_context_data(self, *args, **kwargs):
-        #get the existing context
-        context = super(JScriptMixin, self).get_context_data(*args, **kwargs)
-        
+    def get_javascripts(self):
         #try to get the cached javascript for this commune
         cached_scripts_key = 'commune_scripts_%s' % self.commune.pk
         scripts = cache.get(cached_scripts_key, None)
@@ -103,15 +105,23 @@ class JScriptMixin(object):
         for script in scripts:
             script_collection.add(script)
         
+        return script_collection
+
+    def get_context_data(self, *args, **kwargs):
+        #get the existing context
+        context = super(JScriptMixin, self).get_context_data(*args, **kwargs)
+        
+        js = self.get_javascripts()
+        
         #add the collection to the context
         if 'page' in context:
             context['page'].update({
-                'scripts': script_collection,
+                'scripts': js,
             })
         else:
             context.update({
                 'page': {
-                    'scripts': script_collection,
+                    'scripts': js,
                 }
             })
             

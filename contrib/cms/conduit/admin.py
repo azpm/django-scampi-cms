@@ -26,13 +26,13 @@ class PickerTemplateAdmin(admin.ModelAdmin):
 
 class DynamicPickerAdmin(admin.ModelAdmin):
     fieldsets = (
-        ('Designation', {'fields': ('name', 'commune')}),
+        ('Designation', {'fields': ('name', 'keyname', 'commune')}),
         ('Display', {'fields': ('template',)}),
         ('Picking', {'fields': ('content', 'max_count')}), 
     )
     
     add_fieldsets = (
-        (_('Designation'), {'fields': ('name', )}),
+        (_('Designation'), {'fields': ('name', 'keyname')}),
         (_('Display'), {'fields': ('template', )}),
         (_('Picking'), {'fields': ('content', 'max_count')}),
     )
@@ -44,7 +44,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         """
         
         if obj:
-            return ('commune', 'content')
+            return ('commune', 'keyname', 'content')
         
         return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
     

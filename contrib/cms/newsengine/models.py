@@ -53,6 +53,7 @@ class Article(MultilingualModel):
     class Meta:
         translation = ArticleTranslation
         ordering = ('-creation_date',)
+        multilingual = ['headline','sub_headline','body']
         verbose_name = "Article"
         verbose_name_plural = "Articles"
     
@@ -174,9 +175,13 @@ class PublishPicking(django_filters.FilterSet):
     start = django_filters.filters.DateRangeFilter(lookup_type=('lt','gt','lte','gte'))
     end = django_filters.filters.DateRangeFilter(name="end", lookup_type=('lt','gt','lte','gte'))
     ignores = django_filters.filters.BooleanFilter(name="end", label="Ignore Blank End Times?", lookup_type='isnull')
+    
     class Meta:
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
+        
+    class Archive:
+        using = ('site', 'category', 'published', 'story__categories')   
     
     @staticmethod
     def static_chain(qs):

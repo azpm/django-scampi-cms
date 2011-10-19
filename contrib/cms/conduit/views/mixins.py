@@ -1,44 +1,23 @@
-from django.core.cache import cache
+from django.db.models import Q, Max
+from django.http import Http404, HttpResponseServerError
+from django.shortcuts import get_object_or_404, get_list_or_404, redirect
 
-from libscampi.contrib.cms.communism.models import NamedBox
-from libscampi.contrib.cms.conduit.models import DynamicPicker, StaticPicker
+from libscampi.contrib.cms.communism.models import Javascript, StyleSheet, Theme
+from libscampi.contrib.cms.conduit.models import DynamicPicker
 
-class PickerGraph(object):
-    pickers = None
+class PickerMixin(object):
+    picker = None
     
-    def generate_graph(self):
-        #if there isn't a commune, there's no picker graph
-        if not self.commune:
-            return {}
-            
-        cached_collection_key = 'commune_picker_collection_%s' % self.commune.pk
-        collection = cache.get(cached_collection_key, {})
-            
-        if not collection:
-            statics = Commune.staticpicker_related.all()
-            dynamics = Commune.dynamicpicker_related.all()
-            
-            for static in statics:
-                collection[static.namedbox] = static
-                
-            for dynamic in dynamics:
-                try:
-                    key = dynamic.namedbox_set.get(slice__commune = self.commune)
-                except (NamedBox.DoesNotExist, NamedBox.MultipleObjectsReturned):
-                    continue
-                else:
-                    collection[key] = dynamic
-            
-            cache.set(cached_collection_key, collection, 60*20)
+    def get(self, request, *args, **kwargs):
+        """
+        provides the picker to the view for base QuerySet limits
+        """
         
-        return collection
-    
-    def get_context_data(self, *args, **kwargs):
-        context = super(PickerGraph, self).get_context_data(*args, **kwargs)
-        
-        #populate the graph
-        self.pickers = self.generate_graph()
-        
-        context.update({'pickers': self.pickers})
-        
-        return context
+        if 'picker' in kwargs:
+            picker_key = kwargs['picker']
+            self.picker = get_object_or_404(DynamicPicker, keyname = picker_key, commune = self.commune)
+        else:
+            raise Http404
+            
+        return super(PickerMixin, self).get(request, *args, **kwargs)
+            

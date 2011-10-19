@@ -64,7 +64,9 @@ class DynamicPickerAdmin(admin.ModelAdmin):
 
     #again, special form for creating vs changing
     def get_form(self, request, obj=None, **kwargs):
-        self.form = DynamicPickerForm
+        
+        if obj = None
+            self.form = DynamicPickerForm
         
         return super(DynamicPickerAdmin, self).get_form(request, obj, **kwargs)
         

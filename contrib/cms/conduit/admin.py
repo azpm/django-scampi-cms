@@ -105,7 +105,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         so that after a picker is created you are given the ability to build filters
         """
         if '_addanother' not in request.POST and '_popup' not in request.POST:
-            request.POST['_coninue'] = 1
+            request.POST['_continue'] = 1
         
         return super(DynamicPickerAdmin, self).response_add(request, obj, post_url_continue)
         

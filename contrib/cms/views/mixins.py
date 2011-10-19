@@ -74,12 +74,12 @@ class CSSMixin(object):
         #add the collection to the context
         if 'page' in context:
             context['page'].update({
-                'styles': css_collection,
+                'styles': css,
             })
         else:
             context.update({
                 'page': {
-                    'styles': css_collection,
+                    'styles': css,
                 }
             })
             

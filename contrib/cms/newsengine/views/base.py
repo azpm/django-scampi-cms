@@ -8,6 +8,7 @@ from .mixins import PublishStoryMixin
 class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, Page):
     
     def get_queryset(self):
+        assert False
         f = self.picker.Archive
         assert False
 

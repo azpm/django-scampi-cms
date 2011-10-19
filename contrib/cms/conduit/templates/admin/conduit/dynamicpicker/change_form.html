@@ -2,13 +2,13 @@
 
 {% block extrahead %}
 {{ block.super }}
-
+{% if object_id and original %}
 <script type="text/javascript">
     jQuery(document).ready(function() {
         var path = jQuery.makeArray(window.location.pathname.split("/"));
         
         var picker_id = {{ object_id }};
-        var content_id = django.jQuery("#id_content").val();
+        var content_id = {{ original.content.id }}
     
         var load_filters_url = "{% url admin:conduit-picking-filters-fields %}";
         
@@ -23,7 +23,8 @@
         //override the save method to bundle up the filters correctly
         jQuery("#dynamicpicker_form").submit(function() {
             return picker_form.bundle_filters();
-    });
+        });
     });
 </script>
+{% endif %}
 {% endblock %}

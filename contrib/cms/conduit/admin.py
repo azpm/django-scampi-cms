@@ -115,7 +115,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         urls = super(DynamicPickerAdmin, self).get_urls()
         
         my_urls = patterns('',
-            url(r'^picking/getformfields/$', self.admin_site.admin_view(self.picking_filters_fields), name="conduit-picking-filters-fields"),
+            url(r'^p/formfields/$', self.admin_site.admin_view(self.picking_filters_fields), name="conduit-picking-filters-fields"),
         )
 
         return my_urls + urls

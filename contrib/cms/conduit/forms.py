@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 #libazpm stuff
 from libscampi.contrib.cms.conduit.picker import manifest

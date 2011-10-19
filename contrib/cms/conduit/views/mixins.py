@@ -24,6 +24,6 @@ class PickerMixin(object):
     def get_context_data(self, *args, **kwargs):
         context = super(PickerMixin, self).get_context_data(*args, **kwargs)
         
-        context['picker-id'] = picker
+        context['picker-id'] = self.picker
         return context
             

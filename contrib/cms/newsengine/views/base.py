@@ -37,8 +37,7 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
             else:
                 qs = qs.filter(**f)
         
-        
-         if self.picker.exclude_filters:
+        if self.picker.exclude_filters:
             if isinstance(self.picker.include_filters, list):
                 for f in self.exclude_filters:
                     for k in f.keys():

@@ -179,9 +179,6 @@ class PublishPicking(django_filters.FilterSet):
     class Meta:
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
-        
-    class Archive:
-        using = ('site', 'category', 'published', 'story__categories')   
     
     @staticmethod
     def static_chain(qs):

@@ -8,7 +8,7 @@ from .mixins import PublishStoryMixin
 class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
     
     def get_queryset(self):
-        qs = self.model.objects.select_related.all()
+        qs = self.model.objects.select_related().all()
         
         """
         this is a hardcoded "hack"

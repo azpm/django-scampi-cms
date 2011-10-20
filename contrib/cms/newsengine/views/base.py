@@ -29,7 +29,7 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
         #loop over the inclusion filters and update the qs
         if self.picker.include_filters:
             if isinstance(self.picker.include_filters, list):
-                for f in self.include_filters:
+                for f in self.picker.include_filters:
                     for k in f.keys():
                         if k in exclude_these:
                             f.pop(k) #this strips anything we dont want
@@ -39,7 +39,7 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
         
         if self.picker.exclude_filters:
             if isinstance(self.picker.include_filters, list):
-                for f in self.exclude_filters:
+                for f in self.picker.exclude_filters:
                     for k in f.keys():
                         if k in exclude_these:
                             f.pop(k) #strips unneeded filters

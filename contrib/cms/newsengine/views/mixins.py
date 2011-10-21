@@ -11,4 +11,4 @@ class PublishStoryMixin(object):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
     date_field = 'start'
-    
+    month_format = '%m'

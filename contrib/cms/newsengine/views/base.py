@@ -6,7 +6,11 @@ from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 from .mixins import PublishStoryMixin
 
 class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
+    """
+    Base page for newsengine archives
     
+    provides the picker-pruned initial queryset
+    """
     def get_queryset(self):
         qs = self.model.objects.select_related().all()
         
@@ -54,14 +58,17 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
 class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
     pass
 
-"""
-class PickedStoryYearArchive(Page, PickerArchiveMixin, YearArchiveView):
+class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
+    pass
 
-class PickedStoryMonthArchive(Page, PickerArchiveMixin, MonthArchiveView):
+class PickedStoryMonthArchive(NewsEngineArchivePage, MonthArchiveView):
+    pass
 
-class PickedStoryDayArchive(Page, PickerArchiveMixin, DayArchiveView):
-
-class PickerStoryTodayArchive(Page, PickerArchiveMixin, TodayArchiveView):
-
-class PickedStoryDetailArchive(Page, PickerArchiveMixin, DateDetailView):
-"""
+class PickedStoryDayArchive(NewsEngineArchivePage, DayArchiveView):
+    pass
+    
+class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
+    pass
+    
+class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
+    pass

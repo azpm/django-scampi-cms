@@ -1,7 +1,11 @@
 from libscampi.contrib.cms.newsengine.models import Publish
 
 class PublishStoryMixin(object):
-    #queryset = Publish.objects.all()
+    """
+    Published Story Mixin for archives/pages
+    
+    Provides the model and appropriate field definitions to use Publish in view
+    """
 
     model = Publish
     slug_field = 'slug'

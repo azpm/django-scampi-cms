@@ -56,19 +56,79 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
 
 
 class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
-    pass
+    
+    def get_template_names(self):
+        tpl_list = (
+            "%s/newsengine/archive/%s/%s/%s/index.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/index.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/index.html" % (self.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/index.html" % self.theme.keyname,
+        )
+        
+        return tpl_list
+    
 
 class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
-    pass
+    
+    def get_template_names(self):
+        tpl_list = (
+            "%s/newsengine/archive/%s/%s/%s/year.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/year.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/year.html" % (self.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/year.html" % self.theme.keyname,
+        )
+        
+        return tpl_list
 
 class PickedStoryMonthArchive(NewsEngineArchivePage, MonthArchiveView):
-    pass
+    
+    def get_template_names(self):
+        tpl_list = (
+            "%s/newsengine/archive/%s/%s/%s/month.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/month.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/month.html" % (self.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/month.html" % self.theme.keyname,
+        )
+        
+        return tpl_list
 
 class PickedStoryDayArchive(NewsEngineArchivePage, DayArchiveView):
-    pass
+    
+    def get_template_names(self):
+        tpl_list = (
+            "%s/newsengine/archive/%s/%s/%s/day.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/day.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/day.html" % (self.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/day.html" % self.theme.keyname,
+        )
+        
+        return tpl_list
     
 class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
-    pass
+    
+    def get_template_names(self):
+        tpl_list = (
+            "%s/newsengine/archive/%s/%s/%s/today.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/%s/day.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/today.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/%s/day.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/today.html" % (self.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/%s/day.html" % (self.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/today.html" % self.theme.keyname,
+            "%s/newsengine/archive/day.html" % self.theme.keyname,
+        )
+        
+        return tpl_list
     
 class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
-    pass
+    
+    def get_template_names(self):
+        tpl_list = (
+            "%s/newsengine/archive/%s/%s/%s/%s.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname, self.object.slug),
+            "%s/newsengine/archive/%s/%s/%s/detail.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/detail.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/detail.html" % (self.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/detail.html" % self.theme.keyname,
+        )
+        
+        return tpl_list

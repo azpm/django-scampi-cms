@@ -48,7 +48,7 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
                 qs = qs.exclude(**f)
         
         
-        assert False
+        return qs
 
 
 class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):

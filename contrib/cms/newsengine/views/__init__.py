@@ -1,4 +1,4 @@
-from .base import PickedStoryIndex, PickedStoryYearArchive, PickedStoryMonthArchive, PickedStoryDayArchive,s PickerStoryTodayArchive, PickedStoryDetailArchive
+from .base import PickedStoryIndex, PickedStoryYearArchive, PickedStoryMonthArchive, PickedStoryDayArchive, PickerStoryTodayArchive, PickedStoryDetailArchive
 
 story_detail = PickedStoryDetailArchive.as_view()
 story_archive_day = PickedStoryDayArchive.as_view()

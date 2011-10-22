@@ -123,11 +123,6 @@ class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
 class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
     
     def get_template_names(self):
-        a = self.commune.theme.keyname
-        b = self.realm.keyname
-        c = self.commune.kename
-        d = self.picker.keyname
-        e = self.object.slug
     
         tpl_list = (
             "%s/newsengine/archive/%s/%s/%s/%s.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname, self.object.slug),

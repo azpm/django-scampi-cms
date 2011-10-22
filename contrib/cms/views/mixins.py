@@ -152,7 +152,7 @@ class CommuneMixin(object):
     def get(self, request, *args, **kwargs):
         #get the realm
         self.realm = get_object_or_404(Realm, site = Site.objects.get_current())
-        assert False
+        
         #keyname specified in url
         if 'keyname' in kwargs:
             actual = kwargs['keyname'].split('.') #get the actual last commune key: /<parent>.<child>.<desired>/

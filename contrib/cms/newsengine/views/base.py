@@ -59,10 +59,10 @@ class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
     
     def get_template_names(self):
         tpl_list = (
-            "%s/newsengine/archive/%s/%s/%s/index.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
-            "%s/newsengine/archive/%s/%s/index.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
-            "%s/newsengine/archive/%s/index.html" % (self.theme.keyname, self.realm.keyname),
-            "%s/newsengine/archive/index.html" % self.theme.keyname,
+            "%s/newsengine/archive/%s/%s/%s/index.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/index.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/index.html" % (self.commune.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/index.html" % self.commune.theme.keyname,
         )
         
         return tpl_list
@@ -72,10 +72,10 @@ class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
     
     def get_template_names(self):
         tpl_list = (
-            "%s/newsengine/archive/%s/%s/%s/year.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
-            "%s/newsengine/archive/%s/%s/year.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
-            "%s/newsengine/archive/%s/year.html" % (self.theme.keyname, self.realm.keyname),
-            "%s/newsengine/archive/year.html" % self.theme.keyname,
+            "%s/newsengine/archive/%s/%s/%s/year.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/year.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/year.html" % (self.commune.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/year.html" % self.commune.theme.keyname,
         )
         
         return tpl_list
@@ -84,10 +84,10 @@ class PickedStoryMonthArchive(NewsEngineArchivePage, MonthArchiveView):
     
     def get_template_names(self):
         tpl_list = (
-            "%s/newsengine/archive/%s/%s/%s/month.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
-            "%s/newsengine/archive/%s/%s/month.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
-            "%s/newsengine/archive/%s/month.html" % (self.theme.keyname, self.realm.keyname),
-            "%s/newsengine/archive/month.html" % self.theme.keyname,
+            "%s/newsengine/archive/%s/%s/%s/month.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/month.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/month.html" % (self.commune.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/month.html" % self.commune.theme.keyname,
         )
         
         return tpl_list
@@ -96,10 +96,10 @@ class PickedStoryDayArchive(NewsEngineArchivePage, DayArchiveView):
     
     def get_template_names(self):
         tpl_list = (
-            "%s/newsengine/archive/%s/%s/%s/day.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
-            "%s/newsengine/archive/%s/%s/day.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
-            "%s/newsengine/archive/%s/day.html" % (self.theme.keyname, self.realm.keyname),
-            "%s/newsengine/archive/day.html" % self.theme.keyname,
+            "%s/newsengine/archive/%s/%s/%s/day.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/day.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/day.html" % (self.commune.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/day.html" % self.commune.theme.keyname,
         )
         
         return tpl_list
@@ -108,14 +108,14 @@ class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
     
     def get_template_names(self):
         tpl_list = (
-            "%s/newsengine/archive/%s/%s/%s/today.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
-            "%s/newsengine/archive/%s/%s/%s/day.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
-            "%s/newsengine/archive/%s/%s/today.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
-            "%s/newsengine/archive/%s/%s/day.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
-            "%s/newsengine/archive/%s/today.html" % (self.theme.keyname, self.realm.keyname),
-            "%s/newsengine/archive/%s/day.html" % (self.theme.keyname, self.realm.keyname),
-            "%s/newsengine/archive/today.html" % self.theme.keyname,
-            "%s/newsengine/archive/day.html" % self.theme.keyname,
+            "%s/newsengine/archive/%s/%s/%s/today.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/%s/day.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/today.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/%s/day.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/today.html" % (self.commune.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/%s/day.html" % (self.commune.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/today.html" % self.commune.theme.keyname,
+            "%s/newsengine/archive/day.html" % self.commune.theme.keyname,
         )
         
         return tpl_list
@@ -123,18 +123,18 @@ class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
 class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
     
     def get_template_names(self):
-        a = self.theme.keyname
+        a = self.commune.theme.keyname
         b = self.realm.keyname
         c = self.commune.kename
         d = self.picker.keyname
         e = self.object.slug
     
         tpl_list = (
-            "%s/newsengine/archive/%s/%s/%s/%s.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname, self.object.slug),
-            "%s/newsengine/archive/%s/%s/%s/detail.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
-            "%s/newsengine/archive/%s/%s/detail.html" % (self.theme.keyname, self.realm.keyname, self.commune.keyname),
-            "%s/newsengine/archive/%s/detail.html" % (self.theme.keyname, self.realm.keyname),
-            "%s/newsengine/archive/detail.html" % self.theme.keyname,
+            "%s/newsengine/archive/%s/%s/%s/%s.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname, self.object.slug),
+            "%s/newsengine/archive/%s/%s/%s/detail.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
+            "%s/newsengine/archive/%s/%s/detail.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/newsengine/archive/%s/detail.html" % (self.commune.theme.keyname, self.realm.keyname),
+            "%s/newsengine/archive/detail.html" % self.commune.theme.keyname,
         )
         
         return tpl_list

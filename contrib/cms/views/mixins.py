@@ -128,8 +128,6 @@ class JScriptMixin(object):
         return context
         
 class ThemeMixin(object):
-    theme = None
-    
     def get_context_data(self, *args, **kwargs):
         context = super(ThemeMixin, self).get_context_data(*args, **kwargs)
         

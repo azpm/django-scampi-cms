@@ -156,6 +156,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         return response
                 
 class StaticPickerInlineAdmin(admin.StackedInline):
+    readonly_fields = ('commune',)
     model = StaticPicker
     max_num = 1
     extra = 1

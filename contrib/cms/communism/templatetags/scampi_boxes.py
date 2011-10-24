@@ -25,6 +25,8 @@ class namedbox_node(template.Node):
         tpl = template.Template(cached_tpl)
         c = template.Context(context.render_context)
         
+        c.update({'box': namedbox})
+        
         return tpl.render(c)
         
         

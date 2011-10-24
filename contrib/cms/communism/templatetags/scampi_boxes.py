@@ -23,6 +23,8 @@ class namedbox_node(template.Node):
             cache.set(cached_tpl_key, cached_tpl)
         
         tpl = template.Template(cached_tpl)
+        f = context.render_context
+        assert False
         c = template.Context(context.render_context)
         
         c.update({'box': namedbox})

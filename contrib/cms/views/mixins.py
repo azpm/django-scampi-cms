@@ -157,7 +157,7 @@ class CommuneMixin(object):
         if 'keyname' in kwargs:
             actual = kwargs['keyname'].split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
             self.commune = get_object_or_404(Commune.localised.select_related(), section__keyname = actual[-1]) 
-            self.section = self.commune.section
+            self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
         else:
             #no keyname specified, we need the "primary" section
             

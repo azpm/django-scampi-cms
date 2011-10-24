@@ -14,6 +14,7 @@ class PickerMixin(object):
         """
         provides the picker to the view for base QuerySet limits
         """
+        f = self.commune
         assert False
         if 'picker' in kwargs:
             picker_key = kwargs['picker']

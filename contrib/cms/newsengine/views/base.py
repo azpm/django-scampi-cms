@@ -53,6 +53,15 @@ class NewsEngineArchivePage(PublishStoryMixin, PageNoView, PickerMixin):
         
         
         return qs
+        
+    def get_context_data(self, *args, **kwargs):
+        #get the existing context
+        context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
+        
+        #give the templat the current picker
+        context.update({'picker': self.picker})
+            
+        return context
 
 
 class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):

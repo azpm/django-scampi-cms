@@ -84,9 +84,9 @@ class DynamicPicker(PickerBase):
         
     def get_absolute_url(self):
         if self.commune:
-            return u"/%s/%s/" % (self.commune.keyname, self.keyname)
+            return "/%s/%s/" % (self.commune.keyname, self.keyname)
         
-        return u""
+        return ""
         
 class StaticPicker(PickerBase):
     content = models.TextField(_("Content"), help_text = _("Markdown friendly"))

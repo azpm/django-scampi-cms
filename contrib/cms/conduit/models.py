@@ -82,6 +82,12 @@ class DynamicPicker(PickerBase):
             return qs[:self.max_count]
         return qs
         
+    def get_absolute_url(self):
+        if self.commune:
+            return u"/%s/%s/" % (self.commune.keyname, self.keyname)
+        
+        return u""
+        
 class StaticPicker(PickerBase):
     content = models.TextField(_("Content"), help_text = _("Markdown friendly"))
     namedbox = models.OneToOneField("communism.NamedBox", null = True, blank = True)

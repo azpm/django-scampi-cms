@@ -23,9 +23,20 @@ class namedbox_node(template.Node):
             cache.set(cached_tpl_key, cached_tpl)
         
         tpl = template.Template(cached_tpl)
-        f = context.render_context
-        assert False
         c = template.Context(context.render_context)
+        
+        if 'request' not in c:
+            c.update({'request': context['request']})
+        if 'section' not in c:
+            c.update({'section': context.get('CMS_SECTION', None)})
+        if 'perms' not in c and perms:
+            c.update({'perms': perms})
+        if 'MASTER_MEDIA_URL' not in c:
+            c.update({'MASTER_MEDIA_URL': context.get('MASTER_MEDIA_URL', None)})
+        if 'MEDIA_URL' not in c:
+            c.update({'MEDIA_URL': context.get('MEDIA_URL', None)})
+        if 'THEME_URL' not in c:
+            c.update({'THEME_URL': context.get('THEME_URL', None)})
         
         c.update({'box': namedbox})
         

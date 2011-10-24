@@ -5,7 +5,7 @@ from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 
 from .mixins import PublishStoryMixin
 
-class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, PageNoView):
+class NewsEngineArchivePage(PublishStoryMixin, PageNoView, PickerMixin):
     """
     Base page for newsengine archives
     

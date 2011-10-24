@@ -33,6 +33,8 @@ def section_path_up(cls, glue):
     elements = cls[:]
     if elements[0].extends is not None:
         return section_path_up([elements[0].extends]+elements, glue)
+        
+    assert False
     return glue.join([z.keyname for z in elements])
     
 

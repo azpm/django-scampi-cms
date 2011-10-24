@@ -29,8 +29,8 @@ class namedbox_node(template.Node):
             c.update({'request': context['request']})
         if 'section' not in c:
             c.update({'section': context.get('CMS_SECTION', None)})
-        if 'perms' not in c and perms:
-            c.update({'perms': perms})
+        if 'perms' not in c:
+            c.update({'perms': context.get('perms', None)})
         if 'MASTER_MEDIA_URL' not in c:
             c.update({'MASTER_MEDIA_URL': context.get('MASTER_MEDIA_URL', None)})
         if 'MEDIA_URL' not in c:

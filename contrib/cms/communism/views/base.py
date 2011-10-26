@@ -34,6 +34,16 @@ class Index(Page):
         1. <theme.keyname>/commune/<realm.keyname>/<commune.keyname>.html
         2. <theme.keyname>/commune/<realm.keyname>/generic.html
         3. <theme.keyname>/commune/generic.html
+    
+    context
+    -------
+    
+    I am well aware that these aren't terrible consistent, this is for backwards compatability.
+    At some point, Scampi will be updated to have clean context variable names
+    
+    **commune** -> self.commune (:model:`communism.Commune`)
+    **CMS_SECTION** -> self.section (:model:`communism.Section`)
+    **CMS_REALM** -> self.realm (:model:`communism.Realm`)
         
     
     """

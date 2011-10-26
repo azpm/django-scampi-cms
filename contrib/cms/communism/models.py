@@ -64,7 +64,7 @@ class Javascript(HtmlLinkRef):
     """
     
     file = models.FileField(upload_to = theme_script_decorator, null = True, blank = True)
-    external = models.URLField(null = True, blank = True, , verbose_name = _("External URL"))
+    external = models.URLField(null = True, blank = True, verbose_name = _("External URL"))
     
     class Meta:
         verbose_name = "Theme Javacript"

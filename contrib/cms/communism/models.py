@@ -25,6 +25,10 @@ This will have to be properly fleshed out for a real release
 of this software as a commercial/opensource CMS
 """
 class Theme(models.Model):
+    """
+    Defines a theme that communes utilize to provide stylesheet(s), javascript(s)
+    and a set of templates that reside under a folder of keyname
+    """
     name = models.CharField(_("Reference Name"), max_length = 100)
     keyname = models.SlugField(_("Internal Identifier"), max_length = 20, unique = True)
     description = models.TextField(null = True, blank = True)

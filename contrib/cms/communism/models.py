@@ -94,7 +94,6 @@ class StyleSheet(HtmlLinkRef):
         verbose_name = "Theme Stylesheet"
         verbose_name_plural = "Theme Stylesheets"
 
-# Realm is one-to-one with django.contrib.sites.models.Site (provides metadata)
 class Realm(models.Model):
     """
     First level of organization within the Scampi CMS.  Realms are effectively profiles
@@ -114,7 +113,7 @@ class Realm(models.Model):
     This application provides to two types of BaseHierarchyElements: :model:`communism.Commune`,
     and :models:`communism.Application`.  It is (should be!) possible to provide new types of
     BaseHierarchyElemenets so that if neither an :models:`communism.Application` or :model:`communism.Commune` fit what
-    is necessary, you can make your own
+    is necessary, you can make your own.
     """
 
     site = models.OneToOneField(Site)
@@ -145,6 +144,11 @@ class Realm(models.Model):
             t = None
         return t
     primary_section = property(_primary_section)
+    
+    def this_is_a_funtion(self):
+        """docstring test"""
+        
+        pass
     
     def _has_navigable_sections(self):
         "Returns True if realm has active sections, False otherwise"

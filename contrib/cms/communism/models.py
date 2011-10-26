@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.sites.models import Site
 
-#scampi imports
+#libscampi imports
 from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orphan_picker
 
 #local imports
@@ -17,16 +17,8 @@ from .utils import theme_style_decorator, theme_script_decorator, theme_banner_d
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
 
-
-"""
-Define a theme
-
-This will have to be properly fleshed out for a real release
-of this software as a commercial/opensource CMS
-"""
 class Theme(models.Model):
-    """
-    Defines a theme that communes utilize to provide stylesheet(s), javascript(s)
+    """Defines a theme that communes utilize to provide stylesheet(s), javascript(s)
     and a set of templates that reside under a folder of keyname
     """
     
@@ -38,8 +30,8 @@ class Theme(models.Model):
     def __unicode__(self):
         return "%s" % self.name
         
-# provides an abstract html link reference
 class HtmlLinkRef(models.Model):
+    """Abstract base for HTML includes (css/js)"""
     name = models.CharField(max_length = 50)
     description = models.TextField(null = True, blank = True)
     precedence = models.PositiveSmallIntegerField(_("Attempt to order"))
@@ -53,10 +45,8 @@ class HtmlLinkRef(models.Model):
     def __unicode__(self):
         return "%s" % self.name
 
-# Theme Javascript
 class Javascript(HtmlLinkRef):
-    """
-    Provides the ability to utilize either an uploaded javascript file
+    """Provides the ability to utilize either an uploaded javascript file
     or an "external" file that is hosted somewhere else.  For example, if you wanted to use
     jQuery you migh elect to use the Google Hosted version.
     
@@ -73,10 +63,8 @@ class Javascript(HtmlLinkRef):
 #allow for externally hosted javascripts (like google code)        
 models.signals.post_init.connect(overrive_js_file_url, sender=Javascript)
 
-# Theme Stylesheet
 class StyleSheet(HtmlLinkRef):
-    """
-    Provides stylesheet (css) capabilities to a theme.  Use the IE field to apply
+    """Provides stylesheet (css) capabilities to a theme.  Use the IE field to apply
     the stylesheet for Internet Explorer *only*.
     """    
 
@@ -95,8 +83,7 @@ class StyleSheet(HtmlLinkRef):
         verbose_name_plural = "Theme Stylesheets"
 
 class Realm(models.Model):
-    """
-    First level of organization within the Scampi CMS.  Realms are effectively profiles
+    """First level of organization within the Scampi CMS.  Realms are effectively profiles
     for :model:`sites.Site` linked One To One and enabling a collection of metadata for
     Scampi.
     
@@ -177,8 +164,7 @@ class Realm(models.Model):
             
 
 class RealmNotification(models.Model):
-    """
-    Provides a simple notification system to globally publish alerts to a realm.
+    """Provides a simple notification system to globally publish alerts to a realm.
     """
     realm = models.ForeignKey(Realm)
     name = models.CharField(_("Display Name"), max_length = 100)
@@ -194,8 +180,7 @@ class RealmNotification(models.Model):
         return "<%s> %s" % (self.realm, self.name) 
 
 class Section(models.Model):
-    """
-    sections are transparent, and are a `generic` middleman to provide
+    """Sections are transparent, and are a 'generic' middleman to provide
     hierarchy information to any BaseHierarchyElements
     """
     realm = models.ForeignKey(Realm)
@@ -225,12 +210,12 @@ class Section(models.Model):
         return "%s [%s]" % (self.element, self.element_type.name)
         
     def breadcrumb_helper(self):
-        "Returns fully dotted path to section, including path up for everything extended."
+        """Returns fully dotted path to section, including path up for everything extended."""
         return "%s" % section_path_up([self], ".")
     breadcrumb_helper = property(breadcrumb_helper)
     
     def get_absolute_url(self):
-        "Returns the fully dotted URL path to section."
+        """Returns the fully dotted URL path to section."""
         return "/%s/" % section_path_up([self], ".")
 
 #abstract base class for anything to extend to get hierarchy
@@ -249,14 +234,17 @@ class BaseHierarchyElement(models.Model):
         return "%s" % self.name
         
     def _container(self):
+        """Returns the section that holds this hierarchy element. used in templates."""
         return self.section.get()
     container = property(_container)
     
     def _realm(self):
+        """Returns the realm that the containing section exists on."""
         return self.container.realm
     realm = property(_realm)
     
     def _keyname(self):
+        """Returns the keyname of the containing section -- hierarchy elements treat this is read only member data."""
         return self.container.keyname
     keyname = property(_keyname)
     
@@ -287,18 +275,6 @@ class Commune(BaseHierarchyElement):
     class Meta:
         verbose_name = "CMS Page"
         verbose_name_plural = "CMS Pages"
-        
-    def _generic_template(self):
-        return "%s/commune/generic.html" % self.theme.keyname
-    generic_template = property(_generic_template)
-    
-    def _realm_override_template(self):
-        return "%s/commune/%s/generic.html" % (self.theme.keyname, self.realm.keyname)
-    generic_realm_template = property(_realm_override_template)
-
-    def _commune_override_template(self):
-        return "%s/commune/%s/%s.html" % (self.theme.keyname, self.realm.keyname, self.keyname)
-    override_template = property(_commune_override_template)
 
 class Slice(models.Model):
     """Slices correspond directly with template idioms:
@@ -356,8 +332,11 @@ class NamedBoxTemplate(models.Model):
 models.signals.post_save.connect(cache_namedbox_template, sender=NamedBoxTemplate)
         
 class NamedBox(models.Model):
-    """
-    Holds content, either static or picked
+    """Holds content, either static or picked
+    
+    Boxes are positioned on a grid that corresponds to the three available columns.
+    By default, boxes fill up as much space as possible -- e.g. placing a box in Column 1,
+    subslice 1 and no other boxes in column 2 or 3 will make the box three columns wide.
     """
     
     column_choices = (
@@ -368,9 +347,9 @@ class NamedBox(models.Model):
    
     #structural
     slice = models.ForeignKey(Slice)
-    gridx = models.PositiveSmallIntegerField("Column", choices = column_choices)
-    gridy = models.PositiveSmallIntegerField("Sub Slice", help_text = u"1-Ordered")
-    display_order = models.PositiveSmallIntegerField("Display Order", help_text = u"1-Ordered")
+    gridx = models.PositiveSmallIntegerField(_("Column"), choices = column_choices)
+    gridy = models.PositiveSmallIntegerField(_("Sub Slice"), help_text = u"1-Ordered")
+    display_order = models.PositiveSmallIntegerField(_("Display Order"), help_text = u"1-Ordered")
     
     #display
     name = models.CharField(_("Reference Name"), max_length = 100)
@@ -378,7 +357,7 @@ class NamedBox(models.Model):
     template = models.ForeignKey(NamedBoxTemplate)
     
     #reference
-    keyname = models.SlugField("Template/HTML Identifier", max_length = 20)
+    keyname = models.SlugField(_("Template/HTML Identifier"), max_length = 20)
     active = models.BooleanField(default = True, db_index=True)
     
     content = models.ForeignKey("conduit.DynamicPicker", null = True, blank = True)
@@ -406,16 +385,15 @@ class NamedBox(models.Model):
 models.signals.post_save.connect(map_picker_to_commune, sender=NamedBox)
 models.signals.post_delete.connect(unmap_orphan_picker, sender=NamedBox)
 
-"""
-Application is a pre-existing DJANGO application with it's own urls, views, models, etc.
-
-You create an Application<BaseHierarchyElement> to allow hierarchical navigation to your pre-existing work
-You must also manually set up the website urls.py to import your applications urls and use them
-"""
 class Application(BaseHierarchyElement):
-    namespace = models.CharField("URL Namespace", max_length = 25, null = True, blank = True)
-    app_name = models.CharField("Django Application Name", max_length = 50)
-    default_view = models.CharField("Django View Function", max_length = 50)
+    """Application is a pre-existing DJANGO application with it's own urls, views, models, etc.
+
+    You create an Application<BaseHierarchyElement> to allow hierarchical navigation to your pre-existing work
+    You must also manually set up the website urls.py to import your applications urls and use them
+    """
+    namespace = models.CharField(_("URL Namespace"), max_length = 25, null = True, blank = True)
+    app_name = models.CharField(_("Django Application Name"), max_length = 50)
+    default_view = models.CharField(_("Django View Function"), max_length = 50)
     
     class Meta:
         verbose_name = "CMS Offload"

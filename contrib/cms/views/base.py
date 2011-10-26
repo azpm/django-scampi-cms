@@ -1,7 +1,9 @@
 from django.views.generic import View, TemplateView
 from django.core.exceptions import ImproperlyConfigured
 
-from .mixins import PageMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin
+from libscampi.contrib.cms.communism.views.mixins import CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin
+
+from .mixins import PageMixin
 
 class Page(CommuneMixin, PageMixin, ThemeMixin, CSSMixin, JScriptMixin, TemplateView):
     pass

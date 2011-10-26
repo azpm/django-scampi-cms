@@ -103,14 +103,14 @@ class Realm(models.Model):
     
     The meat of the CMS hierarchy follows:
 
-    # Django :model:`sites.Site` <-> :model:`communism.Realm`  
+    :model:`sites.Site` <-> :model:`communism.Realm`  
     the two are the same, we use Realm to add metadata to a django site
 
-    # :model:`communism.Realm` -> :model:`communism.Section` <- BaseHierarchyElemenet
+    :model:`communism.Realm` -> :model:`communism.Section` <- BaseHierarchyElemenet
     sections are transparent to end users, and exist as a generic go between for
     anything that needs to be organised inside a realm.
 
-    # BaseHierarchyElement <> :model:`communism.Commune`, :models:`communism.Application`
+    BaseHierarchyElement <> :model:`communism.Commune`, :models:`communism.Application`
     This application provides to two types of BaseHierarchyElements: :model:`communism.Commune`,
     and :models:`communism.Application`.  It is (should be!) possible to provide new types of
     BaseHierarchyElemenets so that if neither an :models:`communism.Application` or :model:`communism.Commune` fit what

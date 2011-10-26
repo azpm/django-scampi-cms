@@ -13,7 +13,7 @@ class Index(Page):
     5. libscampi.contrib.cms.communism.views.mixins.JScriptMixin
     
     CommuneMixin provides several instance members:
-        commune - :model:`communism.Commune`
-        section - :model:`communism.Section`
-        realm - :model:`communism.Realm`
+    - commune :model:`communism.Commune`
+    - section :model:`communism.Section`
+    - realm :model:`communism.Realm`
     """

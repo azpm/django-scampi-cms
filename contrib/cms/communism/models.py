@@ -29,10 +29,12 @@ class Theme(models.Model):
     Defines a theme that communes utilize to provide stylesheet(s), javascript(s)
     and a set of templates that reside under a folder of keyname
     """
+    
     name = models.CharField(_("Reference Name"), max_length = 100)
     keyname = models.SlugField(_("Internal Identifier"), max_length = 20, unique = True)
     description = models.TextField(null = True, blank = True)
-    banner = models.ImageField(upload_to=theme_banner_decorator)
+    banner = models.ImageField(upload_to=theme_banner_decorator, verbose_name = _("Image Banner"))
+    
     def __unicode__(self):
         return "%s" % self.name
         
@@ -53,8 +55,17 @@ class HtmlLinkRef(models.Model):
 
 # Theme Javascript
 class Javascript(HtmlLinkRef):
+    """
+    Provides the ability to utilize either an uploaded javascript file
+    or an "external" file that is hosted somewhere else.  For example, if you wanted to use
+    jQuery you migh elect to use the Google Hosted version.
+    
+    Precedence represents an attempt to order the loading of scripts only.
+    """
+    
     file = models.FileField(upload_to = theme_script_decorator, null = True, blank = True)
-    external = models.URLField(null = True, blank = True)
+    external = models.URLField(null = True, blank = True, , verbose_name = _("External URL"))
+    
     class Meta:
         verbose_name = "Theme Javacript"
         verbose_name_plural = "Theme Javascripts"
@@ -64,38 +75,48 @@ models.signals.post_init.connect(overrive_js_file_url, sender=Javascript)
 
 # Theme Stylesheet
 class StyleSheet(HtmlLinkRef):
+    """
+    Provides stylesheet (css) capabilities to a theme.  Use the IE field to apply
+    the stylesheet for Internet Explorer *only*.
+    """    
+
     ie_choices = (
         (6, 'IE 6 (Please don\'t use)'),
         (7, 'IE 7'),
         (8, 'IE 8'),
+        (9, 'IE 9'),
     )
     media = models.CharField(max_length = 200, help_text = "screen, print, etc")
-    for_ie = models.PositiveSmallIntegerField(choices = ie_choices, null = True, blank = True)
+    for_ie = models.PositiveSmallIntegerField(choices = ie_choices, null = True, blank = True, verbose_name = _("IE Version"))
     file = models.FileField(upload_to = theme_style_decorator)
     
     class Meta:
         verbose_name = "Theme Stylesheet"
         verbose_name_plural = "Theme Stylesheets"
 
-"""
-The meat of the CMS hierarchy follows:
-
-# Django Site <-> Realm  
-the two are the same, we use Realm to add metadata to a django site
-
-# Realm -> section <- BaseHierarchyElemenet
-sections are transparent to end users, and exist as a generic go between for
-anything that needs to be organised inside a realm.
-
-# BaseHierarchyElement <> Commune, Application
-This application provides to two types of BaseHierarchyElements: Communes,
-and Applications.  It is (should be!) possible to provide new types of
-BaseHierarchyElemenets so that if neither an Application or Commune fit what
-is necessary, you can make your own
-"""
-
 # Realm is one-to-one with django.contrib.sites.models.Site (provides metadata)
 class Realm(models.Model):
+    """
+    First level of organization within the Scampi CMS.  Realms are effectively profiles
+    for :model:`sites.Site` linked One To One and enabling a collection of metadata for
+    Scampi.
+    
+    The meat of the CMS hierarchy follows:
+
+    # Django :model:`sites.Site` <-> :model:`communism.Realm`  
+    the two are the same, we use Realm to add metadata to a django site
+
+    # :model:`communism.Realm` -> :model:`communism.Section` <- BaseHierarchyElemenet
+    sections are transparent to end users, and exist as a generic go between for
+    anything that needs to be organised inside a realm.
+
+    # BaseHierarchyElement <> :model:`communism.Commune`, :models:`communism.Application`
+    This application provides to two types of BaseHierarchyElements: :model:`communism.Commune`,
+    and :models:`communism.Application`.  It is (should be!) possible to provide new types of
+    BaseHierarchyElemenets so that if neither an :models:`communism.Application` or :model:`communism.Commune` fit what
+    is necessary, you can make your own
+    """
+
     site = models.OneToOneField(Site)
     name = models.CharField(_("Reference Name"), max_length = 100)
     keyname = models.SlugField(_("URI/Template Identifier"), max_length = 20, unique = True)
@@ -104,9 +125,9 @@ class Realm(models.Model):
     active = models.BooleanField(default=True, db_index=True)
     secure = models.BooleanField(default=False, db_index=True)
     googleid = models.CharField(max_length=50, null=True, blank=True, help_text=_("Google Analytics ID"))
-    searchable = models.BooleanField(default=True, db_index=True)
-    search_collection = models.CharField(max_length=200, null = True, blank = True)
-    direct_link = models.BooleanField(default=False)
+    searchable = models.BooleanField(default=True, db_index=True, help_text = _("Flag for search form generation"))
+    search_collection = models.CharField(max_length=200, null = True, blank = True, help_text = ("Keyname for search collections"))
+    direct_link = models.BooleanField(default=False, verbose_name = _("Provides a direct link to some external site outside of your Scampi install"))
     
     class Meta:
         verbose_name = "Realm"
@@ -117,6 +138,7 @@ class Realm(models.Model):
         return "%s" % self.site.domain
         
     def _primary_section(self):
+        "Returns the first active section for this realm, or None"
         try:
             t = self.section_set.select_related().filter(active = True, extends = None).order_by('display_order')[0]
         except IndexError:
@@ -125,6 +147,7 @@ class Realm(models.Model):
     primary_section = property(_primary_section)
     
     def _has_navigable_sections(self):
+        "Returns True if realm has active sections, False otherwise"
         t = self.section_set.filter(active = True, extends = None, generates_navigation = True)
         if len(t) > 0:
             return True
@@ -133,6 +156,7 @@ class Realm(models.Model):
     has_navigable_sections = property(_has_navigable_sections)
         
     def get_absolute_url(self):
+        "Returns fully qualified link to realm, including http/https"
         ps = self.primary_section
         if ps and ps.generates_navigation == True: 
             if self.secure:
@@ -154,11 +178,14 @@ class Realm(models.Model):
             
 
 class RealmNotification(models.Model):
+    """
+    Provides a simple notification system to globally publish alerts to a realm.
+    """
     realm = models.ForeignKey(Realm)
     name = models.CharField(_("Display Name"), max_length = 100)
-    display = models.TextField()
-    display_start = models.DateTimeField(db_index=True)
-    display_end =  models.DateTimeField(db_index=True)
+    display = models.TextField(_("Notification Content"))
+    display_start = models.DateTimeField(_("Start"), db_index=True)
+    display_end =  models.DateTimeField(_("End"), db_index=True)
     
     class Meta:
         verbose_name = "Service Announcement"
@@ -167,12 +194,11 @@ class RealmNotification(models.Model):
     def __unicode__(self):
         return "<%s> %s" % (self.realm, self.name) 
 
-
-"""
-sections are transparent, and are a `generic` middleman to provide
-hierarchy information to any BaseHierarchyElements
-"""
 class Section(models.Model):
+    """
+    sections are transparent, and are a `generic` middleman to provide
+    hierarchy information to any BaseHierarchyElements
+    """
     realm = models.ForeignKey(Realm)
     keyname = models.SlugField(_("URI/Template Identifier"), max_length = 20, db_index = True)
     display_order = models.PositiveSmallIntegerField(_("Display Order"), db_index = True)
@@ -180,11 +206,11 @@ class Section(models.Model):
     generates_navigation = models.BooleanField(_("Generates Navigation"), default = True, db_index=True)
     extends = models.ForeignKey('self', null = True, blank = True, db_index = True)
     
-    element_id = models.PositiveIntegerField()
+    element_id = models.PositiveIntegerField(verbose_name = _("Primary Key of <BaseHierarchyElement>"))
     element_type = models.ForeignKey(ContentType, limit_choices_to = {
         'model__in': ('commune', 'application'), 
         'app_label__in': ('communism',),
-    })
+    }, verbose_name = _("Type of BaseHierarchyElement"))
     element = generic.GenericForeignKey('element_type', 'element_id')
     
     objects = models.Manager()
@@ -200,10 +226,12 @@ class Section(models.Model):
         return "%s [%s]" % (self.element, self.element_type.name)
         
     def breadcrumb_helper(self):
+        "Returns fully dotted path to section, including path up for everything extended."
         return "%s" % section_path_up([self], ".")
     breadcrumb_helper = property(breadcrumb_helper)
     
     def get_absolute_url(self):
+        "Returns the fully dotted URL path to section."
         return "/%s/" % section_path_up([self], ".")
 
 #abstract base class for anything to extend to get hierarchy

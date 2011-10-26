@@ -12,10 +12,27 @@ class Index(Page):
     4. libscampi.contrib.cms.communism.views.mixins.CSSMixin
     5. libscampi.contrib.cms.communism.views.mixins.JScriptMixin
     
-    CommuneMixin provides several instance members:
+    CommuneMixin 
+    ============
+    
+    member variables
+    ----------------
     
     - commune :model:`communism.Commune`
     - section :model:`communism.Section`
     - realm :model:`communism.Realm`
+    
+    methods
+    -------
+    
+    get_page_title
+        Sets the {{ page.title }} value to "realm.Name | commune.name"
+        
+    get_template_names
+        Returns a list of possible templates to use: 
+        1. <theme.keyname>/commune/<realm.keyname>/<commune.keyname>.html
+        2. <theme.keyname>/commune/<realm.keyname>/generic.html
+        3. <theme.keyname>/commune/generic.html
+        
     
     """

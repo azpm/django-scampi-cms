@@ -30,6 +30,7 @@ class Index(Page):
         
     get_template_names
         Returns a list of possible templates to use: 
+        
         1. <theme.keyname>/commune/<realm.keyname>/<commune.keyname>.html
         2. <theme.keyname>/commune/<realm.keyname>/generic.html
         3. <theme.keyname>/commune/generic.html

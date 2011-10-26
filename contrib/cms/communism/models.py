@@ -265,8 +265,7 @@ class BaseHierarchyElement(models.Model):
         
 
 class Commune(BaseHierarchyElement):
-    """
-    Commune is a buildable page that contains:
+    """Commune is a buildable page that contains:
 
     slices <- 3 columns <- named box(s)
 
@@ -302,18 +301,13 @@ class Commune(BaseHierarchyElement):
     override_template = property(_commune_override_template)
 
 class Slice(models.Model):
-    """
-    Slices and Named Boxes correspond directly with template idioms:
+    """Slices correspond directly with template idioms:
+    
+    This allows multiple types of 3-Column layouts on a single page.
 
-    <div class="content-slice">
-     {{ content here }}
+    <div class="slice">
+    -- content here --
     </div>
-
-    and
-
-    {{ NamedBoxTemplate }}
-
-    respectively
     """
 
     name = models.CharField(_("Reference Name"), max_length = 100)
@@ -328,8 +322,7 @@ class Slice(models.Model):
     
     
 class NamedBoxTemplate(models.Model):
-    """
-    Provides the ability to style a named box generically.
+    """Provides the ability to style a named box generically.
     
     context for <content>:
     - box: the namedbox being rendered :model:`communism.NamedBox`, use as {{ box.field_name }}

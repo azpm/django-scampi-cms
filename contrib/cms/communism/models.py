@@ -145,11 +145,6 @@ class Realm(models.Model):
         return t
     primary_section = property(_primary_section)
     
-    def this_is_a_funtion(self):
-        """docstring test"""
-        
-        pass
-    
     def _has_navigable_sections(self):
         "Returns True if realm has active sections, False otherwise"
         t = self.section_set.filter(active = True, extends = None, generates_navigation = True)
@@ -268,25 +263,26 @@ class BaseHierarchyElement(models.Model):
     def get_absolute_url(self):
         return "/%s/" % section_path_up([self.container], ".")
         
-"""
-Commune is a buildable page that contains:
 
-slices <- 3 columns <- named box(s)
-
-Communes are "discoverable" by:
-http<commune.section.realm.secure>://commune.section.realm.site.domain/<commune.keyname>/
-
-e.g. a commune named kuat inside non-secure realm television <-> tv.azpm.org would be:
-http://tv.azpm.org/kuat/
-
-You can have n-count, ordred slices in a Commune, each slice containing 3 fixed columns.
-
-Each column can have content, of deterministic width:=
-Column #1 is the left most column and can have content that spans upto 3 columns
-Column #2 is the middle column and can have content that spans upto 2 columns
-Column #3 is the right most column and can have content that spans 1 column
-"""
 class Commune(BaseHierarchyElement):
+    """
+    Commune is a buildable page that contains:
+
+    slices <- 3 columns <- named box(s)
+
+    Communes are "discoverable" by:
+    http<commune.section.realm.secure>://commune.section.realm.site.domain/<commune.keyname>/
+
+    e.g. a commune named kuat inside non-secure realm television <-> tv.azpm.org would be:
+    http://tv.azpm.org/kuat/
+
+    You can have n-count, ordred slices in a Commune, each slice containing 3 fixed columns.
+
+    Each column can have content, of deterministic width:=
+    Column #1 is the left most column and can have content that spans upto 3 columns
+    Column #2 is the middle column and can have content that spans upto 2 columns
+    Column #3 is the right most column and can have content that spans 1 column
+    """
     theme = models.ForeignKey(Theme)
     
     class Meta:
@@ -305,20 +301,21 @@ class Commune(BaseHierarchyElement):
         return "%s/commune/%s/%s.html" % (self.theme.keyname, self.realm.keyname, self.keyname)
     override_template = property(_commune_override_template)
 
-"""
-Slices and Named Boxes correspond directly with template idioms:
-
-<div class="content-slice">
- {{ content here }}
-</div>
-
-and
-
-{{ NamedBoxTemplate }}
-
-respectively
-"""
 class Slice(models.Model):
+    """
+    Slices and Named Boxes correspond directly with template idioms:
+
+    <div class="content-slice">
+     {{ content here }}
+    </div>
+
+    and
+
+    {{ NamedBoxTemplate }}
+
+    respectively
+    """
+
     name = models.CharField(_("Reference Name"), max_length = 100)
     commune = models.ForeignKey(Commune)
     display_order = models.PositiveSmallIntegerField(_("Display Order"), help_text = u"1-Ordered") 
@@ -331,9 +328,30 @@ class Slice(models.Model):
     
     
 class NamedBoxTemplate(models.Model):
+    """
+    Provides the ability to style a named box generically.
+    
+    context for <content>:
+        box: the namedbox being rendered :model:`communism.NamedBox`, use as {{ box.field_name }}
+        request: django request, use as {{ request.field_name }}
+        section: CMS_SECTON, use as {{ section.field_name }}
+        perms: django permissions, use as {{ perms.field_name }}
+        MASTER_MEDIA_URL: url for master media collection, use as {{ MASTER_MEDIA_URL }}
+        MEDIA_URL: url for local media colleciton, use as {{ MEDIA_URL }}
+        THEME_URL: url for theme media collection, use as {{ THEME_URL }}
+       
+    trivial example template:
+    
+    {% load pickers %}
+    <div class="namedbox">
+        <h2>{{ box.display_name }}</h2>
+        {% render_picker box.picker %}
+    </div>
+          
+    """
     name = models.CharField(_("Reference Name"), max_length=50, db_index=True)
     description = models.TextField(blank = True)
-    content = models.TextField()
+    content = models.TextField(_("django template"))
     
     class Meta:
         verbose_name = u"NamedBox Template"
@@ -344,8 +362,11 @@ class NamedBoxTemplate(models.Model):
         
 models.signals.post_save.connect(cache_namedbox_template, sender=NamedBoxTemplate)
         
-#A named box merely provides a styled box to hold content, that content comes from a conduit.models.picker
 class NamedBox(models.Model):
+    """
+    Holds content, either static or picked
+    """
+    
     column_choices = (
         (1, 'Column #1'),
         (2, 'Column #2'),

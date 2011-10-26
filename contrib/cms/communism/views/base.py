@@ -41,9 +41,9 @@ class Index(Page):
     I am well aware that these aren't terrible consistent, this is for backwards compatability.
     At some point, Scampi will be updated to have clean context variable names
     
-    **commune** -> self.commune (:model:`communism.Commune`)
-    **CMS_SECTION** -> self.section (:model:`communism.Section`)
-    **CMS_REALM** -> self.realm (:model:`communism.Realm`)
+    - *commune* -> self.commune (:model:`communism.Commune`)
+    - *CMS_SECTION* -> self.section (:model:`communism.Section`)
+    - *CMS_REALM* -> self.realm (:model:`communism.Realm`)
         
     
     """

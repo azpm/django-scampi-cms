@@ -332,13 +332,13 @@ class NamedBoxTemplate(models.Model):
     Provides the ability to style a named box generically.
     
     context for <content>:
-        box: the namedbox being rendered :model:`communism.NamedBox`, use as {{ box.field_name }}
-        request: django request, use as {{ request.field_name }}
-        section: CMS_SECTON, use as {{ section.field_name }}
-        perms: django permissions, use as {{ perms.field_name }}
-        MASTER_MEDIA_URL: url for master media collection, use as {{ MASTER_MEDIA_URL }}
-        MEDIA_URL: url for local media colleciton, use as {{ MEDIA_URL }}
-        THEME_URL: url for theme media collection, use as {{ THEME_URL }}
+    - box: the namedbox being rendered :model:`communism.NamedBox`, use as {{ box.field_name }}
+    - request: django request, use as {{ request.field_name }}
+    - section: CMS_SECTON, use as {{ section.field_name }}
+    - perms: django permissions, use as {{ perms.field_name }}
+    - MASTER_MEDIA_URL: url for master media collection, use as {{ MASTER_MEDIA_URL }}
+    - MEDIA_URL: url for local media colleciton, use as {{ MEDIA_URL }}
+    - THEME_URL: url for theme media collection, use as {{ THEME_URL }}
        
     trivial example template:
     

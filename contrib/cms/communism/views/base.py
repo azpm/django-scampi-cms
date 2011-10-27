@@ -38,7 +38,7 @@ class Index(Page):
     context
     -------
     
-    I am well aware that these aren't terrible consistent, this is for backwards compatability.
+    I am well aware that these aren't terrible consistent, this is for backwards compatibility.
     At some point, Scampi will be updated to have clean context variable names
     
     - *commune*wh -> self.commune (:model:`communism.Commune`)
@@ -48,6 +48,64 @@ class Index(Page):
     PageMixin
     =========
     
+    member variables
+    ----------------
     
+    - title unicode string
+    - onload unicode string
     
+    methods
+    -------
+    
+    get_page_title
+        Not Implemented, you must override this method to allow populating page.title
+    
+    get_page_onload
+        Returns value of self.onload, can be overridden
+        
+    context
+    -------
+    
+    page.title -> self.title
+    page.onload -> self.onload
+    
+    ThemeMixin
+    =========
+    
+    Requires CommuneMixin
+    
+    context
+    -------
+    
+    page.theme -> self.commune.theme
+    
+    CSSMixin
+    =========
+    
+    methods
+    -------
+    
+    get_stylesheets
+        Returns cached html_link_refs of stylesheets or builds cache and returns collection
+        Can be overridden to allow different stylesheet loading mechanisms
+    
+    context
+    -------
+    
+    page.styles -> self.get_stylesheets()
+    
+    JScriptMixin
+    =========
+    
+    methods
+    -------
+    
+    get_javascripts
+        Returns cached html_link_refs of javascripts or builds cache and returns collection
+        Can be overridden to allow different js loading mechanisms
+        
+    context
+    -------
+    
+    page.scripts -> self.get_javascripts()    
     """

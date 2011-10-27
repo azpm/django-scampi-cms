@@ -258,10 +258,10 @@ class Commune(BaseHierarchyElement):
     slices <- 3 columns <- named box(s)
 
     Communes are "discoverable" by:
-    http<commune.section.realm.secure>://commune.section.realm.site.domain/<commune.keyname>/
+    http<commune.section.realm.secure>://<commune.section.realm.site.domain>/<commune.keyname>/
 
-    e.g. a commune named kuat inside non-secure realm television <-> tv.azpm.org would be:
-    http://tv.azpm.org/kuat/
+    e.g. a commune named kuat inside non-secure realm television *tv.azpm.org* would be:
+        http://tv.azpm.org/kuat/
 
     You can have n-count, ordred slices in a Commune, each slice containing 3 fixed columns.
 

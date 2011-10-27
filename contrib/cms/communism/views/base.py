@@ -14,7 +14,6 @@ class Index(Page):
     
     CommuneMixin 
     ============
-    ----
     
     member variables
     ----------------
@@ -45,8 +44,6 @@ class Index(Page):
     - commune -> self.commune (:model:`communism.Commune`)
     - CMS_SECTION -> self.section (:model:`communism.Section`)
     - CMS_REALM -> self.realm (:model:`communism.Realm`)
-    
-    ----
         
     PageMixin
     =========
@@ -72,8 +69,6 @@ class Index(Page):
     page.title -> self.title
     page.onload -> self.onload
     
-    ----
-    
     ThemeMixin
     ==========
     
@@ -83,8 +78,6 @@ class Index(Page):
     -------
     
     page.theme -> self.commune.theme
-    
-    ----
     
     CSSMixin
     =========
@@ -100,8 +93,6 @@ class Index(Page):
     -------
     
     page.styles -> self.get_stylesheets()
-    
-    ----
     
     JScriptMixin
     ============

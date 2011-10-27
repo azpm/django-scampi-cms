@@ -70,7 +70,7 @@ class Index(Page):
     page.onload -> self.onload
     
     ThemeMixin
-    =========
+    ==========
     
     Requires CommuneMixin
     
@@ -95,7 +95,7 @@ class Index(Page):
     page.styles -> self.get_stylesheets()
     
     JScriptMixin
-    =========
+    ============
     
     methods
     -------

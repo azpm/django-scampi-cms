@@ -288,7 +288,7 @@ class Commune(BaseHierarchyElement):
             return documentation
 
         return utils.parse_rst(utils.trim_docstring(documentation), 'model', _('model:') + self._meta.module_name)
-    __doc__ = _(pretty_doc())
+    __doc__ = pretty_doc()
 
 
 class Slice(models.Model):

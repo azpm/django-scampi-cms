@@ -12,10 +12,9 @@ class Index(Page):
     4. libscampi.contrib.cms.communism.views.mixins.CSSMixin
     5. libscampi.contrib.cms.communism.views.mixins.JScriptMixin
     
-    ----
-    
     CommuneMixin 
     ============
+    ----
     
     member variables
     ----------------

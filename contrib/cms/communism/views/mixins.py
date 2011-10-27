@@ -185,17 +185,20 @@ class JScriptMixin(object):
         return context
         
 class ThemeMixin(object):
+    def get_theme(self):
+        return self.commune.theme
+
     def get_context_data(self, *args, **kwargs):
         context = super(ThemeMixin, self).get_context_data(*args, **kwargs)
         
         if 'page' in context:
             context['page'].update({
-                'theme': self.commune.theme,
+                'theme': self.get_theme()
             })
         else:
             context.update({
                 'page': {
-                    'theme': self.commune.theme,
+                    'theme': self.get_theme(),
                 }
             })
             

@@ -74,10 +74,17 @@ class Index(Page):
     
     Requires CommuneMixin
     
+    methods
+    -------
+    
+    get_theme
+        returns self.commune.theme
+        Can be overridden to allow custom theme application
+    
     context
     -------
     
-    page.theme -> self.commune.theme
+    page.theme -> self.get_theme
     
     CSSMixin
     =========

@@ -253,28 +253,43 @@ class BaseHierarchyElement(models.Model):
         
 
 class Commune(BaseHierarchyElement):
-    """Commune is a buildable page that contains:
-
-    slices <- 3 columns <- named box(s)
-
-    Communes are "discoverable" by:
-    http<commune.section.realm.secure>://commune.section.realm.site.domain/<commune.keyname>/
-
-    e.g. a commune named kuat inside non-secure realm television <-> tv.azpm.org would be:
-    http://tv.azpm.org/kuat/
-
-    You can have n-count, ordred slices in a Commune, each slice containing 3 fixed columns.
-
-    Each column can have content, of deterministic width:=
-    Column #1 is the left most column and can have content that spans upto 3 columns
-    Column #2 is the middle column and can have content that spans upto 2 columns
-    Column #3 is the right most column and can have content that spans 1 column
-    """
     theme = models.ForeignKey(Theme)
     
     class Meta:
         verbose_name = "CMS Page"
         verbose_name_plural = "CMS Pages"
+        
+    #this is because django admin docs is dumb    
+    def pretty_doc(self):
+        from django.contrib.admindocs import utils
+        
+        documentation = """
+        Commune is a buildable page that contains:
+
+        slices <- 3 columns <- named box(s)
+
+        Communes are "discoverable" by:
+        http<commune.section.realm.secure>://commune.section.realm.site.domain/<commune.keyname>/
+
+        e.g. a commune named kuat inside non-secure realm television <-> tv.azpm.org would be:
+        http://tv.azpm.org/kuat/
+
+        You can have n-count, ordred slices in a Commune, each slice containing 3 fixed columns.
+
+        Each column can have content, of deterministic width:=
+        Column #1 is the left most column and can have content that spans upto 3 columns
+        Column #2 is the middle column and can have content that spans upto 2 columns
+        Column #3 is the right most column and can have content that spans 1 column
+        """
+
+        
+        
+        if not utils.docutils_is_available:
+            return documentation
+
+        return utils.parse_rst(utils.trim_docstring(documentation), 'model', _('model:') + self._meta.module_name)
+    __doc__ = property(pretty_doc)
+
 
 class Slice(models.Model):
     """Slices correspond directly with template idioms:

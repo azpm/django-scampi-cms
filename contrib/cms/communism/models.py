@@ -253,26 +253,27 @@ class BaseHierarchyElement(models.Model):
         
 
 class Commune(BaseHierarchyElement):
-    """Commune is a buildable page that contains:
+    """
+Commune is a buildable page that contains:
 
-    ::
-    slices <- 3 columns <- named box(s)
+::
+slices <- 3 columns <- named box(s)
 
-    ::
-    Communes are "discoverable" by:
-    http<commune.section.realm.secure>://commune.section.realm.site.domain/<commune.keyname>/
+::
+Communes are "discoverable" by:
+http<commune.section.realm.secure>://commune.section.realm.site.domain/<commune.keyname>/
 
-    ::
-    e.g. a commune named kuat inside non-secure realm television <-> tv.azpm.org would be:
-    http://tv.azpm.org/kuat/
+::
+e.g. a commune named kuat inside non-secure realm television <-> tv.azpm.org would be:
+http://tv.azpm.org/kuat/
 
-    You can have n-count, ordred slices in a Commune, each slice containing 3 fixed columns.
+You can have n-count, ordred slices in a Commune, each slice containing 3 fixed columns.
 
-    Each column can have content, of deterministic width
-    
-    - Column #1 is the left most column and can have content that spans upto 3 columns
-    - Column #2 is the middle column and can have content that spans upto 2 columns
-    - Column #3 is the right most column and can have content that spans 1 column
+Each column can have content, of deterministic width
+
+- Column #1 is the left most column and can have content that spans upto 3 columns
+- Column #2 is the middle column and can have content that spans upto 2 columns
+- Column #3 is the right most column and can have content that spans 1 column
     """
     theme = models.ForeignKey(Theme)
     

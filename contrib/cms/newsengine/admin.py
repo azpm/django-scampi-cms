@@ -7,7 +7,7 @@ from django.core.mail import mail_admins
 from django.template.defaultfilters import slugify
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
-from .forms import ArticleTranslationForm
+from .forms import ArticleTranslationForm, StoryForm, PublishForm
 
 class ArticleTranslationInline(admin.StackedInline):
     model = ArticleTranslation
@@ -90,27 +90,9 @@ class StoryAdmin(admin.ModelAdmin):
                 publish_request.save()
             except (DatabaseError, IntegrityError):
                 mail_admins("couldn't pre-publish a story", "%s" % locals(), fail_silently = True)
-
-    """
-    In addition to showing a user's username in related fields, show their full
-    name too (if they have one and it differs from the username).
-    """
-    always_show_username = True  
-
-    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        field = super(StoryAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-        if db_field.rel.to == User:
-            field.label_from_instance = self.get_user_label
-        return field
     
-    def get_user_label(self, user):
-        name = user.get_full_name()
-        username = user.username
-        if not self.always_show_username:
-            return name or username
-        return (name and name != username and '%s (%s)' % (name, username)
-                or username)
-
+    form = StoryForm
+    
 class PublishCategoryAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Information', {'fields': ('title','keyname')}),
@@ -135,7 +117,9 @@ class PublishStoryAdmin(admin.ModelAdmin):
     save_as = True
     
     ordering = ['-id']
-        
+    
+    form = PublishForm
+                
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.start is not None and obj.start < datetime.now():
             return ('start', 'slug', 'approved_by')

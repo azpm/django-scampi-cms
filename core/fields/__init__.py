@@ -22,3 +22,4 @@ except ImportError:
 from .uuid import UUIDField
 from .pickle import PickledObjectField
 from .crypto import EncryptedTextField, EncryptedCharField, EncryptedDateField, EncryptedDateTimeField, EncryptedIntField, EncryptedLongField, EncryptedFloatField
+from .user import UserModelChoiceField, UserModelMultipleChoiceField

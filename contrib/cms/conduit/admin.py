@@ -25,6 +25,9 @@ class PickerTemplateAdmin(admin.ModelAdmin):
 
 
 class DynamicPickerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'keyname', 'commune')
+    search_fields = ('commune__name',)
+    
     fieldsets = (
         ('Designation', {'fields': ('name', 'keyname', 'commune')}),
         ('Display', {'fields': ('template',)}),

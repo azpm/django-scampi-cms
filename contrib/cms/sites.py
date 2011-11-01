@@ -9,8 +9,8 @@ class CMSSite(object):
     def urls(self):
         try:
             realm = Realm.objects.get(site=Site.objects.get_current())
-        except Realm.DoesNotExist:
-            realm = type("null_realm", (object, ), {keyname: u"no-realm"})()
+        except (Realm.DoesNotExist, Site.DoesNotExist):
+            realm = type("null_realm", (object, ), {'keyname': u"no-realm"})()
         
         cms_urls = patterns(None, 
             url(r'^m/', include(media_urls)),

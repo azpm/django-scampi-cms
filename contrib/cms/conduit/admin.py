@@ -53,7 +53,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         js = (
             'https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js',
             'http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js',
-            settings.MASTER_MEDIA_URL+'admin/js/conduit.pickers.js',
+            'admin/js/conduit.pickers.js',
         )
 
     #we have the "adding a picker" form and the "changing the picker" form

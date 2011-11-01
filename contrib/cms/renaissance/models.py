@@ -63,7 +63,6 @@ class MediaType(models.Model):
     keyname = models.SlugField(max_length=20, unique = True)
     description = models.TextField(null = True, blank = True)
     inline_template = models.ForeignKey(MediaInlineTemplate, verbose_name = "Media Inline-Template", db_column="template_id") #this is a bit of a fuckup because we added the other template
-    view_template = models.ForeignKey(MediaViewTemplate, verbose_name = "Media View-Template", null=True, blank=True)
     
     class Meta:
         abstract = True

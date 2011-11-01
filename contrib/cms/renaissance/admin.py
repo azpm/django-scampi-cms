@@ -64,9 +64,6 @@ class DimensionalMediaTypeAdmin(MediaTypeAdmin, admin.ModelAdmin):
 class InlineTemplateAdmin(admin.ModelAdmin):
     list_display = ('title',)
     
-class ViewTemplateAdmin(admin.ModelAdmin):
-    list_display = ('title',)
-    
 class MediaTypeOverrideAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Designation', {'fields': ('type',)}),
@@ -104,4 +101,3 @@ admin.site.register(DocumentTypeOverride, MediaTypeOverrideAdmin)
 
 admin.site.register(MediaInlineTemplate, InlineTemplateAdmin)
 admin.site.register(MediaPlaylistTemplate)
-admin.site.register(MediaViewTemplate, ViewTemplateAdmin)

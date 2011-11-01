@@ -21,7 +21,7 @@ from libscampi.contrib.cms.newsengine.signals import SolidSender, preprocess_art
 mimetypes.types_map.update(appsettings.EXTRA_MIME_TYPES)
 
 __all__ = [
-    'MediaInlineTemplate', 'MediaPlaylistTemplate', 'MediaViewTemplate',
+    'MediaInlineTemplate', 'MediaPlaylistTemplate',
     'ImageType', 'VideoType', 'AudioType', 'DocumentType', 'ObjectType',
     'ImageTypeOverride', 'VideoTypeOverride', 'AudioTypeOverride', 'DocumentTypeOverride', 'ObjectTypeOverride',
     'Image', 'Video', 'Audio', 'Document', 'Object', 'External',
@@ -33,29 +33,25 @@ class MediaInlineTemplate(models.Model):
     title = models.CharField(max_length = 25)
     description = models.TextField(null = True, blank = True)
     content = models.TextField()
+    
+    stylesheet = models.ManyToManyField('communism.StyleSheet', blank = True)
+    javascript = models.ManyToManyField('communism.Javascript', blank = True)
+    
     def __unicode__(self):
         return "%s" % self.title
     class Meta:
         verbose_name = 'Template (Inline)'
         verbose_name_plural = 'Templates (Inline)'
-        
-class MediaViewTemplate(models.Model):
-    title = models.CharField(max_length = 25)
-    description = models.TextField(null = True, blank = True)
-    content = models.TextField()
-    def __unicode__(self):
-        return "%s" % self.title
-    class Meta:
-        verbose_name = 'Template (View)'
-        verbose_name_plural = 'Templates (View)'
 
 class MediaPlaylistTemplate(models.Model):
     title = models.CharField(max_length = 25)
     description = models.TextField(null = True, blank = True)
+    
     stylesheet = models.ForeignKey('communism.StyleSheet', null = True, blank = True)
     javascript = models.ForeignKey('communism.Javascript', null = True, blank = True)
     
     content = models.TextField()
+    
     def __unicode__(self):
         return "%s" % self.title
     class Meta:

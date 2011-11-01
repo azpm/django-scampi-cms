@@ -43,7 +43,7 @@ class HtmlLinkRef(models.Model):
         ordering = ['precedence']
         
     def __unicode__(self):
-        return "%s" % self.name
+        return "[%s] %s" % (self.theme.keyname, self.name)
 
 class Javascript(HtmlLinkRef):
     """Provides the ability to utilize either an uploaded javascript file

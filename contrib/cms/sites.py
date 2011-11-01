@@ -13,7 +13,6 @@ class CMSSite(object):
             realm = type("null_realm", (object, ), {'keyname': u"no-realm"})()
         
         cms_urls = patterns(None, 
-            url(r'^m/', include(media_urls)),
             url(r'', include(page_urls)),
         )    
         

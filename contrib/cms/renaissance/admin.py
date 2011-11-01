@@ -53,7 +53,7 @@ class ObjectPlaylistAdmin(PlaylistAdmin, admin.ModelAdmin): inlines = [RankedObj
 class MediaTypeAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Designation', {'fields': ('title','keyname','description')}),
-        ('Display', {'fields': ('inline_template','view_template')})
+        ('Display', {'fields': ('inline_template',)})
     )
     
     list_display = ('title', 'keyname', 'inline_template')

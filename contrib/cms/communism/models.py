@@ -31,8 +31,9 @@ class Theme(models.Model):
     def __unicode__(self):
         return "%s" % self.name
         
-    def get_url(self):
+    def _get_url(self):
         return "%s%s" % (settings.MEDIA_URL, self.keyname)
+    get_url = property(_get_url)
         
 class HtmlLinkRef(models.Model):
     """Abstract base for HTML includes (css/js)"""

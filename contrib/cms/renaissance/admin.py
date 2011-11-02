@@ -20,6 +20,11 @@ class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
     fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file','type')}), )
     list_filter = MediaAdmin.list_filter+['type']
     prepopulated_fields = {'slug': ('title',)}
+    
+class VideoMediaAdmin(MediaAdmin, admin.ModelAdmin):
+    fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file','thumbnail','type')}), )
+    list_filter = MediaAdmin.list_filter+['type']
+    prepopulated_fields = {'slug': ('title',)}
 
 class ExternalAdmin(admin.ModelAdmin): pass
     
@@ -75,7 +80,7 @@ class DimensionalMediaTypeOverrideAdmin(MediaTypeOverrideAdmin, admin.ModelAdmin
     fieldsets = MediaTypeOverrideAdmin.fieldsets + ( ('Attributes', {'fields': ('width', 'height')}), )
     
 admin.site.register(Image, FileBasedMediaAdmin)
-admin.site.register(Video, FileBasedMediaAdmin)
+admin.site.register(Video, VideoMediaAdmin)
 admin.site.register(Audio, FileBasedMediaAdmin)
 admin.site.register(Document, FileBasedMediaAdmin)
 admin.site.register(Object, FileBasedMediaAdmin)

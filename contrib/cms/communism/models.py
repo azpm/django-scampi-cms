@@ -32,8 +32,8 @@ class Theme(models.Model):
         return "%s" % self.name
         
     def _get_url(self):
-        return "%s%s" % (settings.MEDIA_URL, self.keyname)
-    get_url = property(_get_url)
+        return "%s%s/" % (settings.MEDIA_URL, self.keyname)
+    base_url = property(_get_url)
         
 class HtmlLinkRef(models.Model):
     """Abstract base for HTML includes (css/js)"""

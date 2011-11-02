@@ -202,6 +202,7 @@ class Image(Media):
 class Video(Media):
     file = models.FileField(upload_to=_file_upload_pathing)
     type = models.ForeignKey(VideoType)
+    thumbnail = models.ForeignKey(Image)
         
     class Meta:
         verbose_name = "Video File"

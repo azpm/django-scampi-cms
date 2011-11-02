@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime, time, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -29,6 +30,9 @@ class Theme(models.Model):
     
     def __unicode__(self):
         return "%s" % self.name
+        
+    def get_url(self):
+        return "%s%s" % (settings.MEDIA_URL, self.keyname)
         
 class HtmlLinkRef(models.Model):
     """Abstract base for HTML includes (css/js)"""

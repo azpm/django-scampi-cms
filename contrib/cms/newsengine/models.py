@@ -58,7 +58,7 @@ class Article(MultilingualModel):
         verbose_name_plural = "Articles"
     
     def who_made_me(self):
-        return self.author.get_full_name()
+        return u"%s" % self.author.get_full_name()
     who_made_me.short_description = "Creating Editor"
     
     def __unicode__(self):

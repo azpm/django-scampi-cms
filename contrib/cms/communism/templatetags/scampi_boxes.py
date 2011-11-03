@@ -23,29 +23,38 @@ class namedbox_node(template.Node):
             cache.set(cached_tpl_key, cached_tpl)
         
         tpl = template.Template(cached_tpl)
+        request = context.get('request', None)
+            
+        if not request:
+            return ''
+        
+        c = {
+            'box': namedbox, 
+            'cms_realm': context.get('cms_realm', None),
+            'cms_section': context.get('cms_section', None),
+            'page': context.get('page', None),
+        }
+        
+        
         c = template.Context(context.render_context)
-        
-        if 'request' not in c:
-            c.update({'request': context['request']})
-        if 'section' not in c:
-            c.update({'section': context.get('CMS_SECTION', None)})
-        if 'perms' not in c:
-            c.update({'perms': context.get('perms', None)})
-        if 'MASTER_MEDIA_URL' not in c:
-            c.update({'MASTER_MEDIA_URL': context.get('MASTER_MEDIA_URL', None)})
-        if 'MEDIA_URL' not in c:
-            c.update({'MEDIA_URL': context.get('MEDIA_URL', None)})
-        if 'THEME_URL' not in c:
-            c.update({'THEME_URL': context.get('THEME_URL', None)})
-        
-        c.update({'box': namedbox})
-        
-        return tpl.render(c)
-        
-        
-        #return render_to_string(tpl, {'box': namedbox}, context)
+        new_context = template.RequestContext(request, c, current_app = context.current_app)
+        return tpl.render(new_context)
+
         
 def render_namedbox(parser, token):
+    """
+    Renders a :model:`communism.NamedBox` according to it's :model:`communism.NamedBoxTemplate`
+    
+    {% render_namedbox box %}  Where box is a :model:`communism.NamedBox`
+    
+    Provides the following context to the :model:`communism.NamedBoxTemplate`:
+    
+    - box: the namedbox being rendered :model:`communism.NamedBox`, use as {{ box.field_name }}
+    - request: django request, use as {{ request.field_name }} comes from RequestContext
+    - cms_section: :model:`communism.Section`, use as {{ cms_section.field_name }}
+    - cms_realm: :model:`communism.Realm`, use as {{ cms_realm.field_name }}
+    """
+    
     try:
         tag_name, namedbox = token.contents.split(None, 1)
     except ValueError:

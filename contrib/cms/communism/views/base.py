@@ -41,9 +41,9 @@ class Index(Page):
     I am well aware that these aren't terrible consistent, this is for backwards compatibility.
     At some point, Scampi will be updated to have clean context variable names
     
-    - commune -> self.commune (:model:`communism.Commune`)
-    - CMS_SECTION -> self.section (:model:`communism.Section`)
-    - CMS_REALM -> self.realm (:model:`communism.Realm`)
+    - cms_commune -> self.commune (:model:`communism.Commune`)
+    - cms_section -> self.section (:model:`communism.Section`)
+    - cms_realm -> self.realm (:model:`communism.Realm`)
         
     PageMixin
     =========
@@ -66,8 +66,8 @@ class Index(Page):
     context
     -------
     
-    page.title -> self.title
-    page.onload -> self.onload
+    cms_page.title -> self.title
+    cms_page.onload -> self.onload
     
     ThemeMixin
     ==========
@@ -84,7 +84,7 @@ class Index(Page):
     context
     -------
     
-    page.theme -> self.get_theme
+    cms_page.theme -> self.get_theme
     
     CSSMixin
     =========
@@ -99,7 +99,7 @@ class Index(Page):
     context
     -------
     
-    page.styles -> self.get_stylesheets()
+    cms_page.styles -> self.get_stylesheets()
     
     JScriptMixin
     ============
@@ -114,5 +114,5 @@ class Index(Page):
     context
     -------
     
-    page.scripts -> self.get_javascripts()    
+    cms_page.scripts -> self.get_javascripts()    
     """

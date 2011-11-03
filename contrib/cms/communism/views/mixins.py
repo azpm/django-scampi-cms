@@ -93,9 +93,9 @@ class CommuneMixin(object):
         
         #set the context commune
         context.update({
-            'scampi_commune': self.commune,
-            'scampi_section': self.section,
-            'scampi_realm': self.realm,
+            'cms_commune': self.commune,
+            'cms_section': self.section,
+            'cms_realm': self.realm,
         })
         
         return context
@@ -129,13 +129,13 @@ class CSSMixin(object):
         css = self.get_stylesheets()
         
         #add the collection to the context
-        if 'scampi_page' in context:
-            context['scampi_page'].update({
+        if 'cms_page' in context:
+            context['cms_page'].update({
                 'styles': css,
             })
         else:
             context.update({
-                'scampi_page': {
+                'cms_page': {
                     'styles': css,
                 }
             })
@@ -171,13 +171,13 @@ class JScriptMixin(object):
         js = self.get_javascripts()
         
         #add the collection to the context
-        if 'scampi_page' in context:
-            context['scampi_page'].update({
+        if 'cms_page' in context:
+            context['cms_page'].update({
                 'scripts': js,
             })
         else:
             context.update({
-                'scampi_page': {
+                'cms_page': {
                     'scripts': js,
                 }
             })
@@ -191,13 +191,13 @@ class ThemeMixin(object):
     def get_context_data(self, *args, **kwargs):
         context = super(ThemeMixin, self).get_context_data(*args, **kwargs)
         
-        if 'scampi_page' in context:
-            context['scampi_page'].update({
+        if 'cms_page' in context:
+            context['cms_page'].update({
                 'theme': self.get_theme()
             })
         else:
             context.update({
-                'scampi_page': {
+                'cms_page': {
                     'theme': self.get_theme(),
                 }
             })

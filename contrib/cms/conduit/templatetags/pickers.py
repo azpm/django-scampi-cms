@@ -25,7 +25,6 @@ class picker_node(template.Node):
             if not request:
                 return ''
             
-            
             c = {
                 'picker': context.get('picker', None), 
                 'cms_realm': context.get('cms_realm', None),
@@ -44,7 +43,7 @@ class picker_node(template.Node):
 @register.tag('render_picker')
 def render_picker(parser, token):
     """
-    Renders a picker
+    Renders a Picker
     
     {% render_picker picker_variable %}
     
@@ -61,12 +60,17 @@ def render_picker(parser, token):
 
     render_picker provides the following context to :model:`conduit.PickerTemplate`
     
-    - picker: the picker being render
+    - picker: the :model:`conduit.DynamicPicker` being rendered
     - cms_realm: the current realm :model:`communism.Realm`
     - cms_section: the current section :model:`communism.Section`
     - page: the current Page instance
     - request: from RequestContext 
     - perms: from RequestContext
+    
+    Static Pickers
+    ==============
+    
+    Content will be rendered as markdown
     """
     
     try:

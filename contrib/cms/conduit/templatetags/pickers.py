@@ -28,9 +28,9 @@ class picker_node(template.Node):
             
             c = {
                 'picker': context.get('picker', None), 
-                'cms_realm': context.get(, None),
-                'cms_section': context.get(, None),
-                'page': context.get(, None),
+                'cms_realm': context.get('cms_realm', None),
+                'cms_section': context.get('cms_section', None),
+                'page': context.get('page', None),
             }
             
             new_context = template.RequestContext(request, c, current_app = context.current_app)

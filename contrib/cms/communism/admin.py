@@ -29,7 +29,7 @@ class SectionAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(SectionAdmin, self).queryset(request)
         
-        return qs.order_by('display_order')
+        return qs.order_by('realm__display_order', 'display_order')
 
 class SectionInline(generic.GenericTabularInline):
     ct_field = 'element_type'

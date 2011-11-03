@@ -27,9 +27,11 @@ class SectionAdmin(admin.ModelAdmin):
     list_filter = ('realm',)
 
     def queryset(self, request):
-        qs = super(SectionAdmin, self).queryset(request)
+        #qs = super(SectionAdmin, self).queryset(request)
         
-        return qs.order_by('realm__display_order', 'display_order')
+        qs = Section.objects.order_by('realm__display_order', 'display_order')
+        
+        return qs
 
 class SectionInline(generic.GenericTabularInline):
     ct_field = 'element_type'
@@ -40,6 +42,8 @@ class SectionInline(generic.GenericTabularInline):
     )
     max_num = 1
     extra = 1
+    
+    
 
 class SliceAdmin(admin.ModelAdmin):
     list_display = ('name', 'traverse_up', 'display_order')

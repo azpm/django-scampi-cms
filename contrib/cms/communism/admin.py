@@ -23,8 +23,13 @@ class RealmNotificationAdmin(admin.ModelAdmin):
 class SectionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'realm', 'keyname', 'extends','active','display_order','generates_navigation')
     list_editable = ('active','display_order','generates_navigation')
-    #ordering = ('realm__display_order', 'display_order')
+    
     list_filter = ('realm',)
+
+    def queryset(self, request):
+        qs = super(SectionAdmin, self).queryset(request)
+        
+        return qs.order_by('display_order')
 
 class SectionInline(generic.GenericTabularInline):
     ct_field = 'element_type'
@@ -75,8 +80,6 @@ class BaseHierarchyElementAdmin(admin.ModelAdmin):
     list_display = ('name', 'realm', 'traverse_up', 'keyname')
     list_filter = ('section__realm',)
     search_fields = ['name','section__realm__name',]
-    
-    ordering = ('section__realm__display_order','section__display_order')
     
     def traverse_up(self, cls):
         return section_path_up([cls.container], " > ")

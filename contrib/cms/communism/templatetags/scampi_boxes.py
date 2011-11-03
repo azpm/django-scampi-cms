@@ -35,8 +35,6 @@ class namedbox_node(template.Node):
             'page': context.get('page', None),
         }
         
-        
-        c = template.Context(context.render_context)
         new_context = template.RequestContext(request, c, current_app = context.current_app)
         return tpl.render(new_context)
 

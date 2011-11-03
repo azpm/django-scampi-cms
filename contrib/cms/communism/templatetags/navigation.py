@@ -8,9 +8,6 @@ from libscampi.contrib.cms.communism.models import *
 register = template.Library()
 
 
-
-
-
 class RealmsNode(template.Node):
     def __init__(self, varname):
         self.varname = varname

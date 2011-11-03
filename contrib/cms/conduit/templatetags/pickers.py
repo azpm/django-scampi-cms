@@ -26,7 +26,7 @@ class picker_node(template.Node):
                 return ''
             
             c = {
-                'picker': context.get('picker', None), 
+                'picker': picker, 
                 'cms_realm': context.get('cms_realm', None),
                 'cms_section': context.get('cms_section', None),
                 'page': context.get('page', None),

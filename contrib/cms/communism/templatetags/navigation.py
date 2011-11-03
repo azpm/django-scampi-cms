@@ -7,6 +7,35 @@ from libscampi.contrib.cms.communism.models import *
 
 register = template.Library()
 
+class SiteMapNode(template.Node):
+    def render(self, context):
+        request = context.get('request', None)
+            
+        if not request:
+            return ''
+                
+        realms = Realm.objects.select_related().filter(active = True).order_by('display_order')
+        c = {
+            'realms': realms
+        }
+        
+        new_context = template.RequestContext(request, c, context.curre
+        
+@register.tag
+def render_sitemap(parser, token):
+    """
+    Renders the scampi cms sitemap according to:
+    
+    <theme>/navigation/sitemap.html
+    
+    use: {% render_sitemap %}
+    """
+    try:
+        tag_name = token.contents.split()
+    except ValueError:
+        raise template.TemplateSyntaxError, "render_sitemap does not take arguments"
+        
+    return SiteMapNode()
 
 class RealmsNode(template.Node):
     def __init__(self, varname):

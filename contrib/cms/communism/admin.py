@@ -83,6 +83,7 @@ class CommuneAdmin(BaseHierarchyElementAdmin):
     fieldsets = (
         ('General', {'fields': ('name', 'description', 'theme')}),
     )
+    list_filter = ('section__realm',)
     ordering = ('section__realm__display_order','section__display_order')
     inlines = (SectionInline, SliceInline)
        

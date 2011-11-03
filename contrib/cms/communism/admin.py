@@ -26,13 +26,6 @@ class SectionAdmin(admin.ModelAdmin):
     
     list_filter = ('realm',)
 
-    def queryset(self, request):
-        #qs = super(SectionAdmin, self).queryset(request)
-        
-        qs = Section.objects.order_by('realm__display_order', 'display_order')
-        
-        return qs
-
 class SectionInline(generic.GenericTabularInline):
     ct_field = 'element_type'
     ct_fk_field = 'element_id'

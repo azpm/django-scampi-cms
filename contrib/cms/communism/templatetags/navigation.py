@@ -47,7 +47,7 @@ class SectionsNode(template.Node):
         self.varname = varname
         
     def render(self, context):
-        pointer = self.pointer.resolver(context)
+        pointer = self.pointer.resolve(context)
         
         if type(pointer) == Realm:
             sections = pointer.section_set.select_related().filter(active = True, generates_navigation = True, extends__isnull=True)

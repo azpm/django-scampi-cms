@@ -14,7 +14,7 @@ class notifications_node(template.Node):
     
     def render(self, context):
         try:
-            notifications = RealmNotification.objects.filter(realm = context['CMS_REALM'], display_start__lte=datetime.now()).exclude(display_end__lte=datetime.today(), display_end__isnull=False)
+            notifications = RealmNotification.objects.filter(realm = context['cms_realm'], display_start__lte=datetime.now()).exclude(display_end__lte=datetime.today(), display_end__isnull=False)
         except (ValueError, KeyError):
             notifications = RealmNotification.objects.none()
             

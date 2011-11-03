@@ -19,25 +19,23 @@ class picker_node(template.Node):
         
         if type(picker) is DynamicPicker:
             tpl = template.Template(picker.template.content)
-            c = template.Context(context.render_context)
-            perms = context.get('perms', None)
             
-            if 'picker' not in c:
-                c.update({'picker': picker})
-            if 'request' not in c:
-                c.update({'request': context['request']})
-            if 'section' not in c:
-                c.update({'section': context.get('CMS_SECTION', None)})
-            if 'perms' not in c and perms:
-                c.update({'perms': perms})
-            if 'MASTER_MEDIA_URL' not in c:
-                c.update({'MASTER_MEDIA_URL': context.get('MASTER_MEDIA_URL', None)})
-            if 'MEDIA_URL' not in c:
-                c.update({'MEDIA_URL': context.get('MEDIA_URL', None)})
-            if 'THEME_URL' not in c:
-                c.update({'THEME_URL': context.get('THEME_URL', None)})
-                
-            return tpl.render(c)
+            request = context.get('request', None)
+            
+            if not request:
+                return ''
+            
+            
+            c = {
+                'picker': context.get('picker', None), 
+                'cms_realm': context.get(, None),
+                'cms_section': context.get(, None),
+                'page': context.get(, None),
+            }
+            
+            new_context = template.RequestContext(request, c, current_app = context.current_app)
+            return tpl.render(new_context)
+        
         elif type(picker) is StaticPicker:
             return markdown(picker.content)
                     
@@ -45,64 +43,35 @@ class picker_node(template.Node):
     
 @register.tag('render_picker')
 def render_picker(parser, token):
+    """
+    Renders a picker
+    
+    {% render_picker picker_variable %}
+    
+    Most often used as:
+    
+    {% render_picker box.picker %}
+    
+    Will correctly determine if dynamic or static content needs to be rendered.
+    
+    Dynamic Pickers
+    ===============
+    
+    Pickers will be rendered according to the template given in :model:`conduit.PickerTemplate`
+
+    render_picker provides the following context to :model:`conduit.PickerTemplate`
+    
+    - picker: the picker being render
+    - cms_realm: the current realm :model:`communism.Realm`
+    - cms_section: the current section :model:`communism.Section`
+    - page: the current Page instance
+    - request: from RequestContext 
+    - perms: from RequestContext
+    """
+    
     try:
         tag, picker = token.split_contents()
     except ValueError:
         raise template.TemplateSyntaxError("'%s' requires an argument: a picker" % token.contents.split()[0])
         
     return picker_node(picker)
-
-
-class unpacked_picker(template.Node):
-    def __init__(self, nb):
-        self.named_box = template.Variable(nb)
-    
-    def render(self, context):
-        try:
-            named_box = self.named_box.resolve(context)
-        except template.VariableDoesNotExist:
-            return u"" #handed tag something that doesn't exist
-        
-        graph = context.get('pickers', None)
-        if not graph:
-            return u"" #case where there isn't a picker graph
-            
-        try:
-            picker = graph[named_box]
-        except (ValueError, KeyError):
-            return u"" #case where named box doesn't have a picker
-            
-            
-        if type(picker) is DynamicPicker:
-            tpl = template.Template(picker.template.content)
-            c = template.Context(context.render_context)
-            perms = context.get('perms', None)
-            
-            if 'picker' not in c:
-                c.update({'picker': picker})
-            if 'request' not in c:
-                c.update({'request': context['request']})
-            if 'section' not in c:
-                c.update({'section': context.get('CMS_SECTION', None)})
-            if 'perms' not in c and perms:
-                c.update({'perms': perms})
-            if 'MASTER_MEDIA_URL' not in c:
-                c.update({'MASTER_MEDIA_URL': context.get('MASTER_MEDIA_URL', None)})
-            if 'MEDIA_URL' not in c:
-                c.update({'MEDIA_URL': context.get('MEDIA_URL', None)})
-            if 'THEME_URL' not in c:
-                c.update({'THEME_URL': context.get('THEME_URL', None)})
-            
-            return tpl.render(c)
-        elif type(picker) is StaticPicker:
-            return markdown(picker.content)
-
-
-@register.tag('unpack_picker')
-def unpack_picker(parser, token):
-    try:
-        tag, named_box = token.split_contents()
-    except ValueError:
-        raise template.TemplateSyntaxError("'%s' requires an argument: a picker" % token.contents.split()[0])
-    
-    return unpacked_picker(named_box)

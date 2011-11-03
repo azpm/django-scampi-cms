@@ -12,6 +12,17 @@ from libscampi.contrib.cms.conduit.utils import coerce_filters
 from libscampi.contrib.cms.conduit.picker import manifest
 
 class PickerTemplate(models.Model):
+    """
+    A picker template for dynamic picker rendering.  Each template is given a RequestContext
+    containing the following variables:
+    
+    - picker: the picker being render
+    - cms_realm: the current realm :model:`communism.Realm`
+    - cms_section: the current section :model:`communism.Section`
+    - page: the current Page instance
+    - request: from RequestContext 
+    - perms: from RequestContext
+    """
     name =  models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
     content = models.TextField(_("django template"))
     stylesheet = models.ManyToManyField('communism.StyleSheet', blank = True)

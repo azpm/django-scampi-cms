@@ -87,7 +87,6 @@ class CommuneAdmin(BaseHierarchyElementAdmin):
         ('General', {'fields': ('name', 'description', 'theme')}),
     )
     
-    list_select_related = True
     inlines = (SectionInline, SliceInline)
        
 class ApplicationAdmin(BaseHierarchyElementAdmin):   

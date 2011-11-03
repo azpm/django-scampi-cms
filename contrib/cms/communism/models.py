@@ -210,8 +210,7 @@ class Section(models.Model):
         verbose_name_plural = "Hierarchy Elements"
         unique_together = (("element_id","element_type"),("realm","keyname"),("realm", "extends", "display_order"))
         
-        order_with_respect_to = "realm"
-        ordering = ['display_order']
+        ordering = ['realm__display_order', 'display_order']
         
     def __unicode__(self):
         return "%s [%s]" % (self.element, self.element_type.name)

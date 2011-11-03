@@ -9,7 +9,7 @@ register = template.Library()
 
 class SiteMapNode(template.Node):
     def render(self, context):
-        request = context.get('request', None)
+        """request = context.get('request', None)
             
         if not request:
             return ''
@@ -19,7 +19,7 @@ class SiteMapNode(template.Node):
             'realms': realms
         }
         
-        new_context = template.RequestContext(request, c, context.curre
+        new_context = template.RequestContext(request, c, context.curre"""
         
 @register.tag
 def render_sitemap(parser, token):

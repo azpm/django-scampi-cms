@@ -23,7 +23,7 @@ class RealmNotificationAdmin(admin.ModelAdmin):
 class SectionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'realm', 'keyname', 'extends','active','display_order','generates_navigation')
     list_editable = ('active','display_order','generates_navigation')
-    ordering = ('realm__display_order', 'display_order')
+    #ordering = ('realm__display_order', 'display_order')
     list_filter = ('realm',)
 
 class SectionInline(generic.GenericTabularInline):

@@ -137,13 +137,14 @@ class Realm(models.Model):
         return t
     primary_section = property(_primary_section)
     
+    def _tla_sections(self):
+        return self.section_set.filter(active = True, extends = None, generates_navigation = True)
+    tl_sections = property(_tla_sections)
+    
     def _has_navigable_sections(self):
         "Returns True if realm has active sections, False otherwise"
-        t = self.section_set.filter(active = True, extends = None, generates_navigation = True)
-        if len(t) > 0:
-            return True
-        else:
-            return False
+        t = self.section_set.filter(active = True, extends = None, generates_navigation = True).exists()
+        return t
     has_navigable_sections = property(_has_navigable_sections)
         
     def get_absolute_url(self):

@@ -87,7 +87,7 @@ class CommuneMixin(object):
 
     def get_template_names(self):
         tpl_list = (
-            "%s/communism/%s/%s.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
+            "%s/communism/%s/%s.html" % (self.commune.theme.keyname, self.realm.keyname, self.section.keyname),
             "%s/communism/%s/commune.html" % (self.commune.theme.keyname, self.realm.keyname),
             "%s/communism/commune.html" % self.commune.theme.keyname,
         )

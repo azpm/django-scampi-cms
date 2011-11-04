@@ -131,7 +131,7 @@ class Realm(models.Model):
     def _primary_section(self):
         "Returns the first active section for this realm, or None"
         try:
-            t = self.section_set.select_related().filter(active = True, extends = None).order_by('display_order')[0]
+            t = self.section_set.filter(active = True, extends = None).order_by('display_order')[0]
         except IndexError:
             t = None
         return t

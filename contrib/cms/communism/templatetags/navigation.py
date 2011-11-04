@@ -23,8 +23,8 @@ class SiteMapNode(template.Node):
             'cms_realm': realm,
             'cms_section': section,
             'cms_page': page,
-            'yes': True,
-            'no': False,
+            'foo': True,
+            'bar': False,
         }
         
         new_context = template.RequestContext(request, c, context.current_app)

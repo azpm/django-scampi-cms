@@ -73,10 +73,7 @@ class CommuneMixin(object):
                 return redirect(self.section.element.get_absolute_url())
                 
             try:
-                self.commune = Commune.objects.get(
-                    pk = self.section.element_id, 
-                    section__id = self.section.id
-                )
+                self.commune = Commune.objects.get(pk = self.section.element_id, section__id = self.section.id)
             except Commune.DoesNotExist:
                 #this section doesn't generate navigation and isn't a commune (we have no idea what it is)
                 return HttpResponseServerError            
@@ -86,7 +83,7 @@ class CommuneMixin(object):
 
     #overrides base page title functionality
     def get_page_title(self):
-        return "%s | %s" % (self.commune.realm.name, self.commune.name)
+        return "%s | %s" % (self.realm.name, self.commune.name)
 
     def get_template_names(self):
         tpl_list = (

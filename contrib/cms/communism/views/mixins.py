@@ -71,13 +71,15 @@ class CommuneMixin(object):
             if self.section.generates_navigation:
                 #this section has a keyword argument, we should use it
                 return redirect(self.section.element.get_absolute_url())
-            
-            if self.section.generates_navigation == False and type(self.section.element) != Commune:
-                #this section doesn't generate navigation and isn't a commune (we have no idea what it is)
-                return HttpResponseServerError
                 
             #set the commune
             self.commune = self.section.element
+            
+            if self.section.generates_navigation == False and type(self.commune) != Commune:
+                #this section doesn't generate navigation and isn't a commune (we have no idea what it is)
+                return HttpResponseServerError
+                
+            
         
         #finally return the parent get method
         return super(CommuneMixin, self).get(request, *args, **kwargs)

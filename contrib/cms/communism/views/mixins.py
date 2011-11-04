@@ -50,7 +50,7 @@ class CommuneMixin(object):
     
     def get(self, request, *args, **kwargs):
         #get the realm
-        self.realm = get_object_or_404(Realm, site = Site.objects.get_current())
+        self.realm = get_object_or_404(Realm.select_related, site = Site.objects.get_current())
         
         #keyname specified in url
         if 'keyname' in kwargs:

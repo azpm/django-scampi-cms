@@ -58,15 +58,12 @@ class CommuneMixin(object):
         site = Site.objects.get_current()
         self.realm = site.realm
         
-        
-        
         #keyname specified in url
         if 'keyname' in kwargs:
             actual = kwargs['keyname'].split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
             
             self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
             self.commune = get_object_or_404(Commune.localised.select_related(), section__keyname = actual[-1]) 
-            logger.debug('request made')
         else:
             #no keyname specified, we need the "primary" section
             self.section = self.realm.primary_section #get the primary section of this realm

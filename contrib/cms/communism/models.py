@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime, time, timedelta
-from django.utils.functional import cached_property
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
@@ -11,6 +11,7 @@ from django.contrib.sites.models import Site
 
 #libscampi imports
 from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orphan_picker
+from libscampi.utils.functional import cached_propery
 
 #local imports
 from .managers import localised_section_manager, localised_element_manager
@@ -136,7 +137,7 @@ class Realm(models.Model):
         except IndexError:
             t = None
         return t
-    primary_section = cached_property(_primary_section)
+    primary_section = cached_propery(_primary_section)
     
     def _tla_sections(self):
         return self.section_set.filter(active = True, extends = None, generates_navigation = True)

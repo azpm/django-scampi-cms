@@ -224,6 +224,14 @@ class Section(models.Model):
     def get_absolute_url(self):
         """Returns the fully dotted URL path to section."""
         return "/%s/" % section_path_up([self], ".")
+        
+    def get_real_absolute_url(self):
+        realm = self.realm
+        
+        if realm.secure:
+            return "https://%s/%s/" % (realm.site.domain, section_path_up([self], "."))
+        else:
+            return "http://%s/%s/" % (realm.site.domain, section_path_up([self], "."))
 
 #abstract base class for anything to extend to get hierarchy
 class BaseHierarchyElement(models.Model):

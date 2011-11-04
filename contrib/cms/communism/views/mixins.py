@@ -12,7 +12,7 @@ from libscampi.contrib.cms.communism.models import *
 
 import collections, copy
 
-logger = logger.getLogger('libscampi.contrib.cms.communism.views')
+logger = logging.getLogger('libscampi.contrib.cms.communism.views')
 
 class html_link_refs(collections.MutableSet):
     def __init__(self, iterable = None):

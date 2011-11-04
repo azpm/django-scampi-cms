@@ -152,7 +152,7 @@ class Publish(models.Model):
         return "%s > %s" % (self.site, self.story.article.headline)
         
     def get_absolute_url(self):
-        return "%s/%d/%d/%d/%s/" % (self.category.keyname, self.start.year, self.start.month, self.start.day, self.slug)
+        return "%d/%d/%d/%s/" % (self.start.year, self.start.month, self.start.day, self.slug)
 
     @property
     def comments_enabled(self):

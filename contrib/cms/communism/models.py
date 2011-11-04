@@ -11,7 +11,7 @@ from django.contrib.sites.models import Site
 
 #libscampi imports
 from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orphan_picker
-from libscampi.utils.functional import cached_propery
+from libscampi.utils.functional import cached_property
 
 #local imports
 from .managers import localised_section_manager, localised_element_manager

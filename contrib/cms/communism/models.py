@@ -141,13 +141,13 @@ class Realm(models.Model):
     
     def _tla_sections(self):
         return self.section_set.filter(active = True, extends = None, generates_navigation = True)
-    tl_sections = property(_tla_sections)
+    tl_sections = cached_property(_tla_sections)
     
     def _has_navigable_sections(self):
         "Returns True if realm has active sections, False otherwise"
         t = self.section_set.filter(active = True, extends = None, generates_navigation = True).exists()
         return t
-    has_navigable_sections = property(_has_navigable_sections)
+    has_navigable_sections = cached_property(_has_navigable_sections)
         
     def get_absolute_url(self):
         "Returns fully qualified link to realm, including http/https"
@@ -169,6 +169,7 @@ class Realm(models.Model):
                 return "http://%s/" % (self.site.domain,)
         else:
             return "#"
+    get_absolute_url = cached_property(get_absolute_url)
             
 
 class RealmNotification(models.Model):

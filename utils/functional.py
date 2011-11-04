@@ -1,3 +1,6 @@
+from functools import wraps, update_wrapper
+
+
 class cached_property(object):
     """
     Decorator that creates converts a method with a single

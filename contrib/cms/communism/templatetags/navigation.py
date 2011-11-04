@@ -26,7 +26,7 @@ class SiteMapNode(template.Node):
         }
         
         new_context = template.RequestContext(request, c, context.current_app)
-        tpl = template.loader.get_template("%s/navigation/sitemap.html" % page.theme.keyname)
+        tpl = template.loader.get_template("%s/navigation/sitemap.html" % page['theme'].keyname)
         
         return tpl.render(new_context)
         

@@ -5,14 +5,14 @@ class PageMixin(object):
     def get_context_data(self, *args, **kwargs):
         context = super(PageMixin, self).get_context_data(*args, **kwargs)
         
-        if 'page' in context:
-            context['page'].update({
+        if 'cms_page' in context:
+            context['cms_page'].update({
                 'title': self.get_page_title(),
                 'onload': self.get_page_onload(),
             })
         else:
             context.update({
-                'page': {
+                'cms_page': {
                     'title': self.get_page_title(),
                     'onload': self.get_page_onload(),
                 }

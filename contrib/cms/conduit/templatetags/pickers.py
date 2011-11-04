@@ -29,7 +29,7 @@ class picker_node(template.Node):
                 'picker': picker, 
                 'cms_realm': context.get('cms_realm', None),
                 'cms_section': context.get('cms_section', None),
-                'page': context.get('page', None),
+                'cms_page': context.get('cms_page', None),
             }
             
             new_context = template.RequestContext(request, c, current_app = context.current_app)

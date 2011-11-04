@@ -9,17 +9,26 @@ register = template.Library()
 
 class SiteMapNode(template.Node):
     def render(self, context):
-        """request = context.get('request', None)
-            
-        if not request:
+        request = context.get('request', None)
+        realm = context.get('cms_realm', None)
+        section = context.get('cms_section', None)
+        page = context.get('cms_page', None)
+        
+        if not request or not realm or not section:
             return ''
                 
         realms = Realm.objects.select_related().filter(active = True).order_by('display_order')
         c = {
-            'realms': realms
+            'realms': realms,
+            'cms_realm': realm,
+            'cms_section': section,
+            'cms_page': page,
         }
         
-        new_context = template.RequestContext(request, c, context.curre"""
+        new_context = template.RequestContext(request, c, context.current_app)
+        tpl = template.loader.get_template("%s/navigation/sitemap.html" % page.theme.keyname)
+        
+        return tpl.render(new_context)
         
 @register.tag
 def render_sitemap(parser, token):

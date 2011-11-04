@@ -1,3 +1,5 @@
+import logging
+
 from django.views.generic import View, TemplateView
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect
 from django.http import Http404, HttpResponseServerError
@@ -9,6 +11,8 @@ from django.core.cache import cache
 from libscampi.contrib.cms.communism.models import *
 
 import collections, copy
+
+logger = logger.getLogger('libscampi.contrib.cms.communism.views')
 
 class html_link_refs(collections.MutableSet):
     def __init__(self, iterable = None):
@@ -50,13 +54,19 @@ class CommuneMixin(object):
     
     def get(self, request, *args, **kwargs):
         #get the realm
-        self.realm = get_object_or_404(Realm.objects.select_related(), site = Site.objects.get_current())
+        #self.realm = get_object_or_404(Realm.objects.select_related(),)
+        site = Site.objects.get_current()
+        self.realm = site.realm
+        
+        logger.debug('request made')
         
         #keyname specified in url
         if 'keyname' in kwargs:
             actual = kwargs['keyname'].split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
-            self.commune = get_object_or_404(Commune.localised.select_related(), section__keyname = actual[-1]) 
+            
             self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
+            self.commune = get_object_or_404(Commune.localised.select_related(), section__keyname = actual[-1]) 
+            
         else:
             #no keyname specified, we need the "primary" section
             self.section = self.realm.primary_section #get the primary section of this realm

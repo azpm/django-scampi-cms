@@ -19,7 +19,6 @@ class html_link_refs(collections.MutableSet):
         self.elements = lst = []
         if not iterable:
             return None
-        
         try:
             for value in iterable:
                 if value not in lst:
@@ -114,6 +113,7 @@ class CSSMixin(object):
         
         #cache empty, get the styles and refill the cache
         if not styles:
+            logger.debug("missed css cache on %s" % cached_css_key)
             styles = StyleSheet.objects.filter(active=True).filter(
                 Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) & 
                 Q(pickertemplate__dynamicpicker__namedbox__active=True) | 
@@ -156,6 +156,7 @@ class JScriptMixin(object):
         
         #cache empty, get the scripts and refill the cache
         if not scripts:
+            logger.debug("missed css cache on %s" % cached_css_key)
             scripts = Javascript.objects.filter(active=True).filter(
                 Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) & 
                 Q(pickertemplate__dynamicpicker__namedbox__active=True) | 

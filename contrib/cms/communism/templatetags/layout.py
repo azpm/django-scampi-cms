@@ -18,7 +18,6 @@ class layout_node(template.Node):
         
         if maximum_y is not None:
             for i in range(0, maximum_y):
-                print i
                 grid.append([ [],[],[] ])
 
             for box in box_collection:

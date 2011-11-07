@@ -74,6 +74,7 @@ class CommuneMixin(object):
             self.commune = self.section.element
             
             if self.section.generates_navigation == False and type(self.commune) != Commune:
+                logger.error("tried to load a section [%s] that wasn't a commune" % self.section.keyname)
                 #this section doesn't generate navigation and isn't a commune (we have no idea what it is)
                 return HttpResponseServerError
         

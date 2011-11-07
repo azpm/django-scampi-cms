@@ -18,7 +18,7 @@ class picker_node(template.Node):
             return u""
         
         if type(picker) is DynamicPicker:
-            tpl = template.Template(picker.template.content)
+            tpl = template.Template(picker.template.content, name="conduit.PickerTemplate")
             
             request = context.get('request', None)
             

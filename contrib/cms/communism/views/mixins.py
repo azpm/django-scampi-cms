@@ -163,8 +163,7 @@ class JScriptMixin(object):
                 Q(base=True)
             ).order_by('precedence')
             cache.set(cached_scripts_key, scripts, 60*20)
-            logger.debug(cache.get(cached_scripts_key, "No cached scripts after cache set"))
-           
+                       
         #build a simple collection of styles
         script_collection = html_link_refs()
         for script in scripts:

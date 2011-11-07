@@ -6,9 +6,10 @@ from django.utils.translation import ugettext_lazy as _
 #scampu stuff
 from libscampi.core.fields import PickledObjectField 
 from libscampi.contrib.cms.communism.models import Commune
+from libscampi.utils.functional import cached_property
 
 #local imports
-from libscampi.contrib.cms.conduit.utils import coerce_filters
+from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template
 from libscampi.contrib.cms.conduit.picker import manifest
 
 class PickerTemplate(models.Model):
@@ -35,6 +36,8 @@ class PickerTemplate(models.Model):
     def __unicode__(self):
         return self.name
 
+models.signals.post_save.connect(cache_picker_template, sender=PickerTemplate)
+
 class PickerBase(models.Model):
     name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
     commune = models.ForeignKey(Commune, null = True, blank = True, related_name = "%(class)s_related")
@@ -42,7 +45,6 @@ class PickerBase(models.Model):
     class Meta:
         abstract = True
         ordering = ['precedence']
-
     
 class DynamicPicker(PickerBase):
     keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"))

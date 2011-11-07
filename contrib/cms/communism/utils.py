@@ -1,5 +1,9 @@
+import logging
+
 from django.core.cache import cache
 from django.template.defaultfilters import slugify
+
+logger = logging.getLogger('libscampi.contrib.cms.communism.utils')
 
 """
 Theme Helpers and Utility functions
@@ -37,7 +41,9 @@ def section_path_up(cls, glue):
     
 
 #updates the cache whenever you save a namedboxtemplate
-def cache_namedbox_template(sender, instance, **kwargs):
-    cache_key = "nb-template-%s" % slugify(instance.name)
+def cache_namedbox_template(sender, instance, **kwargs):    
+    cache_key = "namedbox-tpl-%d" % instance.pk
     tpl = instance.content
     cache.set(cache_key, tpl)
+    
+    logger.info("updating cached template %s [NamedBoxTemplate]" % cache_key)

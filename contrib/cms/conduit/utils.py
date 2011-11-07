@@ -1,11 +1,16 @@
+import logging
+
 import django_filters
 
 from datetime import datetime, timedelta
+from django.core.cache import cache
 from django.db.models.sql.constants import QUERY_TERMS
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from django.core.exceptions import ObjectDoesNotExist
+
+logger = logging.getLogger('libscampi.contrib.cms.conduit.utils')
 
 DATE_RANGE_COERCION = {
     '-today': lambda name, lookup: {'%s__%s' % (name, lookup): datetime.now()},
@@ -134,6 +139,13 @@ def unmap_orphan_picker(sender, instance, **kwargs):
     else:
         picker.commune = None
         picker.save()
+        
+def cache_picker_template(sender, instance, **kwargs):
+    cache_key = "dynamicpicker-tpl-%d" % instance.pk
+    tpl = instance.content
+    cache.set(cache_key, tpl)
+    
+    logger.info("updating cached template %s [PickerTemplate]" % cache_key)
 
 
             

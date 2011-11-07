@@ -1,10 +1,14 @@
+import logging
+
 from django import template
+from django.core.cache import cache
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.markup.templatetags.markup import markdown
 
 from libscampi.contrib.cms.conduit.models import *
 
+logger = logging.getLogger('libscampi.contrib.cms.conduit.templatetags')
 register = template.Library()
 
 class picker_node(template.Node):
@@ -17,13 +21,22 @@ class picker_node(template.Node):
         except template.VariableDoesNotExist:
             return u""
         
-        if type(picker) is DynamicPicker:
-            tpl = template.Template(picker.template.content, name="conduit.PickerTemplate")
-            
+        if type(picker) is DynamicPicker:            
             request = context.get('request', None)
             
             if not request:
                 return ''
+            
+            cached_tpl_key = "dynamicpicker-tpl-%d" % picker.template_id
+            cached_tpl = cache.get(cached_tpl_key, None)
+            
+            if not cached_tpl:
+                logger.debug("cache miss on %s trying to get cached template" % cached_tpl)
+                cached_tpl = picker.template.content
+                cache.set(cached_tpl_key, cached_tpl)
+            
+            tpl = template.Template(cached_tpl, name="conduit.PickerTemplate [%s]" % picker.template.name)
+
             
             c = {
                 'picker': picker, 

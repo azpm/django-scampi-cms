@@ -62,7 +62,7 @@ class CommuneMixin(object):
             actual = kwargs['keyname'].split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
             
             self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
-            self.commune = get_object_or_404(Commune.localised.select_related(), section__keyname = actual[-1]) 
+            self.commune = get_object_or_404(Commune.localised.select_related('section'), section__keyname = actual[-1]) 
         else:
             #no keyname specified, we need the "primary" section
             self.section = self.realm.primary_section #get the primary section of this realm

@@ -161,7 +161,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         return response
         
 class StaticPickerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'namedbox__name')
+    list_display = ('name', 'namedbox')
     fieldsets = (
         (None, {'fields': ('name', 'content')}),
         ('Information', {'fields': ('namedbox', 'commune')}),

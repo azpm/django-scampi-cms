@@ -159,7 +159,27 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         response = HttpResponse(simplejson.dumps(returns), content_type="application/json")
         
         return response
-                
+        
+class StaticPickerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'namedbox__name')
+    fieldsets = (
+        (None, {'fields': ('name', 'content')}),
+        ('Information', {'fields': ('namedbox', 'commune')}),
+    )
+    
+    def get_readonly_fields(self, request, obj=None):
+        """
+        commune is always readonly
+        content can only be set once
+        """
+        
+        if obj:
+            return ('commune', 'namedbox')
+        else:
+            return ('commune',)
+        
+        return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
+                                        
 class StaticPickerInlineAdmin(admin.StackedInline):
     readonly_fields = ('commune',)
     model = StaticPicker
@@ -169,5 +189,5 @@ class StaticPickerInlineAdmin(admin.StackedInline):
     verbose_name_plural = "Static Content"
     
 admin.site.register(DynamicPicker, DynamicPickerAdmin)
-admin.site.register(StaticPicker)
+admin.site.register(StaticPicker, StaticPickerAdmin)
 admin.site.register(PickerTemplate, PickerTemplateAdmin)

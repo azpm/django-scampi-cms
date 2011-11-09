@@ -35,7 +35,7 @@ class ArticleTranslation(models.Model):
         verbose_name_plural = 'Article Translations'
     
     def __unicode__(self):
-        return u"%" % self.headline
+        return u"%s" % self.headline
     
 class Article(MultilingualModel):
     contributors = models.ManyToManyField(User, related_name = "contributors", null = True, blank = True, limit_choices_to={'is_staff':True})

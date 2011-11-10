@@ -26,7 +26,7 @@ class ExtValidator(object):
     def __call__(self, value):
         self.get_extension(value.name)
     
-        params = {'exts': ",".join(valid_extensions[self.valid_key])}
+        params = {'exts': ", ".join(valid_extensions[self.valid_key])}
     
         if self.extension not in valid_extensions[self.valid_key]:
             raise  ValidationError(self.message % params, self.code)

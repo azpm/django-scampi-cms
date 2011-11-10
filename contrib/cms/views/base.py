@@ -8,7 +8,7 @@ from .mixins import PageMixin
 class Page(SectionMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     pass
 
-class CMSPage(SectoinMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
+class CMSPage(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     pass
 
 class CMSPageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, PageMixin, JScriptMixin):

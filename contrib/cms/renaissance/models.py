@@ -206,7 +206,7 @@ class Image(Media):
     base_type = "image"
                 
 class Video(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidVidExtension])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidVidExtension()])
     type = models.ForeignKey(VideoType)
     thumbnail = models.ForeignKey(Image, null = True)
         
@@ -217,7 +217,7 @@ class Video(Media):
     base_type = "video"
 
 class Audio(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidAudExtension])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidAudExtension()])
     type = models.ForeignKey(AudioType)
         
     class Meta:
@@ -227,7 +227,7 @@ class Audio(Media):
     base_type = "audio"
 
 class Document(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidDocExtension])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidDocExtension()])
     type = models.ForeignKey(DocumentType)
     
     class Meta:
@@ -237,7 +237,7 @@ class Document(Media):
     base_type = "document"
     
 class Object(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidObjExtension])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidObjExtension()])
     type = models.ForeignKey(ObjectType)
     
     class Meta:

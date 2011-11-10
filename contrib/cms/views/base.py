@@ -1,13 +1,9 @@
-import logging
-
 from django.views.generic import View, TemplateView
 from django.core.exceptions import ImproperlyConfigured
 
 from libscampi.contrib.cms.communism.views.mixins import SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin
 
 from .mixins import PageMixin
-
-logger = logging.getLogger('libscampi.contrib.cms.views')
 
 class Page(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     pass

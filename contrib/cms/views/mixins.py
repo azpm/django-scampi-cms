@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger('libscampi.contrib.cms.views')
+
 class PageMixin(object):
     title = None
     onload = None

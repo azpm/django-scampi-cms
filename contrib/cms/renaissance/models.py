@@ -193,7 +193,7 @@ def _file_upload_pathing(cls, fname):
     #fname = re.sub(r'\s','', fname) #strip all whitespace chars from file
     name = slugify(file)
     
-    return "master/%s/%d/%d/%d/%s/%s.%s" % (cls.base_type, now.year, now.month, now.day, cls.type.keyname, name, ext)
+    return "master/%s/%d/%d/%d/%s/%s%s" % (cls.base_type, now.year, now.month, now.day, cls.type.keyname, name, ext)
 
 class Image(Media):
     file = models.ImageField(upload_to=_file_upload_pathing, validators=[ValidImgExtension()])

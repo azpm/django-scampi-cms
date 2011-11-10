@@ -2,12 +2,14 @@
 from django.conf import settings
 
 # Valid media extensions, edit at your own risk
-IMAGE_EXTS = getattr(settings, 'IMAGE_EXTS', ('bmp','gif','ico','cur','jpg','jpeg','pcx','png','psd','tga','tiff','wmf','xcf','bmp','wmf','apm','emf'))
-VIDEO_EXTS = getattr(settings, 'VIDEO_EXTS', ('asf','wmv','flv','mov','mpeg','mpg','mpe','vob','qt','mp4','m4v','rm','avi','ogm'))
-AUDIO_EXTS = getattr(settings, 'AUDIO_EXTS', ('asf','aif','aiff','aifc','flac','au','snd','mid','midi','mpa','m4a','mp1','mp2','mp3','ra','xm','wav','ogg'))
-FLASH_EXTS = getattr(settings, 'FLASH_EXTS', ('swf',))
-DOC_EXTS = getattr(settings, 'DOC_EXTS', ('pdf','xls','doc'))
-                                          
+valid_extensions = {
+    'img': getattr(settings, 'VALID_IMG_EXT', ('.gif', '.jpg', '.jpeg', '.png')),
+    'vid': getattr(settings, 'VALID_VID_EXT', ('.mov', '.mp4', '.m4v', '.flv', '.webm')),
+    'aud': getattr(settings, 'VALID_AUD_EXT', ('.mp3', '.m4a')),
+    'obj': getattr(settings, 'VALID_OBJ_EXT', ('.swf',)),
+    'doc': getattr(settings, 'VALID_DOC_EXT', ('.doc', '.pdf', '.ppt')),
+}
+                                                                                                                        
 # Information quality for parsing metadata (0.0=fastest, 1.0=best, and default is 0.5)
 INFO_QUALITY = getattr(settings, 'INFO_QUALITY', 1.0)
 

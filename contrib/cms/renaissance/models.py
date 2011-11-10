@@ -14,7 +14,7 @@ from taggit.managers import TaggableManager
 #Local Imports
 from libscampi.contrib.cms.renaissance import settings as appsettings
 from libscampi.contrib.cms.renaissance.utils import legacy_inline_images, inlined_media
-from libscampi.contrib.cms.renaissance.validation import has_extension
+from libscampi.contrib.cms.renaissance.validation import ValidImgExtension, ValidVidExtension, ValidDocExtension, ValidAudExtension, ValidObjExtension
 
 #Article plugins
 from libscampi.contrib.cms.newsengine.signals import SolidSender, preprocess_article, postprocess_article
@@ -193,7 +193,7 @@ def _file_upload_pathing(cls, fname):
     return "master/%s/%d/%d/%d/%s/%s" % (cls.base_type, now.year, now.month, now.day, cls.type.keyname, fname)
 
 class Image(Media):
-    file = models.ImageField(upload_to=_file_upload_pathing, validators=[has_extension])
+    file = models.ImageField(upload_to=_file_upload_pathing, validators=[ValidImgExtension()])
     type = models.ForeignKey(ImageType)
     
     class Meta:
@@ -203,7 +203,7 @@ class Image(Media):
     base_type = "image"
                 
 class Video(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[has_extension])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidVidExtension])
     type = models.ForeignKey(VideoType)
     thumbnail = models.ForeignKey(Image, null = True)
         
@@ -214,7 +214,7 @@ class Video(Media):
     base_type = "video"
 
 class Audio(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[has_extension])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidAudExtension])
     type = models.ForeignKey(AudioType)
         
     class Meta:
@@ -224,7 +224,7 @@ class Audio(Media):
     base_type = "audio"
 
 class Document(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[has_extension])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidDocExtension])
     type = models.ForeignKey(DocumentType)
     
     class Meta:
@@ -234,7 +234,7 @@ class Document(Media):
     base_type = "document"
     
 class Object(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[has_extension])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidObjExtension])
     type = models.ForeignKey(ObjectType)
     
     class Meta:

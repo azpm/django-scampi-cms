@@ -51,7 +51,7 @@ class SectionMixin(object):
     realm = None
     
     def get(self, request, *args, **kwargs):
-        logger.debug("SectionMixin.get started") 
+        logger.debug("SectionMixin.get called") 
         #get the realm
         site = Site.objects.get_current()
         self.realm = site.realm
@@ -74,20 +74,20 @@ class SectionMixin(object):
 
     def get_context_data(self, *args, **kwargs):
         context = super(SectionMixin, self).get_context_data(*args, **kwargs)
-        
+        logger.debug("SectionMixin.get_context_data started")
         #set the context commune
         context.update({
             'cms_section': self.section,
             'cms_realm': self.realm,
         })
-        
+        logger.debug("ScetionMixin.get_context_data ended")
         return context
 
 class CommuneMixin(object):
     commune = None
         
     def get(self, request, *args, **kwargs):
-        logger.debug("CommuneMixin.get started") 
+        logger.debug("CommuneMixin.get called") 
         self.commune = self.section.element
         
         #finally return the parent get method
@@ -108,16 +108,17 @@ class CommuneMixin(object):
     
     def get_context_data(self, *args, **kwargs):
         context = super(CommuneMixin, self).get_context_data(*args, **kwargs)
-        
+        logger.debug("CommuneMix.get_context_data started")
         #set the context commune
         context.update({
             'cms_commune': self.commune,
         })
-        
+        logger.debug("CommuneMixin.get_context_data ended")
         return context
     
 class CSSMixin(object):
     def get_stylesheets(self):
+        logger.debug("CSSMixin.get_stylesheets called")
         #try to get the cached css for this commune
         cached_css_key = 'commune_css_%s' % self.commune.pk
         styles = cache.get(cached_css_key, None)
@@ -142,7 +143,7 @@ class CSSMixin(object):
     def get_context_data(self, *args, **kwargs):
         #get the existing context
         context = super(CSSMixin, self).get_context_data(*args, **kwargs)
-        
+        logger.debug("CSSMixin.get_context_data started")
         css = self.get_stylesheets()
         
         #add the collection to the context
@@ -156,11 +157,12 @@ class CSSMixin(object):
                     'styles': css,
                 }
             })
-            
+        logger.debug("CSSMixin.get_context_data ended")
         return context
     
 class JScriptMixin(object):
     def get_javascripts(self):
+        logger.debug("JScriptMixin.get_javascripts called")
         #try to get the cached javascript for this commune
         cached_scripts_key = 'commune_scripts_%s' % self.commune.pk
         scripts = cache.get(cached_scripts_key, None)
@@ -185,7 +187,7 @@ class JScriptMixin(object):
     def get_context_data(self, *args, **kwargs):
         #get the existing context
         context = super(JScriptMixin, self).get_context_data(*args, **kwargs)
-        
+        logger.debug("JScriptMixin.get_context_data started")
         js = self.get_javascripts()
         
         #add the collection to the context
@@ -199,11 +201,12 @@ class JScriptMixin(object):
                     'scripts': js,
                 }
             })
-            
+        logger.debug("JScript.get_context_data ended")    
         return context
         
 class ThemeMixin(object):
     def get_theme(self):
+        logger.debug("ThemeMixin.get_theme called")
         return self.commune.theme
 
     def get_context_data(self, *args, **kwargs):
@@ -219,5 +222,5 @@ class ThemeMixin(object):
                     'theme': self.get_theme(),
                 }
             })
-            
+        logger.debug("ThemeMixin.get_context_data ended")
         return context

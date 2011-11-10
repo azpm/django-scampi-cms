@@ -45,15 +45,14 @@ class html_link_refs(collections.MutableSet):
     
     def reset(self):
         self.elements = []
-
-class CommuneMixin(object):
-    commune = None
+        
+class SectionMixin(Object):
     section = None
     realm = None
     
     def get(self, request, *args, **kwargs):
+        logger.debug("SectionMixin.get started") 
         #get the realm
-        #self.realm = get_object_or_404(Realm.objects.select_related(),)
         site = Site.objects.get_current()
         self.realm = site.realm
         
@@ -62,7 +61,6 @@ class CommuneMixin(object):
             actual = kwargs['keyname'].split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
             
             self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
-            self.commune = get_object_or_404(Commune.localised.select_related('section'), section__keyname = actual[-1]) 
         else:
             #no keyname specified, we need the "primary" section
             self.section = self.realm.primary_section #get the primary section of this realm
@@ -70,13 +68,31 @@ class CommuneMixin(object):
             if self.section.generates_navigation:
                 #this section has a keyword argument, we should use it
                 return redirect(self.section.element.get_absolute_url())
-            
-            self.commune = self.section.element
-            
-            if self.section.generates_navigation == False and type(self.commune) != Commune:
-                logger.error("tried to load a section [%s] that wasn't a commune" % self.section.keyname)
-                #this section doesn't generate navigation and isn't a commune (we have no idea what it is)
-                return HttpResponseServerError
+                   
+        #finally return the parent get method
+        return super(SectionMixin, self).get(request, *args, **kwargs)
+
+    #overrides base page title functionality
+    def get_page_title(self):
+        return "%s | %s" % (self.realm.name, self.section.name)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(SectionMixin, self).get_context_data(*args, **kwargs)
+        
+        #set the context commune
+        context.update({
+            'cms_section': self.section,
+            'cms_realm': self.realm,
+        })
+        
+        return context
+
+class CommuneMixin(object):
+    commune = None
+        
+    def get(self, request, *args, **kwargs):
+        logger.debug("CommuneMixin.get started") 
+        self.commune = self.section.element
         
         #finally return the parent get method
         return super(CommuneMixin, self).get(request, *args, **kwargs)
@@ -100,8 +116,6 @@ class CommuneMixin(object):
         #set the context commune
         context.update({
             'cms_commune': self.commune,
-            'cms_section': self.section,
-            'cms_realm': self.realm,
         })
         
         return context

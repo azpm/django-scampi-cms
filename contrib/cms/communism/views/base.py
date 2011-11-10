@@ -6,11 +6,12 @@ class Index(Page):
     
     Index inherits from: libscamp.contrib.cms.views.base.Page which in turn inherits from:
     
-    1. libscampi.contrib.cms.communism.views.mixins.CommuneMixin
-    2. libscampi.contrib.cms.views.mixins.PageMixin
-    3. libscampi.contrib.cms.communism.views.mixins.ThemeMixin
-    4. libscampi.contrib.cms.communism.views.mixins.CSSMixin
-    5. libscampi.contrib.cms.communism.views.mixins.JScriptMixin
+    1. libscampi.contrib.cms.communism.views.mixins.SectionMixin
+    2. libscampi.contrib.cms.communism.views.mixins.CommuneMixin
+    3. libscampi.contrib.cms.views.mixins.PageMixin
+    4. libscampi.contrib.cms.communism.views.mixins.ThemeMixin
+    5. libscampi.contrib.cms.communism.views.mixins.CSSMixin
+    6. libscampi.contrib.cms.communism.views.mixins.JScriptMixin
     
     CommuneMixin 
     ============

@@ -46,7 +46,7 @@ class html_link_refs(collections.MutableSet):
     def reset(self):
         self.elements = []
         
-class SectionMixin(Object):
+class SectionMixin(object):
     section = None
     realm = None
     

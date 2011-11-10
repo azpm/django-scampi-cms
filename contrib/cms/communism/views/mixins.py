@@ -72,10 +72,6 @@ class SectionMixin(object):
         #finally return the parent get method
         return super(SectionMixin, self).get(request, *args, **kwargs)
 
-    #overrides base page title functionality
-    def get_page_title(self):
-        return "%s | %s" % (self.realm.name, self.section.name)
-
     def get_context_data(self, *args, **kwargs):
         context = super(SectionMixin, self).get_context_data(*args, **kwargs)
         

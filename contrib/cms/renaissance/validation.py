@@ -30,8 +30,6 @@ class ExtValidator(object):
     
         if self.extension not in valid_extensions[self.valid_key]:
             raise  ValidationError(self.message % params, self.code)
-            
-        raise ValidationError("%s" % value.name)
 
 class ValidImgExtension(ExtValidator):
     code = "img_ext"

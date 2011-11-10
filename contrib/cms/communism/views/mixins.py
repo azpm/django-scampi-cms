@@ -91,7 +91,7 @@ class CommuneMixin(object):
         self.commune = self.section.element
         
         #finally return the parent get method
-        return super(CommuneMixin, self).get(request, *args, **kwargs)
+        return 
 
     #overrides base page title functionality
     def get_page_title(self):

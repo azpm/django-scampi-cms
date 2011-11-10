@@ -5,15 +5,16 @@ from libscampi.contrib.cms.communism.views.mixins import SectionMixin, CommuneMi
 
 from .mixins import PageMixin
 
-class Page(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
+class Page(SectionMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     pass
 
-class PageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, PageMixin, JScriptMixin):
+class CMSPage(SectoinMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
+    pass
+
+class CMSPageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, PageMixin, JScriptMixin):
     """
     Implements a CMS page that has no view
     e.g. you must provide an alternative View mixin
     """    
     pass
     
-class UnManagedPage(SectionMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
-    pass

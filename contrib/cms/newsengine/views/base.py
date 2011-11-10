@@ -1,11 +1,11 @@
 from django.views.generic.dates import *
 
-from libscampi.contrib.cms.views.base import Page, PageNoView
+from libscampi.contrib.cms.views.base import CMSPageNoView
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 
 from .mixins import PublishStoryMixin
 
-class NewsEngineArchivePage(PublishStoryMixin, PageNoView, PickerMixin):
+class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     """
     Base page for newsengine archives
     

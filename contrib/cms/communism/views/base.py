@@ -1,17 +1,32 @@
-from libscampi.contrib.cms.views.base import Page
+from libscampi.contrib.cms.views.base import CMSPage
 
-class Index(Page):
+class Index(CMSPage):
     """
-    Index/Commune landing page for Scampi CMS
+    Index/Commune landing page for Scampi CMSPage
     
     Index inherits from: libscamp.contrib.cms.views.base.Page which in turn inherits from:
     
     1. libscampi.contrib.cms.communism.views.mixins.SectionMixin
     2. libscampi.contrib.cms.communism.views.mixins.CommuneMixin
-    3. libscampi.contrib.cms.views.mixins.PageMixin
-    4. libscampi.contrib.cms.communism.views.mixins.ThemeMixin
-    5. libscampi.contrib.cms.communism.views.mixins.CSSMixin
-    6. libscampi.contrib.cms.communism.views.mixins.JScriptMixin
+    3. libscampi.contrib.cms.communism.views.mixins.ThemeMixin
+    4. libscampi.contrib.cms.communism.views.mixins.CSSMixin
+    5. libscampi.contrib.cms.communism.views.mixins.JScriptMixin
+    6. libscampi.contrib.cms.views.mixins.PageMixin
+    
+    SectionMixin 
+    ============
+    
+    member variables
+    ----------------
+    
+    - section :model:`communism.Section`
+    - realm :model:`communism.Realm`
+    
+    context
+    -------
+    
+    - cms_section -> self.section (:model:`communism.Section`)
+    - cms_realm -> self.realm (:model:`communism.Realm`)
     
     CommuneMixin 
     ============
@@ -20,8 +35,6 @@ class Index(Page):
     ----------------
     
     - commune :model:`communism.Commune`
-    - section :model:`communism.Section`
-    - realm :model:`communism.Realm`
     
     methods
     -------
@@ -39,37 +52,8 @@ class Index(Page):
     context
     -------
     
-    I am well aware that these aren't terrible consistent, this is for backwards compatibility.
-    At some point, Scampi will be updated to have clean context variable names
-    
     - cms_commune -> self.commune (:model:`communism.Commune`)
-    - cms_section -> self.section (:model:`communism.Section`)
-    - cms_realm -> self.realm (:model:`communism.Realm`)
         
-    PageMixin
-    =========
-    
-    member variables
-    ----------------
-    
-    - title unicode string
-    - onload unicode string
-    
-    methods
-    -------
-    
-    get_page_title
-        Not Implemented, you must override this method to allow populating page.title
-    
-    get_page_onload
-        Returns value of self.onload, can be overridden
-        
-    context
-    -------
-    
-    cms_page.title -> self.title
-    cms_page.onload -> self.onload
-    
     ThemeMixin
     ==========
     
@@ -116,4 +100,29 @@ class Index(Page):
     -------
     
     cms_page.scripts -> self.get_javascripts()    
+    
+    PageMixin
+    =========
+    
+    member variables
+    ----------------
+    
+    - title unicode string
+    - onload unicode string
+    
+    methods
+    -------
+    
+    get_page_title
+        Not Implemented, you must override this method to allow populating page.title
+    
+    get_page_onload
+        Returns value of self.onload, can be overridden
+        
+    context
+    -------
+    
+    cms_page.title -> self.title
+    cms_page.onload -> self.onload
+
     """

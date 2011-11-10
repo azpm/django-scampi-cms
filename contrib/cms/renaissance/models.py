@@ -7,6 +7,7 @@ import re
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 
 from taggit.managers import TaggableManager
 
@@ -185,7 +186,8 @@ class Media(models.Model):
 
 def _file_upload_pathing(cls, fname):
     now = datetime.datetime.now()
-    fname = re.sub(r'\s','', fname) #strip all whitespace chars from file
+    #fname = re.sub(r'\s','', fname) #strip all whitespace chars from file
+    fname = slugify(fname)
     
     return "master/%s/%d/%d/%d/%s/%s" % (cls.base_type, now.year, now.month, now.day, cls.type.keyname, fname)
 

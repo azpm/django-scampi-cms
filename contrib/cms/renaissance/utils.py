@@ -35,7 +35,7 @@ def inlined_media(sender, article, context, language, **kwargs):
     article_template = "%s %s" % ("{% load renaissance_private %}", body)
     
     try:
-        tpl = template.Template(article_template)
+        tpl = template.Template(article_template, name="newsengine.Article private render target")
         c = template.Context({'article': article})
         rendered = tpl.render(c)
     except template.TemplateSyntaxError:

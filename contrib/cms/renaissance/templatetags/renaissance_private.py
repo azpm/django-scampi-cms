@@ -24,7 +24,7 @@ class inline_media_node(template.Node):
                 inline_attr = attr.split('=')
                 try:
                     inliner.update({inline_attr[0]: inline_attr[1]})
-                except (AttributeError, ValueError):
+                except (IndexError, ValueError):
                     continue
         
         if self.type not in ["image", "video", "audio", "document", "object", "external"]:
@@ -33,42 +33,42 @@ class inline_media_node(template.Node):
         #inline for image
         if self.type == "image":
             try:
-                media = article.image_inlines.get(slug=self.slug)
+                media = article.image_inlines.select_related('inline_template').get(slug=self.slug)
             except Image.DoesNotExist:
                 media = Image.objects.none()
         
         #inline for video
         if self.type == "video":
             try:
-                media = article.video_inlines.get(slug=self.slug)
+                media = article.video_inlines.select_related('inline_template').get(slug=self.slug)
             except Video.DoesNotExist:
                 media = Video.objects.none()
         
         #inline for audio
         if self.type == "audio":
             try:
-                media = article.audio_inlines.get(slug=self.slug)
+                media = article.audio_inlines.select_related('inline_template').get(slug=self.slug)
             except Audio.DoesNotExist:
                 media = Audio.objects.none()
             
         #inline for document
         if self.type == "document":
             try:
-                media = article.document_inlines.get(slug=self.slug)
+                media = article.document_inlines.select_related('inline_template').get(slug=self.slug)
             except Document.DoesNotExist:
                 media = Document.objects.none()
         
         #inline for object
         if self.type == "object":
             try:
-                media = article.object_inlines.get(slug=self.slug)
+                media = article.object_inlines.select_related('inline_template').get(slug=self.slug)
             except Object.DoesNotExist:
                 media = Object.objects.none()
             
         #inline for external
         if self.type == "external":
             try:
-                media = article.external_inlines.get(slug=self.slug)
+                media = article.external_inlines.select_related('inline_template').get(slug=self.slug)
             except External.DoesNotExist:
                 media = External.objects.none()
         

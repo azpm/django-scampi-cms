@@ -15,5 +15,5 @@ class PageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, PageMixin, JS
     """    
     pass
     
-class UnManagedPage(SectionMixin, PageMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView)
+class UnManagedPage(SectionMixin, PageMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     pass

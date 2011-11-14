@@ -87,6 +87,10 @@ class StyleSheet(HtmlLinkRef):
     class Meta:
         verbose_name = "Theme Stylesheet"
         verbose_name_plural = "Theme Stylesheets"
+        
+class ProxyCSS(Stylesheet):
+    class Meta:
+        abstract = True
 
 class Realm(models.Model):
     """First level of organization within the Scampi CMS.  Realms are effectively profiles

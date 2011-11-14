@@ -81,7 +81,7 @@ class SectionMixin(object):
             'cms_section': self.section,
             'cms_realm': self.realm,
         })
-        logger.debug("ScetionMixin.get_context_data ended")
+        logger.debug("SectionMixin.get_context_data ended")
         return context
 
 class CommuneMixin(object):

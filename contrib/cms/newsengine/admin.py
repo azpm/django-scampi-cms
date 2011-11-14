@@ -118,7 +118,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     
     ordering = ['-id']
     
-    form = PublishForm
+    #form = PublishForm
                 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.start is not None and obj.start < datetime.now():

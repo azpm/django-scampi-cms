@@ -59,6 +59,7 @@ class SectionMixin(object):
         #keyname specified in url
         if 'keyname' in kwargs:
             actual = kwargs['keyname'].split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
+            logger.debug("requested cms section: %s" % actual)
             
             self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
         else:

@@ -88,7 +88,7 @@ class StyleSheet(HtmlLinkRef):
         verbose_name = "Theme Stylesheet"
         verbose_name_plural = "Theme Stylesheets"
         
-class ProxyCSS(Stylesheet):
+class ProxyCSS(StyleSheet):
     class Meta:
         abstract = True
 

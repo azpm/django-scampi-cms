@@ -7,6 +7,12 @@ from .mixins import PageMixin
 
 class Page(SectionMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     pass
+    
+class PageNoView(SectionMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
+    """
+    Implements an unmanaged page that has no view, you must provide the proper response mixin
+    """
+    pass
 
 class CMSPage(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     pass

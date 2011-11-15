@@ -58,7 +58,8 @@ class SectionMixin(object):
         
         #keyname specified in url
         if 'keyname' in kwargs:
-            actual = kwargs['keyname'].split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
+            keyname = kwargs.pop('keyname')
+            actual = keyname.split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
             logger.debug("requested cms section: %s" % actual)
             
             self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
@@ -72,6 +73,30 @@ class SectionMixin(object):
                    
         #finally return the parent get method
         return super(SectionMixin, self).get(request, *args, **kwargs)
+        
+    def post(self, request, *args, **kwargs):
+        logger.debug("SectionMixin.post called") 
+        #get the realm
+        site = Site.objects.get_current()
+        self.realm = site.realm
+        
+        #keyname specified in url
+        if 'keyname' in kwargs:
+            keyname = kwargs.pop('keyname')
+            actual = keyname.split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
+            logger.debug("requested cms section: %s" % actual)
+            
+            self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
+        else:
+            #no keyname specified, we need the "primary" section
+            self.section = self.realm.primary_section #get the primary section of this realm
+            
+            if self.section.generates_navigation:
+                #this section has a keyword argument, we should use it
+                return redirect(self.section.element.get_absolute_url())
+                   
+        #finally return the parent get method
+        return super(SectionMixin, self).post(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         context = super(SectionMixin, self).get_context_data(*args, **kwargs)

@@ -17,7 +17,7 @@ class PageNoView(SectionMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
 class CMSPage(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     pass
 
-class CMSPageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, PageMixin, JScriptMixin):
+class CMSPageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
     """
     Implements a CMS page that has no view
     e.g. you must provide an alternative View mixin

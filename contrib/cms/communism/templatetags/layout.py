@@ -35,3 +35,8 @@ def generate_layout(parser, token):
     return layout_node(slice)
 
 register.tag('generate_layout', generate_layout)
+
+for i in range(0, maximum_y):
+    grid.append([ [],[],[] ])
+for box in box_collection:
+    grid[box.gridy-1][box.gridx-1].append(box)

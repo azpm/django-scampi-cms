@@ -74,7 +74,7 @@ class BoxAdmin(admin.ModelAdmin):
     list_per_page = 20
     
 class BaseHierarchyElementAdmin(admin.ModelAdmin):
-    list_display = ('name', 'realm', 'traverse_up', 'keyname')
+    list_display = ('name', 'realm',  'keyname')
     list_filter = ('section__realm',)
     search_fields = ['name','section__realm__name',]
     

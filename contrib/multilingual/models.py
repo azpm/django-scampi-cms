@@ -105,7 +105,7 @@ class MultilingualModel(models.Model):
                             raise ValueError, "'%s' has no translation in '%s'"%(self, code)
                     else:
                         self.__dict__[translation_key] = translation
-                        
+                assert False
                 return translation[field]
                 
         raise AttributeError, "'%s' object has no attribute '%s'"%(self.__class__.__name__, str(attr))

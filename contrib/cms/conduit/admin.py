@@ -184,10 +184,7 @@ class StaticPickerAdmin(admin.ModelAdmin):
 class StaticPickerInlineAdmin(admin.StackedInline):
     fieldsets = (
         (None, {'fields': ('name', 'content')}),
-        ('Information', {'fields': ('commune', )}),
-        ('HTML Links', {'fields': ('stylesheet', 'javascript')}), 
     )
-    readonly_fields = ('commune','stylesheet','javascript')
     model = StaticPicker
     max_num = 1
     extra = 1

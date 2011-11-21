@@ -74,7 +74,7 @@ class BoxAdmin(admin.ModelAdmin):
     list_per_page = 20
     
 class BaseHierarchyElementAdmin(admin.ModelAdmin):
-    list_display = ('name', 'realm',  'keyname')
+    list_display = ('name','realm','traverse_up','keyname')
     list_filter = ('section__realm',)
     search_fields = ['name','section__realm__name',]
     
@@ -89,7 +89,7 @@ class CommuneAdmin(BaseHierarchyElementAdmin):
     
     def queryset(self, request):
         qs = super(CommuneAdmin, self).queryset(request)
-        return qs
+        
         return qs.select_related('section')
     
     inlines = (SectionInline, SliceInline)

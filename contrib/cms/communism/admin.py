@@ -35,8 +35,6 @@ class SectionInline(generic.GenericTabularInline):
     )
     max_num = 1
     extra = 1
-    
-    
 
 class SliceAdmin(admin.ModelAdmin):
     list_display = ('name', 'traverse_up', 'display_order')
@@ -72,6 +70,11 @@ class BoxAdmin(admin.ModelAdmin):
     inlines = [StaticPickerInlineAdmin]
     search_fields = ('name','keyname')
     list_per_page = 20
+    
+    def queryset(self, request):
+        qs = super(BoxAdmin, self).queryset(request)
+        
+        return qs.select_related('template','slice')
     
 class BaseHierarchyElementAdmin(admin.ModelAdmin):
     list_display = ('name','realm','traverse_up','keyname')

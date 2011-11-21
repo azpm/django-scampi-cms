@@ -100,6 +100,7 @@ class MultilingualModel(models.Model):
                             except ObjectDoesNotExist:
                                 if not MULTILINGUAL_FAIL_SILENTLY:
                                     raise ValueError, "'%s' has no translation in '%s'"%(self, code)
+                                assert False
                                 return u""
                         elif not MULTILINGUAL_FAIL_SILENTLY:
                             raise ValueError, "'%s' has no translation in '%s'"%(self, code)

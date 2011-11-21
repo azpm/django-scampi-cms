@@ -89,7 +89,7 @@ class CommuneAdmin(BaseHierarchyElementAdmin):
     
     def queryset(self, request):
         qs = super(CommuneAdmin, self).queryset(request)
-        
+        return qs
         return qs.select_related('section')
     
     inlines = (SectionInline, SliceInline)

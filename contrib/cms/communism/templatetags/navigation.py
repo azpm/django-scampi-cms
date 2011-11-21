@@ -51,7 +51,7 @@ class RealmsNode(template.Node):
         self.varname = varname
     
     def render(self, context):
-        realms = Realm.objects.select_related().filter(active = True).order_by('display_order')
+        realms = Realm.objects.select_related('site',).filter(active = True).order_by('display_order')
         context[self.varname] = realms
         
         return ''

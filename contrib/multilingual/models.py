@@ -93,7 +93,6 @@ class MultilingualModel(models.Model):
                 if not translation:
                     try:
                         translation = self._meta.translation.objects.get(model=self, language__code=code).values()
-                        assert False
                     except ObjectDoesNotExist:
                         if MULTILINGUAL_FALL_BACK_TO_DEFAULT and MULTILINGUAL_DEFAULT and code != MULTILINGUAL_DEFAULT:
                             try:
@@ -105,6 +104,7 @@ class MultilingualModel(models.Model):
                         elif not MULTILINGUAL_FAIL_SILENTLY:
                             raise ValueError, "'%s' has no translation in '%s'"%(self, code)
                     else:
+                        assert False
                         self.__dict__[translation_key] = translation
                 
                 return translation[field]

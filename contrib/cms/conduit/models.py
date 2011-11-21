@@ -104,6 +104,9 @@ class DynamicPicker(PickerBase):
 class StaticPicker(PickerBase):
     content = models.TextField(_("Content"), help_text = _("Markdown friendly"))
     namedbox = models.OneToOneField("communism.NamedBox", null = True, blank = True)
+    stylesheet = models.ManyToManyField('communism.StyleSheet', blank = True)
+    javascript = models.ManyToManyField('communism.Javascript', blank = True)
+    
     class Meta:
         verbose_name = "Static Content Picker"
         verbose_name_plural = "Static Content Pickers"

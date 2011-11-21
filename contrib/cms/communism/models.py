@@ -254,7 +254,7 @@ class BaseHierarchyElement(models.Model):
     def _container(self):
         """Returns the section that holds this hierarchy element. used in templates."""
         return self.section.get()
-    container = property(_container)
+    container = cached_property(_container)
     
     def _realm(self):
         """Returns the realm that the containing section exists on."""

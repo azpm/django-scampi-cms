@@ -87,6 +87,11 @@ class CommuneAdmin(BaseHierarchyElementAdmin):
         ('General', {'fields': ('name', 'description', 'theme')}),
     )
     
+    def queryset(self, request):
+        qs = super(CommuneAdmin, self).queryset(request)
+        return qs
+        #return qs.select_related('season','season__series')
+    
     inlines = (SectionInline, SliceInline)
        
 class ApplicationAdmin(BaseHierarchyElementAdmin):   

@@ -51,7 +51,7 @@ class RealmsNode(template.Node):
         self.varname = varname
     
     def render(self, context):
-        realms = Realm.objects.select_related('site',).filter(active = True).order_by('display_order')
+        realms = Realm.objects.select_related('site').filter(active = True).order_by('display_order')
         context[self.varname] = realms
         
         return ''
@@ -90,13 +90,13 @@ class SectionsNode(template.Node):
         
         if type(pointer) == Realm:
             #sections = pointer.section_set.select_related().filter(active = True, generates_navigation = True, extends__isnull=True)
-            sections = pointer.section_set.select_related('element').filter(active = True, generates_navigation = True, extends__isnull=True)
+            sections = pointer.section_set.filter(active = True, generates_navigation = True, extends__isnull=True)
         elif type(pointer) == Section:
             #sections = Section.objects.select_related().filter(active = True, generates_navigation = True, extends = pointer)
-            sections = Section.objects.select_related('element').filter(active = True, generates_navigation = True, extends = pointer)
+            sections = Section.objects.filter(active = True, generates_navigation = True, extends = pointer)
         elif type(pointer) == Commune:
             #sections = Section.objects.select_related().filter(active = True, generates_navigation = True, extends = pointer.section)
-            sections = Section.objects.select_related('element').filter(active = True, generates_navigation = True, extends = pointer.section)
+            sections = Section.objects.filter(active = True, generates_navigation = True, extends = pointer.section)
         else:
             sections = Section.objects.none()
         

@@ -1,5 +1,6 @@
 import re
 
+from django.core.cache import cache
 from django import template
 from django.utils.translation import ugettext_lazy as _
 
@@ -17,7 +18,13 @@ class SiteMapNode(template.Node):
         if not request or not realm or not section:
             return ''
                 
-        realms = Realm.objects.select_related().filter(active = True).order_by('display_order')
+        realms_qs_key = "cms_realms"
+        realms = cache.get(realms_qs_key, None)
+        
+        if not realms:
+            realms = Realm.objects.select_related('site').filter(active = True).order_by('display_order')
+            cache.set(realms_qs_key, realms, 60*20)
+            
         c = {
             'realms': realms,
             'cms_realm': realm,
@@ -51,7 +58,13 @@ class RealmsNode(template.Node):
         self.varname = varname
     
     def render(self, context):
-        realms = Realm.objects.select_related('site').filter(active = True).order_by('display_order')
+        realms_qs_key = "cms_realms"
+        realms = cache.get(realms_qs_key, None)
+        
+        if not realms:
+            realms = Realm.objects.select_related('site').filter(active = True).order_by('display_order')
+            cache.set(realms_qs_key, realms, 60*20)
+        
         context[self.varname] = realms
         
         return ''

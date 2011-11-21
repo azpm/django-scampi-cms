@@ -26,7 +26,7 @@ class namedbox_node(template.Node):
             cached_tpl = namedbox.template.content
             cache.set(cached_tpl_key, cached_tpl)
         
-        tpl = template.Template(cached_tpl, name = "communism.NamedBoxTemplate [%s]" % namedbox.template.name)
+        tpl = template.Template(cached_tpl, name = "communism.NamedBoxTemplate [%s]" % namedbox.template_id)
         request = context.get('request', None)
             
         if not request:

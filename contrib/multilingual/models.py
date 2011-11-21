@@ -63,7 +63,7 @@ class MultilingualModel(models.Model):
     book.description_pl
     u'Django opisane w prostych slowach'
     
-    shameless retrieved from http://django-multilingual-model.googlecode.com/
+    shameless stolen from http://django-multilingual-model.googlecode.com/
     """
     class Meta:
         abstract = True

@@ -100,13 +100,13 @@ class MultilingualModel(models.Model):
                             except ObjectDoesNotExist:
                                 if not MULTILINGUAL_FAIL_SILENTLY:
                                     raise ValueError, "'%s' has no translation in '%s'"%(self, code)
-                                translation = None
+                                return u""
                         elif not MULTILINGUAL_FAIL_SILENTLY:
                             raise ValueError, "'%s' has no translation in '%s'"%(self, code)
                     else:
                         self.__dict__[translation_key] = translation
                     
-                return self.__dict__[translation_key].__dict__[field]
+                return translation.__dict__[field]
                 
         raise AttributeError, "'%s' object has no attribute '%s'"%(self.__class__.__name__, str(attr))
     

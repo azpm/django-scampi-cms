@@ -87,6 +87,7 @@ class MultilingualModel(models.Model):
             if code is not None:
                 try: 
                     #return self._meta.translation.objects.get(model=self, language__code=code).__dict__[field]
+                    assert False
                     return self._meta.translation.objects.select_related().get(model=self, language__code=code).__dict__[field]
                 except ObjectDoesNotExist:
                     if MULTILINGUAL_FALL_BACK_TO_DEFAULT and MULTILINGUAL_DEFAULT and code != MULTILINGUAL_DEFAULT:

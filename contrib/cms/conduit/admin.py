@@ -182,7 +182,12 @@ class StaticPickerAdmin(admin.ModelAdmin):
         return super(StaticPickerAdmin, self).get_readonly_fields(request, obj)
                                         
 class StaticPickerInlineAdmin(admin.StackedInline):
-    readonly_fields = ('commune',)
+    fieldsets = (
+        (None, {'fields': ('name', 'content')}),
+        ('Information', {'fields': ('commune', )}),
+        ('HTML Links', {'fields': ('stylesheet', 'javascript')}), 
+    )
+    readonly_fields = ('commune','stylesheet','javascript')
     model = StaticPicker
     max_num = 1
     extra = 1

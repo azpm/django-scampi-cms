@@ -253,7 +253,7 @@ class BaseHierarchyElement(models.Model):
         
     def _container(self):
         """Returns the section that holds this hierarchy element. used in templates."""
-        return self.section.get()
+        return self.section.select_related('realm','realm__site').get()
     container = cached_property(_container)
     
     def _realm(self):

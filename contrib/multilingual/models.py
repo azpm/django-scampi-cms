@@ -74,8 +74,11 @@ class MultilingualModel(models.Model):
     
     def __getattr__(self, attr):
         if attr in self.__dict__:
+            #this returns the value of anything not handled by multilingual
             return self.__dict__[attr]
+        
         for field in self._meta.multilingual:
+            #loop through and find the fields and codes for multilingual support
             code = None
             match = re.match(r'^%s_(?P<code>[a-z_]{2,5})$' % field, str(attr))
             if match:
@@ -85,19 +88,25 @@ class MultilingualModel(models.Model):
                 code = self._language
                 field = attr
             if code is not None:
+                #first attempt to get the cached value
+                if "%s_%s" % (code, attr) in self.__dict__:
+                    return self.__dict__["%s_%s" % (code, attr)]
+                                
                 try: 
-                    #return self._meta.translation.objects.get(model=self, language__code=code).__dict__[field]
-                    assert False
-                    return self._meta.translation.objects.select_related().get(model=self, language__code=code).__dict__[field]
+                    val = self._meta.translation.objects.select_related().get(model=self, language__code=code).__dict__[field]
                 except ObjectDoesNotExist:
                     if MULTILINGUAL_FALL_BACK_TO_DEFAULT and MULTILINGUAL_DEFAULT and code != MULTILINGUAL_DEFAULT:
                         try:
-                            return self._meta.translation.objects.select_related().get(model=self, language__code=MULTILINGUAL_DEFAULT).__dict__[field]
+                            val = self._meta.translation.objects.select_related().get(model=self, language__code=MULTILINGUAL_DEFAULT).__dict__[field]
                         except ObjectDoesNotExist:
-                            pass
-                    if MULTILINGUAL_FAIL_SILENTLY:
-                        return None
-                    raise ValueError, "'%s' has no translation in '%s'"%(self, code) 
+                            val = None
+                    
+                    if val is None and not MULTILINGUAL_FAIL_SILENTLY:
+                        raise ValueError, "'%s' has no translation in '%s'"%(self, code)
+                else:
+                    self.__dict__["%s_%s" % (code, attr)] = val
+                    
+                return val
         raise AttributeError, "'%s' object has no attribute '%s'"%(self.__class__.__name__, str(attr))
     
     def for_language(self, code):

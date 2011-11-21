@@ -90,13 +90,13 @@ class SectionsNode(template.Node):
         
         if type(pointer) == Realm:
             #sections = pointer.section_set.select_related().filter(active = True, generates_navigation = True, extends__isnull=True)
-            sections = pointer.section_set.filter(active = True, generates_navigation = True, extends__isnull=True)
+            sections = pointer.section_set.select_related('element').filter(active = True, generates_navigation = True, extends__isnull=True)
         elif type(pointer) == Section:
             #sections = Section.objects.select_related().filter(active = True, generates_navigation = True, extends = pointer)
-            sections = Section.objects.filter(active = True, generates_navigation = True, extends = pointer)
+            sections = Section.objects.select_related('element').filter(active = True, generates_navigation = True, extends = pointer)
         elif type(pointer) == Commune:
             #sections = Section.objects.select_related().filter(active = True, generates_navigation = True, extends = pointer.section)
-            sections = Section.objects.filter(active = True, generates_navigation = True, extends = pointer.section)
+            sections = Section.objects.select_related('element').filter(active = True, generates_navigation = True, extends = pointer.section)
         else:
             sections = Section.objects.none()
         

@@ -155,6 +155,8 @@ class CSSMixin(object):
             styles = StyleSheet.objects.filter(active=True).filter(
                 Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) & 
                 Q(pickertemplate__dynamicpicker__namedbox__active=True) | 
+                Q(staticpicker__namedbox__slice__commune=self.commune) &
+                Q(staticpicker__namedbox__active=True) |
                 Q(base=True)
             ).order_by('precedence')
             cache.set(cached_css_key, styles, 60*20)
@@ -199,6 +201,8 @@ class JScriptMixin(object):
             scripts = Javascript.objects.filter(active=True).filter(
                 Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) & 
                 Q(pickertemplate__dynamicpicker__namedbox__active=True) | 
+                Q(staticpicker__namedbox__slice__commune=self.commune) &
+                Q(staticpicker__namedbox__active=True) |
                 Q(base=True)
             ).order_by('precedence')
             cache.set(cached_scripts_key, scripts, 60*20)

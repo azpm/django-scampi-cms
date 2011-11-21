@@ -165,6 +165,7 @@ class StaticPickerAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'content')}),
         ('Information', {'fields': ('namedbox', 'commune')}),
+        ('HTML Links', {'fields': ('stylesheet', 'javascript')}), 
     )
     
     def get_readonly_fields(self, request, obj=None):
@@ -178,7 +179,7 @@ class StaticPickerAdmin(admin.ModelAdmin):
         else:
             return ('commune',)
         
-        return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
+        return super(StaticPickerAdmin, self).get_readonly_fields(request, obj)
                                         
 class StaticPickerInlineAdmin(admin.StackedInline):
     readonly_fields = ('commune',)

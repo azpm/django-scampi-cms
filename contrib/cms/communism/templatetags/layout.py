@@ -23,7 +23,13 @@ class layout_node(template.Node):
             for box in box_collection:
                 grid[box.gridy-1][box.gridx-1].append(box)
         
-        template = "%s/layout/boxgrid.html" % slice.commune.theme.keyname
+        try:
+            theme = context['cms_page']['theme']
+        except (KeyError, ValueError):
+            return ""
+        else:
+            template = "%s/layout/boxgrid.html" % theme.keyname
+        
         return render_to_string(template, {'grid': grid}, context)
         
 def generate_layout(parser, token):

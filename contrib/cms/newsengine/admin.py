@@ -22,7 +22,7 @@ class ArticleTranslationInline(admin.StackedInline):
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
     list_display = ['headline','subheadline','who_made_me']
-    search_fields = ['headline']
+    search_fields = ['translations__headline']
     fieldsets = (
         ('Meta Data', {'fields': ('author', 'contributors')}),
         ('Inline Media', {'fields': (('image_inlines', 'video_inlines', 'audio_inlines'), ('document_inlines', 'object_inlines', 'external_inlines')), 'classes': ('collapse',)})

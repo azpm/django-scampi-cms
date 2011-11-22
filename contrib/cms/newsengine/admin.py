@@ -87,7 +87,7 @@ class StoryAdmin(admin.ModelAdmin):
     filter_horizontal = ['categories']
     
     def headline(self, cls):
-        return u"%s" % cls.article.headline
+        return u"%s" % cls.article.headline_en
     
     def queryset(self, request):
         qs = super(StoryAdmin, self).queryset(request)

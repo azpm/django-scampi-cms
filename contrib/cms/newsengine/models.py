@@ -185,9 +185,7 @@ class PublishPicking(django_filters.FilterSet):
         fields = ['site','start','end','category','published','story__categories']
     
     @staticmethod
-    def static_chain(qs):
-        qs = qs.annotate(num_comments = Count('comments'))
-    
+    def static_chain(qs):    
         return qs.distinct()
 
 #picking

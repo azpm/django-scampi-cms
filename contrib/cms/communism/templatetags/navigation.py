@@ -102,14 +102,14 @@ class SectionsNode(template.Node):
         pointer = self.pointer.resolve(context)
         
         if type(pointer) == Realm:
-            sections = pointer.section_set.select_related(depth=1).filter(active = True, generates_navigation = True, extends__isnull=True)
-            #sections = pointer.section_set.filter(active = True, generates_navigation = True, extends__isnull=True)
+            #sections = pointer.section_set.select_related(depth=1).filter(active = True, generates_navigation = True, extends__isnull=True)
+            sections = pointer.section_set.filter(active = True, generates_navigation = True, extends__isnull=True)
         elif type(pointer) == Section:
-            sections = Section.objects.select_related(depth=1).filter(active = True, generates_navigation = True, extends = pointer)
-            #sections = Section.objects.filter(active = True, generates_navigation = True, extends = pointer)
+            #sections = Section.objects.select_related(depth=1).filter(active = True, generates_navigation = True, extends = pointer)
+            sections = Section.objects.filter(active = True, generates_navigation = True, extends_id = pointer.id)
         elif type(pointer) == Commune:
-            sections = Section.objects.select_related(depth=1).filter(active = True, generates_navigation = True, extends = pointer.section)
-            #sections = Section.objects.filter(active = True, generates_navigation = True, extends = pointer.section)
+            #sections = Section.objects.select_related(depth=1).filter(active = True, generates_navigation = True, extends = pointer.section)
+            sections = Section.objects.filter(active = True, generates_navigation = True, extends_id = pointer.section_id)
         else:
             sections = Section.objects.none()
         

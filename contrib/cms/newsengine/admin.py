@@ -44,7 +44,7 @@ class ArticleAdmin(admin.ModelAdmin):
             obj.author = request.user           
         obj.save()
         
-    def headline(self, cls)
+    def headline(self, cls):
         return cls.head
         
     def subheadline(self, cls):

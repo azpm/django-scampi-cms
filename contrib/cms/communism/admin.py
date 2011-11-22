@@ -74,7 +74,7 @@ class BoxAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(BoxAdmin, self).queryset(request)
         
-        return qs.select_related('template'')
+        return qs.select_related('template',)
     
 class BaseHierarchyElementAdmin(admin.ModelAdmin):
     list_display = ('name','realm','traverse_up','keyname')

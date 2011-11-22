@@ -1,7 +1,6 @@
 import re
 
 from django.core.cache import cache
-from django.db
 from django import template
 from django.utils.translation import ugettext_lazy as _
 

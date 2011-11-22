@@ -186,7 +186,7 @@ class PublishPicking(django_filters.FilterSet):
     
     @staticmethod
     def static_chain(qs):
-        qs = qs.annotate(comments = Count('comments'))
+        qs = qs.annotate(num_comments = Count('comments'))
     
         return qs.distinct()
 

@@ -29,7 +29,7 @@ class SiteMapNode(template.Node):
         sections = cache.get(tla_sections_qs_key, None)
         
         if not sections:
-            sections = Section.objects.filter(active = True, generates_navigation = True, extends__isnull=True
+            sections = Section.objects.filter(active = True, generates_navigation = True, extends__isnull=True)
             cache.set(tla_sections_qs_key, sections, 60*20)
             
         c = {

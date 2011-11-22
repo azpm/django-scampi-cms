@@ -21,7 +21,7 @@ class ArticleTranslationInline(admin.StackedInline):
 
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
-    list_display = ['en_headline','en_sub_headline','who_made_me']
+    list_display = ['head','subhead','who_made_me']
     search_fields = ['headline']
     fieldsets = (
         ('Meta Data', {'fields': ('author', 'contributors')}),
@@ -34,7 +34,10 @@ class ArticleAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(ArticleAdmin, self).queryset(request)
         
-        return qs.select_related('author')
+        return qs.select_related('author').extra(select={
+            'head': 'select headline from newsengine_articletranslation at where at.model_id = newsengine_article.id',
+            'subhead': 'select sub_headline from newsengine_articletranslation at where at.model_id = newsengine_article.id'
+        })
     
     def save_model(self, request, obj, form, change):
         if not change:

@@ -31,6 +31,11 @@ class ArticleAdmin(admin.ModelAdmin):
     readonly_fields = ('author',)
     inlines = [ArticleTranslationInline]
     
+    def queryset(self, request):
+        qs = super(ArticleAdmin, self).queryset(request)
+        
+        return qs.select_related('author')
+    
     def save_model(self, request, obj, form, change):
         if not change:
             obj.author = request.user           

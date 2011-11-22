@@ -45,13 +45,13 @@ class ArticleAdmin(admin.ModelAdmin):
     def languages(self, cls):
         return u"%d" % cls.languages
     
-    def en_headline(self, cls):
-        return cls.headline_en
-    en_headline.short_description = u"Headline [en]"
+    def headline(self, cls):
+        return cls.headline
+    headline.short_description = u"Headline"
     
-    def en_sub_headline(self, cls):
-        return cls.sub_headline_en
-    en_sub_headline.short_description = u"Sub Headline [en]"
+    def sub_headline(self, cls):
+        return cls.sub_headline
+    sub_headline.short_description = u"Sub Headline"
     
     """
     In addition to showing a user's username in related fields, show their full

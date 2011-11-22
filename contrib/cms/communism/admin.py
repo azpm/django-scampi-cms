@@ -37,9 +37,18 @@ class SectionInline(generic.GenericTabularInline):
     extra = 1
 
 class SliceAdmin(admin.ModelAdmin):
-    list_display = ('name',  'display_order')
+    list_display = ('name', 'my_location', 'display_order')
     list_editable = ('display_order',)
     search_fields = ('name','commune__name')
+    
+    def queryset(self, request):
+        qs = super(SliceAdmin, self).queryset(request)
+        
+        return qs.select_related('commune__section__realm','commune')
+
+    def my_location(self, cls):
+        return "%s -> %s" % (cls.commune.realm, cls.commune.name)
+    my_location.short_description = "Realm / Commune"
 
     def traverse_up(self, cls):
         return "%s -> %s" % (cls.commune.realm, section_path_up([cls.commune.container], " > "))

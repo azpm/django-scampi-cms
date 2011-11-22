@@ -1,3 +1,5 @@
+import logging
+
 from datetime import datetime, timedelta
 
 from django.db import IntegrityError, DatabaseError
@@ -9,6 +11,8 @@ from django.template.defaultfilters import slugify
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
 from .forms import ArticleTranslationForm, StoryForm, PublishForm
+
+logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
 
 class ArticleTranslationInline(admin.StackedInline):
     model = ArticleTranslation
@@ -91,7 +95,16 @@ class StoryAdmin(admin.ModelAdmin):
     filter_horizontal = ['categories']
 
     def headline(self, cls):
-        return u"%s" % cls.article.headline
+        try:
+            val = ArticleTranslation.objects.get(language__code = 'en', model = cls.article_id)
+        except ArticleTranslation.DoesNotExist:
+            try:
+                val = ArticleTranslation.objects.filter(model = cls.article_id)[0]
+            except IndexError:
+                logger.debug("Tried to get a story [%d] who's article [%d] had no available headlines" % (cls.id, cls.article_id))
+                return u""
+        
+        return u"%s" % val.headline
         
     def queryset(self, request):
         qs = super(StoryAdmin, self).queryset(request)
@@ -141,7 +154,11 @@ class PublishStoryAdmin(admin.ModelAdmin):
         try:
             val = ArticleTranslation.objects.get(language__code = 'en', model = cls.story.article_id)
         except ArticleTranslation.DoesNotExist:
-            return u""
+            try:
+                val = ArticleTranslation.objects.filter(model = cls.story.article_id)[0]
+            except IndexError:
+                logger.debug("Tried to get a published story [%d] who's article [%d] had no available headlines" % (cls.id, cls.story.article_id))
+                return u""
         
         return u"%s" % val.headline
         

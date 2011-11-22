@@ -92,7 +92,7 @@ class StoryAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(StoryAdmin, self).queryset(request)
         
-        return qs.select_related('author', 'article__translations').filter(article__translations__headline__language__code = 'en')
+        return qs.select_related('author', 'article__translations').filter(article__translations__language__code = 'en')
     
 
     def save_model(self, request, obj, form, change):

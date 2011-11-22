@@ -42,11 +42,6 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         (_('Picking'), {'fields': ('content', 'max_count')}),
     )
     
-    def queryset(self, request):
-        qs = super(DynamicPickerAdmin, self).queryset(request)
-        
-        return qs.select_related('commune','template')
-    
     def get_readonly_fields(self, request, obj=None):
         """
         commune is always readonly

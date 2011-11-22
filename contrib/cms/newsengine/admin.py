@@ -134,6 +134,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     #form = PublishForm
     
     def headline(self, cls):
+        return cls.headline
         try:
             val = ArticleTranslation.objects.get(language__code = 'en', model = cls.story.article_id)
         except ArticleTranslation.DoesNotExist:
@@ -144,7 +145,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(PublishStoryAdmin, self).queryset(request)
         
-        return qs.select_related('site','approved_by__username','category__keyname','category__title', 'story__article_id')
+        return qs.select_related('site','approved_by__username','category__keyname','category__title', 'story__article_id').extra(select={'headline': 'select headline from newsengine_articletranslation at where at.model_id = newsengine_story.article_id'})
                 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.start is not None and obj.start < datetime.now():

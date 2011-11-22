@@ -25,7 +25,15 @@ class SiteMapNode(template.Node):
             realms = Realm.objects.select_related('site').filter(active = True).order_by('display_order')
             cache.set(realms_qs_key, realms, 60*20)
             
+        tla_sections_qs_key = "tla_sections"
+        sections = cache.get(tla_sections_qs_key, None)
+        
+        if not sections:
+            sections = Section.objects.filter(active = True, generates_navigation = True, extends__isnull=True
+            cache.set(tla_sections_qs_key, sections, 60*20)
+            
         c = {
+            'sections': sections,
             'realms': realms,
             'cms_realm': realm,
             'cms_section': section,

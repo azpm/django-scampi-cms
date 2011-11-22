@@ -73,7 +73,7 @@ class BoxAdmin(admin.ModelAdmin):
     
     def queryset(self, request):
         qs = super(BoxAdmin, self).queryset(request)
-        
+        return qs
         return qs.select_related('template',)
     
 class BaseHierarchyElementAdmin(admin.ModelAdmin):

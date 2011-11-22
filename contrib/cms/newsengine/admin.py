@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.db import IntegrityError, DatabaseError
+from django.db.models import Count
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.mail import mail_admins
@@ -34,7 +35,7 @@ class ArticleAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(ArticleAdmin, self).queryset(request)
         
-        return qs.select_related('author').annotate(languages=Count('translations__headline')
+        return qs.select_related('author').annotate(languages=Count('translations__headline'))
     
     def save_model(self, request, obj, form, change):
         if not change:

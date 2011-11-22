@@ -35,7 +35,7 @@ class ArticleAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(ArticleAdmin, self).queryset(request)
         
-        return qs.select_related('author').annotate(languages=Count('translations__headline')).iterator()
+        return qs.select_related('author').annotate(languages=Count('translations__headline'))
     
     def save_model(self, request, obj, form, change):
         if not change:

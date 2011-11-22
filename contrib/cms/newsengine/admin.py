@@ -127,7 +127,12 @@ class PublishStoryAdmin(admin.ModelAdmin):
     #form = PublishForm
     
     def headline(self, cls):
-        return u"%s" % cls.story.article.headline_en
+        try:
+            val = ArticleTranslation.objects.get(language__code = 'en', model = cls.story.article_id)
+        except ArticleTranslation.DoesNotExist:
+            return u""
+        
+        return u"%s" % val.headline
         
     def queryset(self, request):
         qs = super(PublishStoryAdmin, self).queryset(request)

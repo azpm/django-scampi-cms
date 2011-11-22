@@ -106,7 +106,7 @@ class PublishCategoryAdmin(admin.ModelAdmin):
     
 class PublishStoryAdmin(admin.ModelAdmin):
     #list_display = ('site','story','category','start','end','published','approved_by')
-    list_display = ('site','category','start','end','published','approved_by')
+    list_display = ('site','headline','category','start','end','published','approved_by')
     list_display_links = ('category',)
     list_editable = ('published',)
     #list_filter = ('site','category','published','seen')
@@ -126,6 +126,9 @@ class PublishStoryAdmin(admin.ModelAdmin):
     
     #form = PublishForm
     
+    def headline(self, cls):
+        return u"%s" % cls.article.headline_en
+        
     def queryset(self, request):
         qs = super(PublishStoryAdmin, self).queryset(request)
         

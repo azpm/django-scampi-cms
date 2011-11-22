@@ -86,6 +86,11 @@ class StoryAdmin(admin.ModelAdmin):
     raw_id_fields = ('article', 'image_playlist', 'video_playlist', 'audio_playlist', 'document_playlist', 'object_playlist','peers')
     filter_horizontal = ['categories']
 
+     def queryset(self, request):
+        qs = super(StoryAdmin, self).queryset(request)
+        
+        return qs.select_related('author','article')
+
     def save_model(self, request, obj, form, change):
         obj.save()
         

@@ -37,7 +37,7 @@ class SectionInline(generic.GenericTabularInline):
     extra = 1
 
 class SliceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'traverse_up', 'display_order')
+    list_display = ('name',  'display_order')
     list_editable = ('display_order',)
     search_fields = ('name','commune__name')
 

@@ -21,7 +21,7 @@ class ArticleTranslationInline(admin.StackedInline):
 
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
-    list_display = ['head','subhead','who_made_me']
+    list_display = ['headline','subheadline','who_made_me']
     search_fields = ['headline']
     fieldsets = (
         ('Meta Data', {'fields': ('author', 'contributors')}),
@@ -44,6 +44,12 @@ class ArticleAdmin(admin.ModelAdmin):
             obj.author = request.user           
         obj.save()
         
+    def headline(self, cls)
+        return cls.head
+        
+    def subheadline(self, cls):
+        return cls.subhead
+    
     def en_headline(self, cls):
         return cls.headline_en
     en_headline.short_description = u"Headline [en]"

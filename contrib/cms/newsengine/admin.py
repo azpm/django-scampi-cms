@@ -86,11 +86,6 @@ class StoryAdmin(admin.ModelAdmin):
     raw_id_fields = ('article', 'image_playlist', 'video_playlist', 'audio_playlist', 'document_playlist', 'object_playlist','peers')
     filter_horizontal = ['categories']
 
-    def queryset(self, request):
-        qs = super(StoryAdmin, self).queryset(request)
-        
-        return qs.select_related('author','article','categories')
-
     def save_model(self, request, obj, form, change):
         obj.save()
         
@@ -129,6 +124,11 @@ class PublishStoryAdmin(admin.ModelAdmin):
     ordering = ['-id']
     
     #form = PublishForm
+    
+    def queryset(self, request):
+        qs = super(PublishStoryAdmin, self).queryset(request)
+        
+        return qs.select_related('site','approved_by','category','story','story__article')
                 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.start is not None and obj.start < datetime.now():

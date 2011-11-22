@@ -62,7 +62,7 @@ class RealmsNode(template.Node):
         realms = cache.get(realms_qs_key, None)
         
         if not realms:
-            realms = Realm.objects.select_related('site').filter(active = True).order_by('display_order')
+            realms = Realm.objects.select_related('site','section').filter(active = True).order_by('display_order')
             cache.set(realms_qs_key, realms, 60*20)
         
         context[self.varname] = realms

@@ -128,7 +128,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(PublishStoryAdmin, self).queryset(request)
         
-        return qs.select_related('site','approved_by','category','story','story__article')
+        return qs.select_related('site','approved_by','category')
                 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.start is not None and obj.start < datetime.now():

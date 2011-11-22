@@ -127,7 +127,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     #form = PublishForm
     
     def headline(self, cls):
-        return u"%s" % cls.article.headline_en
+        return u"%s" % cls.story.article.headline_en
         
     def queryset(self, request):
         qs = super(PublishStoryAdmin, self).queryset(request)

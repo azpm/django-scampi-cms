@@ -107,7 +107,7 @@ class PublishCategoryAdmin(admin.ModelAdmin):
 class PublishStoryAdmin(admin.ModelAdmin):
     #list_display = ('site','story','category','start','end','published','approved_by')
     list_display = ('site','category','start','end','published','approved_by')
-    list_display_links = ('story',)
+    list_display_links = ('category',)
     list_editable = ('published',)
     #list_filter = ('site','category','published','seen')
     date_hierarchy = 'start'

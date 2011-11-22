@@ -86,7 +86,7 @@ class SectionMixin(object):
             actual = keyname.split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
             logger.debug("requested cms section: %s" % actual)
             
-            self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
+            self.section = get_object_or_404(Section, keyname = actual[-1])
         else:
             #no keyname specified, we need the "primary" section
             self.section = self.realm.primary_section #get the primary section of this realm
@@ -114,7 +114,7 @@ class CommuneMixin(object):
         
     def get(self, request, *args, **kwargs):
         logger.debug("CommuneMixin.get called") 
-        self.commune = self.section.element.select_related('theme')
+        self.commune = self.section.element
         
         #finally return the parent get method
         return super(CommuneMixin, self).get(request, *args, **kwargs)

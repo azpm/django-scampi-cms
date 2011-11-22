@@ -73,7 +73,7 @@ class ArticleAdmin(admin.ModelAdmin):
         
 class StoryAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
-    list_display = ['headline', 'author', 'creation_date']
+    list_display = ['article', 'author', 'creation_date']
     list_filter = ['categories']
     search_fields = ['article__translations__headline']
     fieldsets = (
@@ -85,15 +85,6 @@ class StoryAdmin(admin.ModelAdmin):
     
     raw_id_fields = ('article', 'image_playlist', 'video_playlist', 'audio_playlist', 'document_playlist', 'object_playlist','peers')
     filter_horizontal = ['categories']
-    
-    def headline(self, cls):
-        return u"%s" % cls.article.headline
-    
-    def queryset(self, request):
-        qs = super(StoryAdmin, self).queryset(request)
-        
-        return qs.select_related('author', 'article__translations__headline').filter(article__translations__language__code = 'en')
-    
 
     def save_model(self, request, obj, form, change):
         obj.save()

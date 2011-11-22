@@ -114,7 +114,7 @@ class CommuneMixin(object):
         
     def get(self, request, *args, **kwargs):
         logger.debug("CommuneMixin.get called") 
-        self.commune = self.section.element
+        self.commune = self.section.element.select_related('theme')
         
         #finally return the parent get method
         return super(CommuneMixin, self).get(request, *args, **kwargs)

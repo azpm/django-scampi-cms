@@ -89,7 +89,7 @@ class StoryAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(StoryAdmin, self).queryset(request)
         
-        return qs.select_related('author','article')
+        return qs.select_related('author','article','categories')
 
     def save_model(self, request, obj, form, change):
         obj.save()

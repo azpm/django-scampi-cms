@@ -4,6 +4,9 @@ from datetime import datetime
 from taggit.managers import TaggableManager
 
 from django.db import models
+from django.db.models import Count
+from django.contrib.comments.models import Comment
+from django.contrib.contenttypes import generic
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -140,6 +143,7 @@ class Publish(models.Model):
     slug = models.SlugField(max_length = 255, null = True, unique_for_date = start)
     seen = models.BooleanField(default = False, editable = False)
     
+    comments = generic.GenericRelation(Comment) # reverse generic relation
     objects = models.Manager()
     active = PublishedManager()
     
@@ -182,6 +186,8 @@ class PublishPicking(django_filters.FilterSet):
     
     @staticmethod
     def static_chain(qs):
+        qs = qs.annotate(comments = Count('comments'))
+    
         return qs.distinct()
 
 #picking

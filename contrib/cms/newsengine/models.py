@@ -143,7 +143,7 @@ class Publish(models.Model):
     slug = models.SlugField(max_length = 255, null = True, unique_for_date = start)
     seen = models.BooleanField(default = False, editable = False)
     
-    comments = generic.GenericRelation(Comment) # reverse generic relation
+    comments = generic.GenericRelation(Comment, object_id_field='object_pk') # reverse generic relation
     objects = models.Manager()
     active = PublishedManager()
     
@@ -185,7 +185,8 @@ class PublishPicking(django_filters.FilterSet):
         fields = ['site','start','end','category','published','story__categories']
     
     @staticmethod
-    def static_chain(qs):    
+    def static_chain(qs):
+        qs = qs.select_related('thumbnail')
         return qs.distinct()
 
 #picking

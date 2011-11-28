@@ -14,7 +14,7 @@ from libscampi.utils.functional import cached_property
 from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template
 from libscampi.contrib.cms.conduit.picker import manifest
 
-logger = getLogger('libscampi.contrib.cms.conduit.models')
+logger = logging.getLogger('libscampi.contrib.cms.conduit.models')
 
 class PickerTemplate(models.Model):
     """

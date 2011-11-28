@@ -194,12 +194,12 @@ Pickers.prototype.process_available = function(data) {
     });
     
     this.create_fieldsets();
-    
+    /*
     jQuery.each(data.existing.incl, function(index, value) 
     {
         jQuery.each(value, function(i, property)
         {
             alert(i);
         });
-    });
+    });*/
 }

@@ -178,7 +178,7 @@ class PublishInlineMediaOverride(models.Model):
 class PublishPicking(django_filters.FilterSet):
     start = django_filters.filters.DateRangeFilter(lookup_type=('lt','gt','lte','gte'))
     end = django_filters.filters.DateRangeFilter(name="end", lookup_type=('lt','gt','lte','gte'))
-    ignores = django_filters.filters.BooleanFilter(name="end", label="Ignore Blank End Times?", lookup_type='isnull')
+    #ignores = django_filters.filters.BooleanFilter(name="end", label="Ignore Blank End Times?", lookup_type='isnull')
     
     class Meta:
         model = Publish

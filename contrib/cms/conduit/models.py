@@ -1,3 +1,5 @@
+import logging
+
 from django.db import models
 
 from django.contrib.contenttypes.models import ContentType
@@ -11,6 +13,8 @@ from libscampi.utils.functional import cached_property
 #local imports
 from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template
 from libscampi.contrib.cms.conduit.picker import manifest
+
+logger = getLogger('libscampi.contrib.cms.conduit.models')
 
 class PickerTemplate(models.Model):
     """
@@ -88,9 +92,12 @@ class DynamicPicker(PickerBase):
                 f = self.exclude_filters
                 coerce_filters(f)
                 qs = qs.exclude(**f)
-        
+    
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):
             qs = fs.static_chain(qs)        
+        
+        logger.debug(u"for %d, query: %s" % (self.pk, qs.query))
+            
         if self.max_count > 0:
             return qs[:self.max_count]
         return qs

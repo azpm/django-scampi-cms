@@ -181,22 +181,19 @@ Pickers.prototype.create_fieldset = function(type, num)
     {
         //create the base fieldsets
         jQuery("fieldset").filter(":last").after(html);
-        //add available picking fields to the select boxes
-        jQuery.each(self.available_pickers, function(index, value) 
-        {
-            jQuery("select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
-        });
     }
     else
     {
         //create the base fieldsets
         jQuery("fieldset[name='"+type.prefix+"_group']").filter(":last").after(html);
-        //add available picking fields to the select boxes
-        jQuery.each(self.available_pickers, function(index, value) 
-        {
-            jQuery("fieldset[name='"+type.prefix+"_group']").filter("select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
-        });
+        
     }
+    
+    //add available picking fields to the select boxes
+    jQuery.each(self.available_pickers, function(index, value) 
+    {
+        jQuery("#"+id_pointer+"_filters").filter("select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
+    });
     
     /**
     First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"

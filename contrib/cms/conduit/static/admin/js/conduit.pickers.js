@@ -71,8 +71,9 @@ Pickers.prototype.bundle_filters = function() {
         {
             //order the form count correctly
 			var total_forms = jQuery("#id_"+type+"-TOTAL_FORMS");
+            var current_value = total_forms.val()
             
-            total_forms.attr('value', total_forms.val()+1);
+            total_forms.val(current_value++)
         });
     });
     

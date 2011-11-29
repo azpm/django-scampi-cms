@@ -74,22 +74,12 @@ class DynamicPicker(PickerBase):
 
         qs = model.objects.select_related().all()       
         if self.include_filters:
-            if isinstance(self.include_filters, list):
-                for f in self.include_filters:
-                    coerce_filters(f)
-                    qs = qs.filter(**f)
-            else:
-                f = self.include_filters
+            for f in self.include_filters:
                 coerce_filters(f)
                 qs = qs.filter(**f)
         
         if self.exclude_filters:
-            if isinstance(self.exclude_filters, list):
-                for f in self.exclude_filters:
-                    coerce_filters(f)
-                    qs = qs.exclude(**f)
-            else:
-                f = self.exclude_filters
+            for f in self.exclude_filters:
                 coerce_filters(f)
                 qs = qs.exclude(**f)
     

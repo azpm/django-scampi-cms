@@ -47,11 +47,12 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
 	});
 }
 
-Pickers.prototype.add_filter = function(type)
+Pickers.prototype.add_filter = function(type, group_suffix)
 {
 	var self = this;
-	
-	var index = jQuery("#id_available_"+type+"_picking_element").val();
+	var id_pointer = type+group_suffix;
+    
+	var index = jQuery("#"+id_pointer+"_picking_element").val();
  	if (index in self.available_pickers)
  	{
  		var picking_filter = self.available_pickers[index];
@@ -61,7 +62,7 @@ Pickers.prototype.add_filter = function(type)
  		return;
  	}
  	
- 	jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").after('\
+ 	jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").after('\
  		<div class="form-row" data-filter-ptr="'+index+'">\
  			<div>\
  				<label>'+picking_filter.name+'</label>'+picking_filter.html+'\
@@ -72,7 +73,7 @@ Pickers.prototype.add_filter = function(type)
 	//im leaving this here because I liked the selector and don't want to forget it 	
  	//self.update_element_index(jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
     
-    jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").find("a").bind("click", function() { self.remove_filter(this, type, picking_filter.id); });
+    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").find("a").bind("click", function() { self.remove_filter(this, type, picking_filter.id); });
 }
 
 Pickers.prototype.bundle_filters = function() {
@@ -136,46 +137,73 @@ Pickers.prototype.remove_filter = function(elem, type, picking_elem)
 
 Pickers.prototype.create_fieldsets = function()
 {
+    var self = this;
 	var img = jQuery("img[alt*='Add Another']").filter(":last");
-	var self = this;
     
     var temp_types = [self.incl, self.excl];
     
+    //create the base fieldsets
+    jQuery("form").filter("input[type=hidden]:last").after('\
+        <input type="hidden" name="'+value.prefix+'-TOTAL_FORMS" id="id_'+value.prefix+'-TOTAL_FORMS" value="0"> \
+        <input type="hidden" name="'+value.prefix+'-INITIAL_FORMS" id="id_'+value.prefix+'-INITIAL_FORMS" value="0"> \
+        <input type="hidden" name="'+value.prefix+'-MAX_NUM_FORMS" id="id_'+value.prefix+'-MAX_NUM_FORMS" value=""> \
+        ');
+
     
     //loop over the types in make fieldsets
 	jQuery.each(temp_types, function(index, value) 
     {
-        //create the base fieldsets
-        jQuery("fieldset").filter(":last").after('\
-            <fieldset class="module aligned" id="'+value.prefix+'_picker_filters"> \
-                <h2>'+value.label+' Picking Filters</h2> \
-                <input type="hidden" name="'+value.prefix+'-TOTAL_FORMS" id="id_'+value.prefix+'-TOTAL_FORMS" value="0"> \
-                <input type="hidden" name="'+value.prefix+'-INITIAL_FORMS" id="id_'+value.prefix+'-INITIAL_FORMS" value="0"> \
-                <input type="hidden" name="'+value.prefix+'-MAX_NUM_FORMS" id="id_'+value.prefix+'-MAX_NUM_FORMS" value=""> \
-                <div class="form-row" id="'+value.prefix+'-filter-adder"> \
-                    <div> \
-                        <label for="id_'+value.prefix+'_available_picking_element">Filter Using:</label> \
-                        <select name="picking_elements" id="id_available_'+value.prefix+'_picking_element"><option>---------</option></select> \
-                        <a href="#" class="add-another" id="add_'+value.prefix+'_picking_element"></a> \
-                    </div> \
-                </div> \
-            </fieldset>');
-            
-            
-        /**
-        First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
-        */
-        jQuery("#add_"+value.prefix+"_picking_element").append(img.clone());
-        jQuery("#add_"+value.prefix+"_picking_element").bind("click", function() { self.add_filter(value.prefix); });
+        self.create_fieldset(value, 0);
             
     });
+}
+
+Pickers.prototype.create_fieldset = function(type, num) 
+{
+    var img = jQuery("img[alt*='Add Another']").filter(":last");
+    var group_suffix = '_group_'+num;
+    var id_pointer = type.prefix+group_suffix;
     
-    //add available picking fields to the select boxes
-	jQuery.each(self.available_pickers, function(index, value) 
+    var html = '\
+        <fieldset class="module aligned" name="'+type.prefix+'_group" id="'+id_pointer+'_filters"> \
+            <h2 id="'+id_pointer+'">'+type.label+' Picking Group</h2> \
+            <div class="form-row" id="'+id_pointer+'_filter_adder"> \
+                <div> \
+                    <label for="'+id_pointer+'picking_element">Filter Using:</label> \
+                    <select name="picking_elements" id="'+id_pointer+'_picking_element"><option>---------</option></select> \
+                    <a href="#" class="add-another" id="'+id_pointer+'_add_filter"></a> \
+                </div> \
+            </div> \
+        </fieldset>';
+
+    if (num == 0)
     {
-        jQuery("select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
-    });
-	
+        //create the base fieldsets
+        jQuery("fieldset").filter(":last").after(html);
+        //add available picking fields to the select boxes
+        jQuery.each(self.available_pickers, function(index, value) 
+        {
+            jQuery("select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
+        });
+    }
+    else
+    {
+        //create the base fieldsets
+        jQuery("fieldset[name='"+type.prefix+"_group']").filter(":last").after(html);
+        //add available picking fields to the select boxes
+        jQuery.each(self.available_pickers, function(index, value) 
+        {
+            jQuery("fieldset[name='"+type.prefix+"_group']").filter("select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
+        });
+    }
+    
+    /**
+    First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
+    */
+    jQuery("#"+id_pointer+"_add_filter").append(img.clone());
+    jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(value.prefix, group_suffix); });
+
+    
 }
 
 Pickers.prototype.process_available = function(data) {

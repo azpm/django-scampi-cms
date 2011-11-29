@@ -140,7 +140,7 @@ Pickers.prototype.remove_filter = function(elem, id_pointer, picker_id)
  		var picking_filter = self.available_pickers[picker_id];
         
         //add back to list of available filters
-        jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").prepend('<option value="'+picking_filter.id+'">'+picking_filter.name+'</option>');
+        jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").append('<option value="'+picking_filter.id+'">'+picking_filter.name+'</option>');
  	}
  	else
  	{
@@ -148,7 +148,7 @@ Pickers.prototype.remove_filter = function(elem, id_pointer, picker_id)
  	}
    
     //remove the form row no matter what
-    jQuery(elem).parent().remove(); 
+    jQuery(elem).parent().parent().remove(); 
 }
 
 Pickers.prototype.create_fieldsets = function()

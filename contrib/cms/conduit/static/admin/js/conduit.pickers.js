@@ -200,15 +200,17 @@ Pickers.prototype.create_fieldset = function(type, num)
         jQuery("fieldset").filter(":last").after(html);
         jQuery("fieldset[name='"+type.prefix+"_group'] > div.description").append('<a class="addlink" id="'+id_pointer+'_add_group">Add Group</a>');
         
-        //add green + to filter group and bind click to adding a new group
-        //jQuery("#"+id_pointer+"_add_group").append(img.clone());
+        //bind click to adding a new group
         jQuery("#"+id_pointer+"_add_group").bind("click", function() { self.create_fieldset(type, num+=1); });
     }
     else
     {
         //create the base fieldsets
         jQuery("fieldset[name='"+type.prefix+"_group']").filter(":last").after(html);
-        jQuery("fieldset#"+id_pointer+"_filters > div.description").append("<a class='deletelink'>Delete Group</a>");
+        jQuery("fieldset#"+id_pointer+"_filters > div.description").append("<a class='deletelink' id='"+id_pointer+"_delete_group'>Delete Group</a>");
+        
+        //bind click to adding a new group
+        jQuery("#"+id_pointer+"_delete_group").bind("click", function() { self.delete_fieldset(this); });
     }
     
     //add available picking fields to the select boxes
@@ -220,10 +222,13 @@ Pickers.prototype.create_fieldset = function(type, num)
     //First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
     jQuery("#"+id_pointer+"_add_filter").append(img.clone());
     jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix); });
-    
-    
+   
+}
 
-    
+Pickers.prototype.delete_fieldset = function(elem)
+{
+    //remove the form row no matter what
+    jQuery(elem).parent().parent().remove();
 }
 
 Pickers.prototype.process_available = function(data) {

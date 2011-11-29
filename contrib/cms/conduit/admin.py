@@ -31,9 +31,15 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     search_fields = ('commune__name',)
     
     fieldsets = (
-        ('Designation', {'fields': ('name', 'keyname', 'commune')}),
+        ('Designation', {
+            'fields': ('name', ('keyname', 'commune')),
+            'description': u"Keyname represents the URL slug that this picker will use for archives, commune is the container",
+        }),
         ('Display', {'fields': ('template',)}),
-        ('Picking', {'fields': ('content', 'max_count')}), 
+        ('Picking', {
+            'fields': ('content', 'max_count'),
+            'description': u"Model type and maximum results for this picker",
+        }), 
     )
     
     add_fieldsets = (

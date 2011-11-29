@@ -196,10 +196,10 @@ Pickers.prototype.create_fieldset = function(type, num)
     {
         //create the base fieldsets
         jQuery("fieldset").filter(":last").after(html);
-        jQuery("fieldset[name='"+type.prefix+"_group'] > div.description").append('<a class="add-another" id="'+id_pointer+'_add_group"></a>Add Group');
+        jQuery("fieldset[name='"+type.prefix+"_group'] > div.description").append('<a class="addlink" id="'+id_pointer+'_add_group">Add Group</a>');
         
         //add green + to filter group and bind click to adding a new group
-        jQuery("#"+id_pointer+"_add_group").append(img.clone());
+        //jQuery("#"+id_pointer+"_add_group").append(img.clone());
         jQuery("#"+id_pointer+"_add_group").bind("click", function() { self.create_fieldset(type, num+=1); });
     }
     else

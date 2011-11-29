@@ -99,7 +99,7 @@ Pickers.prototype.bundle_filters = function() {
     	});
 	});
 	
-	return false;
+	return true;
 }
 
 Pickers.prototype.add_filter = function(type, group_suffix)

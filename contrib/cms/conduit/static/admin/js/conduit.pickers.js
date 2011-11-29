@@ -47,43 +47,6 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
 	});
 }
 
-Pickers.prototype.add_filter = function(type, group_suffix)
-{
-	var self = this;
-	var id_pointer = type+group_suffix;
-    
-	var index = jQuery("#"+id_pointer+"_picking_element").val();
- 	if (index in self.available_pickers)
- 	{
- 		var picking_filter = self.available_pickers[index];
- 	}
- 	else
- 	{
- 		return;
- 	}
-    
-    //remove ability to add this filter element to the group again
-    jQuery("#"+id_pointer+"_picking_element option[value='"+index+"']").remove();
- 	//add the filter box
-    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").after('\
- 		<div class="form-row" data-filter-ptr="'+index+'">\
- 			<div>\
- 				<label>'+picking_filter.name+'</label>'+picking_filter.html+'\
- 			</div> \
- 			<a href="#" class="deletelink">Remove</a> \
- 		</div>');
- 	
-	//im leaving this here because I liked the selector and don't want to forget it 	
- 	//self.update_element_index(jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
-    
-    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").find("a").bind("click", function() { self.remove_filter(this, type, picking_filter.id); });
-}
-
-Pickers.prototype.remove_filter = function(elem, type, picking_elem)
-{  
-    jQuery(elem).parent().remove(); //remove the form row no matter what
-}
-
 Pickers.prototype.bundle_filters = function() {
 	var self = this;
     
@@ -135,6 +98,46 @@ Pickers.prototype.bundle_filters = function() {
 	});
 	
 	return true;
+}
+
+Pickers.prototype.add_filter = function(type, group_suffix)
+{
+	var self = this;
+	var id_pointer = type+group_suffix;
+    
+	var index = jQuery("#"+id_pointer+"_picking_element").val();
+ 	if (index in self.available_pickers)
+ 	{
+ 		var picking_filter = self.available_pickers[index];
+ 	}
+ 	else
+ 	{
+ 		return;
+ 	}
+    
+    //remove ability to add this filter element to the group again
+    jQuery("#"+id_pointer+"_picking_element option[value='"+index+"']").remove();
+ 	//add the filter box
+    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").after('\
+ 		<div class="form-row" data-filter-ptr="'+index+'">\
+ 			<div>\
+ 				<label>'+picking_filter.name+'</label>'+picking_filter.html+'\
+ 			</div> \
+ 			<a href="#" class="deletelink">Remove</a> \
+ 		</div>');
+ 	
+	//im leaving this here because I liked the selector and don't want to forget it 	
+ 	//self.update_element_index(jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
+    
+    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").find("a").bind("click", function() { self.remove_filter(this, type, picking_filter.id); });
+    
+    //jump focus to created form field
+    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").focus()
+}
+
+Pickers.prototype.remove_filter = function(elem, type, picking_elem)
+{  
+    jQuery(elem).parent().remove(); //remove the form row no matter what
 }
 
 Pickers.prototype.create_fieldsets = function()

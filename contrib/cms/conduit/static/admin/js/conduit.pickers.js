@@ -172,7 +172,7 @@ Pickers.prototype.create_fieldset = function(type, num)
                 <div> \
                     <label for="'+id_pointer+'picking_element">Filter Using:</label> \
                     <select name="picking_elements" id="'+id_pointer+'_picking_element"><option>---------</option></select> \
-                    <a href="#" class="add-another" id="'+id_pointer+'_add_filter"></a> \
+                    <a class="add-another" id="'+id_pointer+'_add_filter"></a> \
                 </div> \
             </div> \
         </fieldset>';

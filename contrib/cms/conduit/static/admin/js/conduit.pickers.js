@@ -141,7 +141,7 @@ Pickers.prototype.remove_filter = function(elem, id_pointer, picker_id)
  		var picking_filter = self.available_pickers[picker_id];
         
         //add back to list of available filters
-        jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").append('<option value="'+picking_filter.id+'">'+picking_filter.name+'</option>');
+        jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").prepend('<option value="'+picking_filter.id+'">'+picking_filter.name+'</option>');
  	}
  	else
  	{
@@ -182,7 +182,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     
     var html = '\
         <fieldset class="module aligned" name="'+type.prefix+'_group" id="'+id_pointer+'_filters"> \
-            <h2 id="'+id_pointer+'">'+type.label+' Picking Group</h2> \
+            <h2 id="'+id_pointer+'">'+type.label+' Picking Group <a class="add-another" id="'+id_pointer+'_add_group"></a></h2> \
             <div class="form-row" id="'+id_pointer+'_filter_adder"> \
                 <div> \
                     <label for="'+id_pointer+'picking_element">Filter Using:</label> \
@@ -214,6 +214,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
     */
     jQuery("#"+id_pointer+"_add_filter").append(img.clone());
+    jQuery("#"+id_pointer+"_add_group").append(img.clone());
     jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix); });
 
     

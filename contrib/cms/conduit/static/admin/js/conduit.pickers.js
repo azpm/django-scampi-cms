@@ -10,6 +10,7 @@ function Pickers() {
         total_forms: 0,
         initial_forms: 0,
         max_forms: 0,
+        bar_color: "#9ac4a7"
     };
     
     this.excl = {
@@ -18,6 +19,7 @@ function Pickers() {
         total_forms: 0,
         initial_forms: 0,
         max_forms: 0,
+        bar_color: "#c49b98"
     };
     
     this.available_pickers = new Array();
@@ -181,7 +183,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     
     var html = '\
         <fieldset class="module aligned" name="'+type.prefix+'_group" id="'+id_pointer+'_filters"> \
-            <h2 id="'+id_pointer+'">'+type.label+' Picking Group</h2> \
+            <h2 id="'+id_pointer+'" style="background-color:'+type.bar_color+';">'+type.label+' Picking Group</h2> \
             <div class="description"></div> \
             <div class="form-row" id="'+id_pointer+'_filter_adder"> \
                 <div> \

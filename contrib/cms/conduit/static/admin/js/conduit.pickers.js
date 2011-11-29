@@ -200,7 +200,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
     */
     jQuery("#"+id_pointer+"_add_filter").append(img.clone());
-    jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(value.prefix, group_suffix); });
+    jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix); });
 
     
 }

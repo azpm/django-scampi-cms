@@ -181,7 +181,8 @@ Pickers.prototype.create_fieldset = function(type, num)
     
     var html = '\
         <fieldset class="module aligned" name="'+type.prefix+'_group" id="'+id_pointer+'_filters"> \
-            <h2 id="'+id_pointer+'">'+type.label+' Picking Group <a class="add-another" id="'+id_pointer+'_add_group"></a></h2> \
+            <h2 id="'+id_pointer+'">'+type.label+' Picking Group</h2> \
+            <div class="description"></div> \
             <div class="form-row" id="'+id_pointer+'_filter_adder"> \
                 <div> \
                     <label for="'+id_pointer+'picking_element">Filter Using:</label> \
@@ -195,12 +196,17 @@ Pickers.prototype.create_fieldset = function(type, num)
     {
         //create the base fieldsets
         jQuery("fieldset").filter(":last").after(html);
+        jQuery("fieldset[name='"+type.prefix+"_group']").filter(".description").append('<a class="add-another" id="'+id_pointer+'_add_group">Add Another Group</a>');
+        
+        //add green + to filter group and bind click to adding a new group
+        jQuery("#"+id_pointer+"_add_group").append(img.clone());
+        jQuery("#"+id_pointer+"_add_group").bind("click", function() { self.create_fieldset(type, num+=1); });
     }
     else
     {
         //create the base fieldsets
         jQuery("fieldset[name='"+type.prefix+"_group']").filter(":last").after(html);
-        jQuery("#"+id_pointer).append("<a class='deletelink'></a>");
+        jQuery("fieldset[name='"+type.prefix+"_group']").filter(".description").append("<a class='deletelink'>Remove Group</a>");
     }
     
     //add available picking fields to the select boxes
@@ -213,9 +219,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     jQuery("#"+id_pointer+"_add_filter").append(img.clone());
     jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix); });
     
-    //add green + to filter group and bind click to adding a new group
-    jQuery("#"+id_pointer+"_add_group").append(img.clone());
-    jQuery("#"+id_pointer+"_add_group").bind("click", function() { self.create_fieldset(type, num+=1); });
+    
 
     
 }

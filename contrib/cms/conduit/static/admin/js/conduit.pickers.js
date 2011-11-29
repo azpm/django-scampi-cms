@@ -123,7 +123,7 @@ Pickers.prototype.add_filter = function(type, group_suffix)
  			<div>\
  				<label>'+picking_filter.name+'</label>'+picking_filter.html+'\
  			</div> \
- 			<a href="#" class="deletelink">Remove</a> \
+ 			<a class="deletelink">Remove</a> \
  		</div>');
  	
 	//im leaving this here because I liked the selector and don't want to forget it 	
@@ -201,7 +201,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     {
         //create the base fieldsets
         jQuery("fieldset[name='"+type.prefix+"_group']").filter(":last").after(html);
-        
+        jQuery("#"+id_pointer).append("<a class='deletelink'></a>").
     }
     
     //add available picking fields to the select boxes

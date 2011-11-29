@@ -49,74 +49,46 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
 	});
 }
 
-Pickers.prototype.bundle_filters = function() {
-	var self = this;
-    
+Pickers.prototype.bundle_filters = function() 
+{
+    var self = this;
     var temp_types = [self.incl, self.excl];
-    
-    //reset counters in the available filters
-    jQuery.each(self.available_pickers, function(picker_index, picker_value)
-    {
-    	picker_value.incl_count = 0;
-        picker_value.excl_count = 0;
-    });
-    
     
     jQuery.each(temp_types, function(index, value)
     {
         var type = value.prefix;
         var fieldsets = jQuery("fieldset[name="+type+"_group]");
         
-        jQuery.each(fieldsets, function(k,v)
+        jQuery.each(fieldsets, function(k, v)
         {
+            //reset counters in the available filters, this is done for each group
+            jQuery.each(self.available_pickers, function(picker_index, picker_value)
+            {
+                picker_value.incl_count = 0;
+                picker_value.excl_count = 0;
+            });
+            
             //order the form count correctly
 			var total_forms = jQuery("#id_"+type+"-TOTAL_FORMS");
             var count = k+1;
+            var form_rows = jQuery(v).filter("div.form-row:not([name=filter_adder]");
+            
+            jQuery.each(form_rows, function(k2, form_row) 
+            {
+                var div = jQuery(form_row); //if you're trying to follow along this is a jquery friendly object of a form row
+                var picker_ptr = div.attr("data-filter-ptr");
+                var picking_filter = self.available_pickers[picker_ptr];
+                
+                //order the item correctly
+                self.update_element_index(jQuery(div).find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
+            });
+            
+            //increase form count for each group
             total_forms.val(count);
         });
     });
     
-    return false;
-    
-     //loop over the types in make fieldsets
-	jQuery.each(temp_types, function(index, value) 
-    {
-    	var type = value.prefix;
-    	var form_rows = jQuery("fieldset[name="+type+"_group] > div.form-row:not([name=filter_adder])");
-    	//loop over the form rows
-    	jQuery.each(form_rows, function(div_index, div_value)
-    	{
-    		var div = jQuery(div_value); //if you're trying to follow along this is a jquery friendly object of a form row
-    		var picker_ptr = div.attr("data-filter-ptr");
-    		var picking_filter = self.available_pickers[picker_ptr];
-			
-			//order the item correctly
-			self.update_element_index(jQuery(div).find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
-			
-			//order the form count correctly
-			var total_forms = jQuery("#id_"+type+"-TOTAL_FORMS");
-    
-			if (type == "incl") //update inclusion form
-			{
-				picking_filter.incl_count++;
-				if (picking_filter.incl_count > total_forms.val())
-				{
-					total_forms.val(picking_filter.incl_count);
-				}
-			}
-			else //update exclusion form
-			{
-				picking_filter.excl_count++;
-				if (picking_filter.excl_count > total_forms.val())
-				{
-					total_forms.val(picking_filter.excl_count);
-				}
-			}
-			
-    	});
-	});
-	
-	return true;
+    return true;
 }
 
 Pickers.prototype.add_filter = function(type, group_suffix)

@@ -206,7 +206,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     {
         //create the base fieldsets
         jQuery("fieldset[name='"+type.prefix+"_group']").filter(":last").after(html);
-        jQuery("fieldset[name='"+type.prefix+"_group'] > div.description").append("<a class='deletelink'></a>");
+        jQuery("fieldset#"+id_pointer+"_filters > div.description").append("<a class='deletelink'></a>");
     }
     
     //add available picking fields to the select boxes

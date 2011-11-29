@@ -192,7 +192,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     //add available picking fields to the select boxes
     jQuery.each(self.available_pickers, function(index, value) 
     {
-        jQuery("#"+id_pointer+"_filters").filter("select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
+        jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
     });
     
     /**

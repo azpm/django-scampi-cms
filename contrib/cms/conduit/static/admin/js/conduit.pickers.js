@@ -65,7 +65,7 @@ Pickers.prototype.bundle_filters = function() {
 	jQuery.each(temp_types, function(index, value) 
     {
     	var type = value.prefix;
-    	var form_rows = jQuery("fieldset[name="+type+"_group] > div.form-row:not(#"+type+"-filter-adder)");
+    	var form_rows = jQuery("fieldset[name="+type+"_group] > div.form-row:not([name=filter_adder])");
     	//loop over the form rows
     	jQuery.each(form_rows, function(div_index, div_value)
     	{
@@ -185,7 +185,7 @@ Pickers.prototype.create_fieldset = function(type, num)
         <fieldset class="module aligned" name="'+type.prefix+'_group" id="'+id_pointer+'_filters"> \
             <h2 id="'+id_pointer+'" style="background-color:'+type.bar_color+';">'+type.label+' Picking Group</h2> \
             <div class="description"></div> \
-            <div class="form-row" id="'+id_pointer+'_filter_adder"> \
+            <div class="form-row" id="'+id_pointer+'_filter_adder" name="filter_adder"> \
                 <div> \
                     <label for="'+id_pointer+'picking_element">Filter Using:</label> \
                     <select name="picking_elements" id="'+id_pointer+'_picking_element"><option>---------</option></select> \

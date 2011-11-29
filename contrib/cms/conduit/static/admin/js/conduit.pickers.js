@@ -65,7 +65,7 @@ Pickers.prototype.bundle_filters = function() {
 	jQuery.each(temp_types, function(index, value) 
     {
     	var type = value.prefix;
-    	var form_rows = jQuery("#"+value.prefix+"_picker_filters > div.form-row:not(#"+type+"-filter-adder)");
+    	var form_rows = jQuery("#"+value.prefix+"_filters > div.form-row:not(#"+type+"-filter-adder)");
     	//loop over the form rows
     	jQuery.each(form_rows, function(div_index, div_value)
     	{

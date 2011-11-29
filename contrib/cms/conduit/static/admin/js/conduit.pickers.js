@@ -71,7 +71,7 @@ Pickers.prototype.bundle_filters = function()
             //order the form count correctly
 			var total_forms = jQuery("#id_"+type+"-TOTAL_FORMS");
             var count = k+1;
-            var form_rows = jQuery(v).filter("div.form-row:not([name=filter_adder]");
+            var form_rows = jQuery(v).find("div.form-row:not([name=filter_adder]");
             
             jQuery.each(form_rows, function(k2, form_row) 
             {
@@ -88,7 +88,7 @@ Pickers.prototype.bundle_filters = function()
         });
     });
     
-    return true;
+    return false;
 }
 
 Pickers.prototype.add_filter = function(type, group_suffix)

@@ -158,6 +158,7 @@ Pickers.prototype.create_fieldsets = function()
 
 Pickers.prototype.create_fieldset = function(type, num) 
 {
+    var self = this;
     var img = jQuery("img[alt*='Add Another']").filter(":last");
     var group_suffix = '_group_'+num;
     var id_pointer = type.prefix+group_suffix;

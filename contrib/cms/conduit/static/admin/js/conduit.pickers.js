@@ -65,7 +65,7 @@ Pickers.prototype.bundle_filters = function() {
 	jQuery.each(temp_types, function(index, value) 
     {
     	var type = value.prefix;
-    	var form_rows = jQuery("fieldset[name="+value.prefix+"_group] > div.form-row:not(#"+type+"-filter-adder)");
+    	var form_rows = jQuery("fieldset[name="+type+"_group] > div.form-row:not(#"+type+"-filter-adder)");
     	//loop over the form rows
     	jQuery.each(form_rows, function(div_index, div_value)
     	{
@@ -99,7 +99,7 @@ Pickers.prototype.bundle_filters = function() {
     	});
 	});
 	
-	return true;
+	return false;
 }
 
 Pickers.prototype.add_filter = function(type, group_suffix)

@@ -129,7 +129,7 @@ Pickers.prototype.add_filter = function(type, group_suffix)
 	//im leaving this here because I liked the selector and don't want to forget it 	
  	//self.update_element_index(jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
     
-    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").find("a").bind("click", function() { self.remove_filter(this, id_pointer, picking_filter.id); });
+    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").find("a").bind("click", function() { self.remove_filter(this, id_pointer, index); });
 }
 
 Pickers.prototype.remove_filter = function(elem, id_pointer, picker_id)
@@ -139,14 +139,15 @@ Pickers.prototype.remove_filter = function(elem, id_pointer, picker_id)
     if (picker_id in self.available_pickers)
  	{
  		var picking_filter = self.available_pickers[picker_id];
+        
+        //add back to list of available filters
+        jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").append('<option value="'+picking_filter.id+'">'+picking_filter.name+'</option>');
  	}
  	else
  	{
  		alert("Fatal error, filter id is no longer available. Please contact the web team");
  	}
-    
-    //add back to list of available filters
-    jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").append('<option value="'+picking_filter.id+'">'+picking_filter.name+'</option>');
+   
     //remove the form row no matter what
     jQuery(elem).parent().remove(); 
 }

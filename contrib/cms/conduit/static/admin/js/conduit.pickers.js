@@ -121,9 +121,8 @@ Pickers.prototype.add_filter = function(type, group_suffix)
     jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").after('\
  		<div class="form-row" data-filter-ptr="'+index+'">\
  			<div>\
- 				<label>'+picking_filter.name+'</label>'+picking_filter.html+'\
+ 				<label>'+picking_filter.name+'</label>'+picking_filter.html+'<a class="deletelink"></a> \
  			</div> \
- 			<a class="deletelink">Remove</a> \
  		</div>');
  	
 	//im leaving this here because I liked the selector and don't want to forget it 	

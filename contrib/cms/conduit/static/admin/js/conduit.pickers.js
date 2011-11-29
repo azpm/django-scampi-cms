@@ -140,7 +140,7 @@ Pickers.prototype.remove_filter = function(elem, id_pointer, picker_id)
  		var picking_filter = self.available_pickers[picker_id];
         
         //add back to list of available filters
-        jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").append('<option value="'picker_id+'">'+picking_filter.name+'</option>');
+        jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").append('<option value="'+picker_id+'">'+picking_filter.name+'</option>');
  	}
  	else
  	{

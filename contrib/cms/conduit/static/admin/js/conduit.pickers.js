@@ -196,7 +196,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     {
         //create the base fieldsets
         jQuery("fieldset").filter(":last").after(html);
-        jQuery("fieldset[name='"+type.prefix+"_group'] > div.description").append('<a class="add-another" id="'+id_pointer+'_add_group"></a>');
+        jQuery("fieldset[name='"+type.prefix+"_group'] > div.description").append('<a class="add-another" id="'+id_pointer+'_add_group"></a>Add Group');
         
         //add green + to filter group and bind click to adding a new group
         jQuery("#"+id_pointer+"_add_group").append(img.clone());
@@ -206,7 +206,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     {
         //create the base fieldsets
         jQuery("fieldset[name='"+type.prefix+"_group']").filter(":last").after(html);
-        jQuery("fieldset#"+id_pointer+"_filters > div.description").append("<a class='deletelink'></a>");
+        jQuery("fieldset#"+id_pointer+"_filters > div.description").append("<a class='deletelink'>Delete Group</a>");
     }
     
     //add available picking fields to the select boxes

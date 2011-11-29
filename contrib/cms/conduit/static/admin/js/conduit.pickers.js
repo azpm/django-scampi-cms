@@ -71,8 +71,8 @@ Pickers.prototype.bundle_filters = function()
             //order the form count correctly
 			var total_forms = jQuery("#id_"+type+"-TOTAL_FORMS");
             var count = k+1;
-            var fieldset = jQuery(v);
-            var form_rows = fieldset.find(".form-row:not([name=filter_adder]");
+            var fieldset = jQuery("#"+v.id);
+            var form_rows = jQuery(fieldset).find(".form-row:not([name=filter_adder]");
             
             jQuery.each(form_rows, function(k2, form_row) 
             {

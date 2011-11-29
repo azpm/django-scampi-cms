@@ -164,7 +164,7 @@ Pickers.prototype.create_fieldsets = function()
 	jQuery.each(temp_types, function(index, value) 
     {
         //create the base fieldsets
-        jQuery("form#dynamicpicker_form > input[type='hidden']").after('\
+        jQuery("input[name='csfrmiddlewaretoken']").after('\
             <input type="hidden" name="'+value.prefix+'-TOTAL_FORMS" id="id_'+value.prefix+'-TOTAL_FORMS" value="0"> \
             <input type="hidden" name="'+value.prefix+'-INITIAL_FORMS" id="id_'+value.prefix+'-INITIAL_FORMS" value="0"> \
             <input type="hidden" name="'+value.prefix+'-MAX_NUM_FORMS" id="id_'+value.prefix+'-MAX_NUM_FORMS" value=""> \

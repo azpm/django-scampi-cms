@@ -61,6 +61,23 @@ Pickers.prototype.bundle_filters = function() {
         picker_value.excl_count = 0;
     });
     
+    
+    jQuery.each(temp_types, function(index, value)
+    {
+        var type = value.prefix;
+        var fieldsets = jQuery("fieldset[name="+type+"_group]");
+        
+        jQuery.each(fieldsets, function(k,v)
+        {
+            //order the form count correctly
+			var total_forms = jQuery("#id_"+type+"-TOTAL_FORMS");
+            
+            total_forms.attr('value', total_forms.val()+1);
+        });
+    });
+    
+    return false;
+    
      //loop over the types in make fieldsets
 	jQuery.each(temp_types, function(index, value) 
     {

@@ -63,7 +63,7 @@ Pickers.prototype.add_filter = function(type, group_suffix)
  	}
     
     //remove ability to add this filter element to the group again
-    jQuery("#"+id_pointer+"_picking_element option[value='"+inded+"']").remove();
+    jQuery("#"+id_pointer+"_picking_element option[value='"+index+"']").remove();
  	//add the filter box
     jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").after('\
  		<div class="form-row" data-filter-ptr="'+index+'">\

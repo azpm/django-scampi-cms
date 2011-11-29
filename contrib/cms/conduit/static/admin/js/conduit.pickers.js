@@ -61,8 +61,11 @@ Pickers.prototype.add_filter = function(type, group_suffix)
  	{
  		return;
  	}
- 	
- 	jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").after('\
+    
+    //remove ability to add this filter element to the group again
+    jQuery("#"+id_pointer+"_picking_element option[value='"+inded+"']").remove();
+ 	//add the filter box
+    jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").after('\
  		<div class="form-row" data-filter-ptr="'+index+'">\
  			<div>\
  				<label>'+picking_filter.name+'</label>'+picking_filter.html+'\
@@ -74,6 +77,11 @@ Pickers.prototype.add_filter = function(type, group_suffix)
  	//self.update_element_index(jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
     
     jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").find("a").bind("click", function() { self.remove_filter(this, type, picking_filter.id); });
+}
+
+Pickers.prototype.remove_filter = function(elem, type, picking_elem)
+{  
+    jQuery(elem).parent().remove(); //remove the form row no matter what
 }
 
 Pickers.prototype.bundle_filters = function() {
@@ -127,12 +135,6 @@ Pickers.prototype.bundle_filters = function() {
 	});
 	
 	return true;
-}
-
-
-Pickers.prototype.remove_filter = function(elem, type, picking_elem)
-{  
-    jQuery(elem).parent().remove(); //remove the form row no matter what
 }
 
 Pickers.prototype.create_fieldsets = function()

@@ -142,17 +142,15 @@ Pickers.prototype.create_fieldsets = function()
     
     var temp_types = [self.incl, self.excl];
     
-    //create the base fieldsets
-    jQuery("form").filter("input[type=hidden]:last").after('\
-        <input type="hidden" name="'+value.prefix+'-TOTAL_FORMS" id="id_'+value.prefix+'-TOTAL_FORMS" value="0"> \
-        <input type="hidden" name="'+value.prefix+'-INITIAL_FORMS" id="id_'+value.prefix+'-INITIAL_FORMS" value="0"> \
-        <input type="hidden" name="'+value.prefix+'-MAX_NUM_FORMS" id="id_'+value.prefix+'-MAX_NUM_FORMS" value=""> \
-        ');
-
-    
     //loop over the types in make fieldsets
 	jQuery.each(temp_types, function(index, value) 
     {
+        //create the base fieldsets
+        jQuery("form").filter("input[type=hidden]:last").after('\
+            <input type="hidden" name="'+value.prefix+'-TOTAL_FORMS" id="id_'+value.prefix+'-TOTAL_FORMS" value="0"> \
+            <input type="hidden" name="'+value.prefix+'-INITIAL_FORMS" id="id_'+value.prefix+'-INITIAL_FORMS" value="0"> \
+            <input type="hidden" name="'+value.prefix+'-MAX_NUM_FORMS" id="id_'+value.prefix+'-MAX_NUM_FORMS" value=""> \
+            ');
         self.create_fieldset(value, 0);
             
     });

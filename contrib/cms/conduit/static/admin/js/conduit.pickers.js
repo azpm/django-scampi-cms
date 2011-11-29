@@ -82,7 +82,7 @@ Pickers.prototype.bundle_filters = function()
                 var picking_filter = self.available_pickers[picker_ptr];
                 
                 //order the item correctly
-                self.update_element_index(jQuery(div).find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
+                self.update_element_index(jQuery(div).find("label ~ input,select"), "form", type, count);
             });
             
             //increase form count for each group

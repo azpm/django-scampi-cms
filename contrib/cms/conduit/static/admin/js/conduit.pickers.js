@@ -210,12 +210,13 @@ Pickers.prototype.create_fieldset = function(type, num)
         jQuery("#"+id_pointer+"_filters select[name*='picking_elements']").append('<option value="'+index+'">'+value.name+'</option>');
     });
     
-    /**
-    First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
-    */
+    //First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
     jQuery("#"+id_pointer+"_add_filter").append(img.clone());
-    jQuery("#"+id_pointer+"_add_group").append(img.clone());
     jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix); });
+    
+    //add green + to filter group and bind click to adding a new group
+    jQuery("#"+id_pointer+"_add_group").append(img.clone());
+    jQuery("#"+id_pointer+"_add_group").bind("click", function() { self.create_fieldset(type, num+=1); });
 
     
 }

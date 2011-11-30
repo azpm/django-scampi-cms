@@ -185,7 +185,12 @@ class PublishPicking(django_filters.FilterSet):
     
     @staticmethod
     def static_chain(qs):
-        qs = qs.select_related('thumbnail','category','story').annotate(video_count=Count('story__article__video_inlines'))
+        qs = qs.select_related(
+            'thumbnail__file',
+            'thumbnail__caption',
+            'category__keyname',
+            'story__article',
+            'story__article__author').annotate(video_count=Count('story__article__video_inlines'))
         return qs.distinct()
 
 #picking

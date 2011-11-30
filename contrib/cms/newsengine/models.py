@@ -4,7 +4,7 @@ from datetime import datetime
 from taggit.managers import TaggableManager
 
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, Max, Avg, Min
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes import generic
 from django.conf import settings
@@ -185,7 +185,7 @@ class PublishPicking(django_filters.FilterSet):
     
     @staticmethod
     def static_chain(qs):
-        qs = qs.select_related('thumbnail','category','story')
+        qs = qs.select_related('thumbnail','category','story').annotate(video_count=Count('story__article__video_inlines'))
         return qs.distinct()
 
 #picking

@@ -119,8 +119,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
                 messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)
                     
-            obj.include_filters = inclusion_fs
-            obj.exclude_filters = exclusion_fs
+            obj.include_filters = inclusion_fs or None
+            obj.exclude_filters = exclusion_fs or None
             
         
         obj.save()

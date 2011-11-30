@@ -187,16 +187,6 @@ class PublishPicking(django_filters.FilterSet):
     def static_chain(qs):
         qs = qs.select_related('thumbnail','story','story__article')
         return qs
-        qs = qs.select_related('thumbnail','category','story__article').defer(
-            'thumbnail__type','thumbnail__creation_date','thumbnail__credit',
-            'thumbnail__reproduction_allowed','thumbnail__modified',
-            'thumbnail__mime_type','thumbnail__author','story__creation_date',
-            'story__modified','story__seen','story__image_playlist',
-            'story__video_playlist','story__audio_playlist',
-            'story__document_playlist','story__object_playlist'
-        )
-        return qs
-        return qs.distinct()
 
 #picking
 picker.manifest.register(Publish, PublishPicking)

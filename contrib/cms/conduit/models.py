@@ -75,13 +75,15 @@ class DynamicPicker(PickerBase):
         qs = model.objects.all()       
         if self.include_filters:
             for f in self.include_filters:
-                if f is None:
+                if not f:
                     continue
                 coerce_filters(f)
                 qs = qs.filter(**f)
         
         if self.exclude_filters:
             for f in self.exclude_filters:
+                if not f:
+                    continue
                 coerce_filters(f)
                 qs = qs.exclude(**f)
     

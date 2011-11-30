@@ -190,7 +190,7 @@ class PublishPicking(django_filters.FilterSet):
     
     @staticmethod
     def static_chain(qs):
-        qs = qs.select_related('thumbnail','category__keyname','story__article').defer(
+        qs = qs.select_related('thumbnail','category','story__article').defer(
             'thumbnail__type','thumbnail__creation_date','thumbnail__credit',
             'thumbnail__reproduction_allowed','thumbnail__modified',
             'thumbnail__mime_type','thumbnail__author','story__creation_date',

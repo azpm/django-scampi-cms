@@ -1,3 +1,5 @@
+import logging
+
 from django import forms
 from django.contrib import admin
 from django.shortcuts import render_to_response
@@ -6,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.context_processors import csrf
 from django.utils import simplejson
 from django.conf import settings
+from django.contrib import messages
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -13,6 +16,8 @@ from .models import DynamicPicker, StaticPicker, PickerTemplate
 from .forms import DynamicPickerForm
 from .picker import manifest
 from .utils import build_filters, coerce_filters
+
+logger = logging.getLogger('libscampi.contrib.cms.conduit.admin')
 
 class PickerTemplateAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -80,6 +85,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
         #basically only do something if we are "changing" e.g. the picking fields are available
         if change:
+            logger.debug("changing %s [%s]" % (obj.name, obj.keyname))
+            
             content_model = obj.content.model_class()
         
             picking_filterset = manifest.get_registration_info(content_model)()
@@ -93,12 +100,18 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 for form in inclusion:
                     setattr(picking_filterset, '_form', form)
                     inclusion_fs.append(build_filters(picking_filterset))
+            else:
+                logger.debug("%s - inclusion was invalid: %s" % (obj.keyname, inclusion.errors))
+                messages.error(request, "There was an issue with the inclusion filters: %s" % inclusion.errors)
                     
             exclusion_fs = []
             if exclusion.is_valid():
                 for form in exclusion:
                     setattr(picking_filterset, '_form', form)
                     exclusion_fs.append(build_filters(picking_filterset))
+            else:
+                logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
+                messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)
                     
             obj.include_filters = inclusion_fs
             obj.exclude_filters = exclusion_fs

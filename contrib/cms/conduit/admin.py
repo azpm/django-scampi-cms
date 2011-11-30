@@ -99,7 +99,10 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             if inclusion.is_valid():
                 for form in inclusion:
                     setattr(picking_filterset, '_form', form)
-                    inclusion_fs.append(build_filters(picking_filterset))
+                    try:
+                        inclusion_fs.append(build_filters(picking_filterset))
+                    except ValueError:
+                        continue                        
             else:
                 logger.debug("%s - inclusion was invalid: %s" % (obj.keyname, inclusion.errors))
                 messages.error(request, "There was an issue with the inclusion filters: %s" % inclusion.errors)
@@ -108,7 +111,10 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             if exclusion.is_valid():
                 for form in exclusion:
                     setattr(picking_filterset, '_form', form)
-                    exclusion_fs.append(build_filters(picking_filterset))
+                    try:
+                        exclusion_fs.append(build_filters(picking_filterset))
+                    except ValueError:
+                        continue
             else:
                 logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
                 messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)

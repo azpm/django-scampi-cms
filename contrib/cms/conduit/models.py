@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
-#scampu stuff
+#scampi stuff
 from libscampi.core.fields import PickledObjectField 
 from libscampi.contrib.cms.communism.models import Commune
 from libscampi.utils.functional import cached_property
@@ -72,9 +72,11 @@ class DynamicPicker(PickerBase):
         except (NameError, TypeError):
             return {}
 
-        qs = model.objects.select_related().all()       
+        qs = model.objects.all()       
         if self.include_filters:
             for f in self.include_filters:
+                if f is None:
+                    continue
                 coerce_filters(f)
                 qs = qs.filter(**f)
         

@@ -197,7 +197,13 @@ class PublishPicking(django_filters.FilterSet):
             'story__modified','story__seen','story__image_playlist',
             'story__video_playlist','story__audio_playlist',
             'story__document_playlist','story__object_playlist'
-        ).annotate(video_count=Count('story__article__video_inlines'))
+        ).annotate(
+            video_count=Count('story__article__video_inlines')
+            image_count=Count('story__article__image_inlines')
+            audio_count=Count('story__article__audio_inlines')
+            document_count=Count('story__article__document_inlines')
+            object_count=Count('story__article__object_inlines')
+        )
         return qs.distinct()
 
 #picking

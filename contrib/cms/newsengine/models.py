@@ -183,13 +183,21 @@ class PublishPicking(django_filters.FilterSet):
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
     
+    """
+    `newsengine_story`.`creation_date`, `newsengine_story`.`modified`, `newsengine_story`.`seen`, `newsengine_story`.`shared`, `newsengine_story`.`image_playlist_id`, `newsengine_story`.`video_playlist_id`, `newsengine_story`.`audio_playlist_id`, `newsengine_story`.`document_playlist_id`, 
+    """
+    
+    
     @staticmethod
     def static_chain(qs):
-        qs = qs.select_related(
-            'thumbnail__file',
-            'thumbnail__caption',
-            'category__keyname',
-            'story__article').annotate(video_count=Count('story__article__video_inlines'))
+        qs = qs.select_related('thumbnail','category__keyname','story__article').defer(
+            'thumbnail__type','thumbnail__creation_date','thumbnail__credit',
+            'thumbnail__reproduction_allowed','thumbnail__modified',
+            'thumbnail__mime_type','thumbnail__author','story__creation_date',
+            'story__modified','story__seen','story__image_playlist',
+            'story__video_playlist','story__audio_playlist',
+            'story__document_playlist','story__object_playlist'
+        ).annotate(video_count=Count('story__article__video_inlines'))
         return qs.distinct()
 
 #picking

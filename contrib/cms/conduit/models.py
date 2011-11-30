@@ -85,8 +85,6 @@ class DynamicPicker(PickerBase):
     
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):
             qs = fs.static_chain(qs)        
-        
-        logger.debug(u"for %d, query: %s" % (self.pk, qs.query))
             
         if self.max_count > 0:
             return qs[:self.max_count]

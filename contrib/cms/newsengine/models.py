@@ -189,8 +189,7 @@ class PublishPicking(django_filters.FilterSet):
             'thumbnail__file',
             'thumbnail__caption',
             'category__keyname',
-            'story__article',
-            'story__article__author').annotate(video_count=Count('story__article__video_inlines'))
+            'story__article').annotate(video_count=Count('story__article__video_inlines'))
         return qs.distinct()
 
 #picking

@@ -185,7 +185,7 @@ class PublishPicking(django_filters.FilterSet):
     
     @staticmethod
     def static_chain(qs):
-        qs = qs.select_related('thumbnail','category')
+        qs = qs.select_related('thumbnail','category','story')
         return qs.distinct()
 
 #picking

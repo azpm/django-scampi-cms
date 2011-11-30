@@ -92,10 +92,10 @@ def build_filters(filterset):
                 filters.update(fs)
                 
         except forms.ValidationError:
-            raise ValueError("No valid filters")
+            pass
     
     if len(filters) is 0:
-        return None
+        raise ValueError("No valid filters")
     
     return filters
     

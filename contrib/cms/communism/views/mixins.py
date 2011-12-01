@@ -145,8 +145,12 @@ class CommuneMixin(object):
 class CSSMixin(object):
     def get_stylesheets(self):
         logger.debug("CSSMixin.get_stylesheets called")
+        
         #try to get the cached css for this commune
         cached_css_key = 'commune_css_%s' % self.commune.pk
+        if self.request.GET.get('refresh_cache', False):
+            #invalidate on refresh_cache
+            cache.delete(cached_css_key)
         styles = cache.get(cached_css_key, None)
         
         #cache empty, get the styles and refill the cache
@@ -193,6 +197,9 @@ class JScriptMixin(object):
         logger.debug("JScriptMixin.get_javascripts called")
         #try to get the cached javascript for this commune
         cached_scripts_key = 'commune_scripts_%s' % self.commune.pk
+        if self.request.GET.get('refresh_cache', False):
+            #invalidate on refresh_cache
+            cache.delete(cached_scripts_key)
         scripts = cache.get(cached_scripts_key, None)
         
         #cache empty, get the scripts and refill the cache

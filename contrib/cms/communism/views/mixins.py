@@ -162,7 +162,7 @@ class CSSMixin(object):
                 Q(staticpicker__namedbox__slice__commune=self.commune) &
                 Q(staticpicker__namedbox__active=True) |
                 Q(base=True),
-                Q(theme__pk=self.theme.id)
+                Q(theme__pk=theme.id)
             ).order_by('precedence')
             cache.set(cached_css_key, styles, 60*20)
            
@@ -214,7 +214,7 @@ class JScriptMixin(object):
                 Q(staticpicker__namedbox__slice__commune=self.commune) &
                 Q(staticpicker__namedbox__active=True) |
                 Q(base=True),
-                Q(theme__pk=self.theme.id)
+                Q(theme__pk=theme.id)
             ).order_by('precedence')
             cache.set(cached_scripts_key, scripts, 60*20)
                        

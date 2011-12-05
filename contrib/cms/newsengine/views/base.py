@@ -4,6 +4,7 @@ from django.db.models import Q, Max, Avg, Sum
 from django.core.cache import cache
 
 from libscampi.contrib.cms.communism.models import Javascript, StyleSheet
+from libscampi.contrib.cms.communism.views.mixins import html_link_refs
 from libscampi.contrib.cms.views.base import CMSPageNoView
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 

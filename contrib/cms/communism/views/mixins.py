@@ -161,7 +161,8 @@ class CSSMixin(object):
                 Q(pickertemplate__dynamicpicker__namedbox__active=True) | 
                 Q(staticpicker__namedbox__slice__commune=self.commune) &
                 Q(staticpicker__namedbox__active=True) |
-                Q(base=True)
+                Q(base=True),
+                Q(theme__pk=self.theme.id)
             ).order_by('precedence')
             cache.set(cached_css_key, styles, 60*20)
            
@@ -194,6 +195,8 @@ class CSSMixin(object):
     
 class JScriptMixin(object):
     def get_javascripts(self):
+        theme = self.get_theme()
+        
         logger.debug("JScriptMixin.get_javascripts called")
         #try to get the cached javascript for this commune
         cached_scripts_key = 'commune_scripts_%s' % self.commune.pk
@@ -210,7 +213,8 @@ class JScriptMixin(object):
                 Q(pickertemplate__dynamicpicker__namedbox__active=True) | 
                 Q(staticpicker__namedbox__slice__commune=self.commune) &
                 Q(staticpicker__namedbox__active=True) |
-                Q(base=True)
+                Q(base=True),
+                Q(theme__pk=self.theme.id)
             ).order_by('precedence')
             cache.set(cached_scripts_key, scripts, 60*20)
                        

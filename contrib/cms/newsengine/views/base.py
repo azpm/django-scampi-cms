@@ -1,9 +1,13 @@
+import logging
 from django.views.generic.dates import *
+from django.db.models import Q, Max, Avg, Sum
 
 from libscampi.contrib.cms.views.base import CMSPageNoView
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 
 from .mixins import PublishStoryMixin
+
+logger = logging.getLogger('libscampi.contrib.cms.newsengine.views')
 
 class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     """
@@ -130,6 +134,92 @@ class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
         return tpl_list
     
 class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
+    def get_stylesheets(self):
+        
+        publish = self.object
+        story = publish.story
+        article = story.article
+        theme = self.get_theme()
+                
+        #try to get the cached css for this published story
+        cached_css_key = 'picker:%d:publish:css:%s' % (self.picker.id, publish.id)
+        if self.request.GET.get('refresh_cache', False):
+            #invalidate on refresh_cache
+            cache.delete(cached_css_key)
+        styles = cache.get(cached_css_key, None)
+        
+        #cache empty, get the styles and refill the cache
+        if not styles:
+            logger.debug("missed css cache on %s" % cached_css_key)
+            styles = StyleSheet.objects.filter(active=True).filter(
+                #playlist finders
+                Q(mediaplaylisttemplate__videoplaylist__pk = story.videoplaylist_id) |
+                Q(mediaplaylisttemplate__imageplaylist__pk = story.imageplaylist_id) |
+                Q(mediaplaylisttemplate__audioplaylist__pk = story.audioplaylist_id) |
+                Q(mediaplaylisttemplate__documentplaylist__pk = story.documentplaylist_id) |
+                Q(mediaplaylisttemplate__objectplaylist__pk = story.objectplaylist_id) |
+                #inline finders
+                Q(mediainlinetemplate__videotype__video__id__in=article.video_inlines.values_list('id')) |
+                Q(mediainlinetemplate__imagetype__image__id__in=article.image_inlines.values_list('id')) |
+                Q(mediainlinetemplate__audiotype__audio__id__in=article.audio_inlines.values_list('id')) |
+                Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
+                Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')) |
+                #always include base
+                Q(base=True),
+                #force to the current theme
+                Q(theme__id=self.theme.id)
+            ).order_by('precedence')
+            cache.set(cached_css_key, styles, 60*10)
+           
+        #build a simple collection of styles
+        css_collection = html_link_refs()
+        for style in styles:
+            css_collection.add(style)
+            
+        return css_collection
+
+    def get_javascripts(self):
+        publish = self.object
+        story = publish.story
+        article = story.article
+        theme = self.get_theme()
+        
+        #try to get the cached javascript for this published story
+        cached_scripts_key = 'picker:%d:publish:js:%s' % (self.picker.id, publish.id)
+        if self.request.GET.get('refresh_cache', False):
+            #invalidate on refresh_cache
+            cache.delete(cached_scripts_key)
+        scripts = cache.get(cached_scripts_key, None)
+        
+        #cache empty, get the scripts and refill the cache
+        if not scripts:
+            logger.debug("missed css cache on %s" % cached_scripts_key)
+            scripts = Javascript.objects.filter(active=True).filter(
+                #playlist finders
+                Q(mediaplaylisttemplate__videoplaylist__pk = story.videoplaylist_id) |
+                Q(mediaplaylisttemplate__imageplaylist__pk = story.imageplaylist_id) |
+                Q(mediaplaylisttemplate__audioplaylist__pk = story.audioplaylist_id) |
+                Q(mediaplaylisttemplate__documentplaylist__pk = story.documentplaylist_id) |
+                Q(mediaplaylisttemplate__objectplaylist__pk = story.objectplaylist_id) |
+                #inline finders
+                Q(mediainlinetemplate__videotype__video__id__in=article.video_inlines.values_list('id')) |
+                Q(mediainlinetemplate__imagetype__image__id__in=article.image_inlines.values_list('id')) |
+                Q(mediainlinetemplate__audiotype__audio__id__in=article.audio_inlines.values_list('id')) |
+                Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
+                Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')) |
+                #always include base
+                Q(base=True),
+                #force to the current theme
+                Q(theme__id=self.theme.id)
+            ).order_by('precedence')
+            cache.set(cached_scripts_key, scripts, 60*20)
+                       
+        #build a simple collection of styles
+        script_collection = html_link_refs()
+        for script in scripts:
+            script_collection.add(script)
+        
+        return script_collection    
     
     def get_template_names(self):
     

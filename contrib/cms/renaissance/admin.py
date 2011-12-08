@@ -25,6 +25,7 @@ class VideoMediaAdmin(MediaAdmin, admin.ModelAdmin):
     fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file','thumbnail','type')}), )
     list_filter = MediaAdmin.list_filter+['type']
     prepopulated_fields = {'slug': ('title',)}
+    raw_id_fields = ['thumbnail']
 
 class ExternalAdmin(admin.ModelAdmin): pass
     

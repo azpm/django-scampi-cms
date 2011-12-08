@@ -26,10 +26,11 @@ class article_node(template.Node):
             return u""
         
         language_code = context['request'].LANGUAGE_CODE
+        refresh_cache = context['request'].GET.get('refresh_cache', False)
         
         key = 'html_compiled_%s_%s' % (language_code, article.pk)
         html = cache.get(key, None)
-        if not html or article.modified > html['ts']:        
+        if refresh_cache or not html or article.modified > html['ts']:        
             preprocess_article.send(sender=SolidSender, article=article, context=context, language=language_code)
             postprocess_article.send(sender=SolidSender, article=article, context=context, language=language_code)
             

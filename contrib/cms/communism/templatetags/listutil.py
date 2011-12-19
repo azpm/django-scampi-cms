@@ -3,7 +3,7 @@ Template filters to partition lists into columns or columns.
 
 A common use-case is for splitting a list into a table with columns::
 
-    {% load partition %}
+    {% load listutil %}
     <table>
     {% for column in mylist|columns:3 %}
         <tr>

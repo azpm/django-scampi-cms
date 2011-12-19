@@ -1,68 +1,116 @@
 """
-Template tags for working with lists.
+Template filters to partition lists into columns or columns.
 
-You'll use these in templates thusly::
+A common use-case is for splitting a list into a table with columns::
 
-    {% load listutil %}
-    {% for sublist in mylist|parition:"3" %}
-        {% for item in mylist %}
-            do something with {{ item }}
+    {% load partition %}
+    <table>
+    {% for column in mylist|columns:3 %}
+        <tr>
+        {% for item in column %}
+            <td>{{ item }}</td>
         {% endfor %}
+        </tr>
     {% endfor %}
+    </table>
 """
 
-from django import template
+from django.template import Library
 
-register = template.Library()
+register = Library()
 
-@register.filter
-def partition(thelist, n):
+def columns(thelist, n):
     """
-    Break a list into ``n`` pieces. The last list may be larger than the rest if
-    the list doesn't break cleanly. That is::
+    Break a list into ``n`` columns, filling up each column to the maximum equal
+    length possible. For example::
 
         >>> l = range(10)
 
-        >>> partition(l, 2)
+        >>> columns(l, 2)
         [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
 
-        >>> partition(l, 3)
-        [[0, 1, 2], [3, 4, 5], [6, 7, 8, 9]]
+        >>> columns(l, 3)
+        [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9]]
 
-        >>> partition(l, 4)
-        [[0, 1], [2, 3], [4, 5], [6, 7, 8, 9]]
+        >>> columns(l, 4)
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
 
-        >>> partition(l, 5)
+        >>> columns(l, 5)
         [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
 
-    """
-    try:
-        n = int(n)
-        thelist = list(thelist)
-    except (ValueError, TypeError):
-        return [thelist]
-    p = len(thelist) / n
-    return [thelist[p*i:p*(i+1)] for i in range(n - 1)] + [thelist[p*(i+1):]]
+        >>> columns(l, 9)
+        [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9], [], [], [], []]
 
-@register.filter
-def partition_horizontal(thelist, n):
-    """
-    Break a list into ``n`` peices, but "horizontally." That is, 
-    ``partition_horizontal(range(10), 3)`` gives::
-    
-        [[1, 2, 3],
-         [4, 5, 6],
-         [7, 8, 9],
-         [10]]
-        
-    Clear as mud?
+        # This filter will always return `n` columns, even if some are empty:
+        >>> columns(range(2), 3)
+        [[0], [1], []]
     """
     try:
         n = int(n)
         thelist = list(thelist)
     except (ValueError, TypeError):
         return [thelist]
-    newlists = [list() for i in range(n)]
-    for i, val in enumerate(thelist):
-        newlists[i%n].append(val)
-    return newlists
+    list_len = len(thelist)
+    split = list_len // n
+
+    if list_len % n != 0:
+        split += 1
+    return [thelist[split*i:split*(i+1)] for i in range(n)]
+
+def columns_distributed(thelist, n):
+    """
+    Break a list into ``n`` columns, distributing columns as evenly as possible
+    across the columns. For example::
+
+        >>> l = range(10)
+
+        >>> columns_distributed(l, 2)
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
+
+        >>> columns_distributed(l, 3)
+        [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9]]
+
+        >>> columns_distributed(l, 4)
+        [[0, 1, 2], [3, 4, 5], [6, 7], [8, 9]]
+
+        >>> columns_distributed(l, 5)
+        [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
+
+        >>> columns_distributed(l, 9)
+        [[0, 1], [2], [3], [4], [5], [6], [7], [8], [9]]
+
+        # This filter will always return `n` columns, even if some are empty:
+        >>> columns(range(2), 3)
+        [[0], [1], []]
+    """
+    try:
+        n = int(n)
+        thelist = list(thelist)
+    except (ValueError, TypeError):
+        return [thelist]
+    list_len = len(thelist)
+    split = list_len // n
+
+    remainder = list_len % n
+    offset = 0
+    columns = []
+    for i in range(n):
+        if remainder:
+            start, end = (split+1)*i, (split+1)*(i+1)
+        else:
+            start, end = split*i+offset, split*(i+1)+offset
+        columns.append(thelist[start:end])
+        if remainder:
+            remainder -= 1
+            offset += 1
+    return columns
+
+register.filter(columns)
+register.filter(columns_distributed)
+
+def _test():
+    import doctest
+    doctest.testmod()
+
+if __name__ == "__main__":
+    _test()

@@ -376,7 +376,7 @@ class NamedBox(models.Model):
     keyname = models.SlugField(_("Template/HTML Identifier"), max_length = 20)
     active = models.BooleanField(default = True, db_index=True)
     
-    content = models.ForeignKey("conduit.DynamicPicker", null = True, blank = True)
+    content = models.ForeignKey("conduit.DynamicPicker", null = True, blank = True, on_delete=models.SET_NULL)
     
     class Meta:
         unique_together = (('slice', 'gridx', 'gridy', 'display_order'), ('slice', 'keyname'))

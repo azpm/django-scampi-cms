@@ -8,7 +8,7 @@
         var path = jQuery.makeArray(window.location.pathname.split("/"));
         
         var picker_id = {{ object_id }};
-        var content_id = {{ original.content.id }}
+        var content_id = {{ original.content.id }};
     
         var load_filters_url = "{% url admin:conduit-picking-filters-fields %}";
         

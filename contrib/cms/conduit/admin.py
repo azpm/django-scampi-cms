@@ -76,6 +76,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         
         if not obj:
+            logger.debug('Overriding form for DynamicPicker Admin')
             self.form = DynamicPickerForm
         
         return super(DynamicPickerAdmin, self).get_form(request, obj, **kwargs)

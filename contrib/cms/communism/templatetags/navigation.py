@@ -18,14 +18,14 @@ class SiteMapNode(template.Node):
         if not request or not realm or not section:
             return ''
                 
-        realms_qs_key = "cms_realms"
+        realms_qs_key = "cms:realms:all"
         realms = cache.get(realms_qs_key, None)
         
         if not realms:
             realms = Realm.objects.select_related('site').filter(active = True).extra(select={'tls_count': 'select count(*) from communism_section where extends_id is null and realm_id = communism_realm.id'}).order_by('display_order')
             cache.set(realms_qs_key, realms, 60*20)
             
-        tla_sections_qs_key = "tla_sections"
+        tla_sections_qs_key = "cms:sections:toplevel"
         sections = cache.get(tla_sections_qs_key, None)
         
         if not sections:
@@ -66,7 +66,7 @@ class RealmsNode(template.Node):
         self.varname = varname
     
     def render(self, context):
-        realms_qs_key = "cms_realms"
+        realms_qs_key = "cms:realms:all"
         realms = cache.get(realms_qs_key, None)
         
         if not realms:

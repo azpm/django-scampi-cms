@@ -82,6 +82,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
     #provide the serialization of the inclusion and exclusion filters
     def save_model(self, request, obj, form, change):
+        logger.debug("saving %s [%s]" % (obj.name, obj.keyname))
         
         #basically only do something if we are "changing" e.g. the picking fields are available
         if change:

@@ -27,11 +27,11 @@ class picker_node(template.Node):
             if not request:
                 return ''
             
-            cached_tpl_key = "dynamicpicker-tpl-%d" % picker.template_id
+            cached_tpl_key = "conduit:dp:tpl:%d" % picker.template_id
             cached_tpl = cache.get(cached_tpl_key, None)
             
             if not cached_tpl:
-                logger.debug("cache miss on %s trying to get cached template" % cached_tpl)
+                logger.debug("cache miss on %s trying to get cached template" % cached_tpl_key)
                 cached_tpl = picker.template.content
                 cache.set(cached_tpl_key, cached_tpl)
             

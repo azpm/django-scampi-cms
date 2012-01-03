@@ -17,7 +17,7 @@ class namedbox_node(template.Node):
         #get the namedbox and see if the template is in the cache
         namedbox = self.namedbox.resolve(context)
         
-        cached_tpl_key = "namedbox-tpl-%d" % namedbox.template_id
+        cached_tpl_key = "commune:namedbox:tpl:%d" % namedbox.template_id
         cached_tpl = cache.get(cached_tpl_key, None)
         
         #grab the template from the database and then cache it

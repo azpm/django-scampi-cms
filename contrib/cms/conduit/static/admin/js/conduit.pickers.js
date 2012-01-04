@@ -156,9 +156,10 @@ Pickers.prototype.create_fieldsets = function()
     {
         //create the base fieldsets
         jQuery('input[name*="csrfmiddlewaretoken"]').after('\
-            <input type="hidden" name="'+value.prefix+'-TOTAL_FORMS" id="id_'+value.prefix+'-TOTAL_FORMS" value="0"> \
-            <input type="hidden" name="'+value.prefix+'-INITIAL_FORMS" id="id_'+value.prefix+'-INITIAL_FORMS" value="0"> \
-            <input type="hidden" name="'+value.prefix+'-MAX_NUM_FORMS" id="id_'+value.prefix+'-MAX_NUM_FORMS" value=""> \
+            <input type="hidden" name="'+value.prefix+'-TOTAL_FORMS" id="id_'+value.prefix+'-TOTAL_FORMS" value="0"/> \
+            <input type="hidden" name="'+value.prefix+'-INITIAL_FORMS" id="id_'+value.prefix+'-INITIAL_FORMS" value="0"/> \
+            <input type="hidden" name="'+value.prefix+'-MAX_NUM_FORMS" id="id_'+value.prefix+'-MAX_NUM_FORMS" value=""/> \
+            <input type="hidden" name="includes-pickers" value="1"/>
             ');
         self.create_fieldset(value, 0);
             

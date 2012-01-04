@@ -85,8 +85,10 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         logger.debug("saving %s [%s]" % (obj.name, obj.keyname))
         
+        has_pickers = request.POST.get("includes-pickers", False)
+        
         #basically only do something if we are "changing" e.g. the picking fields are available
-        if change:
+        if change and has_pickers:
             logger.debug("changing %s [%s]" % (obj.name, obj.keyname))
             
             content_model = obj.content.model_class()

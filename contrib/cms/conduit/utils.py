@@ -142,7 +142,7 @@ def unmap_orphan_picker(sender, instance, **kwargs):
         picker.save()
         
 def cache_picker_template(sender, instance, **kwargs):
-    cache_key = "dynamicpicker-tpl-%d" % instance.pk
+    cache_key = "conduit:dp:tpl:%d" % instance.pk
     tpl = instance.content
     cache.set(cache_key, tpl)
     

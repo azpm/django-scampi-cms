@@ -341,6 +341,7 @@ class NamedBoxTemplate(models.Model):
     class Meta:
         verbose_name = u"NamedBox Template"
         verbose_name_plural = u"NamedBox Templates"
+        ordering = ['name',]
         
     def __unicode__(self):
         return self.name

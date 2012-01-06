@@ -14,7 +14,7 @@ from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orp
 from libscampi.utils.functional import cached_property
 
 #local imports
-from .managers import localised_section_manager, localised_element_manager
+from .managers import *
 from .utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up, cache_namedbox_template
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
@@ -29,8 +29,13 @@ class Theme(models.Model):
     description = models.TextField(null = True, blank = True)
     banner = models.ImageField(upload_to=theme_banner_decorator, verbose_name = _("Image Banner"))
     
+    objects = ThemeManager()
+    
     def __unicode__(self):
         return "%s" % self.name
+        
+    def natural_key(self):
+        return self.keyname
         
     def _get_url(self):
         return "%s%s/" % (settings.MEDIA_URL, self.keyname)
@@ -44,6 +49,7 @@ class HtmlLinkRef(models.Model):
     active = models.BooleanField(_("Active"), default=True, db_index=True)
     base = models.BooleanField(_("Always Loaded"), default=False)
     theme = models.ForeignKey(Theme)
+    
     class Meta:
         abstract = True
         ordering = ['precedence']
@@ -121,6 +127,8 @@ class Realm(models.Model):
     search_collection = models.CharField(max_length=200, null = True, blank = True, help_text = ("Keyname for search collections"))
     direct_link = models.BooleanField(default=False, verbose_name = _("Provides a direct link to some external site outside of your Scampi install"))
     
+    objects = RealmManager()
+    
     class Meta:
         verbose_name = "Realm"
         verbose_name_plural = "Realms"
@@ -128,6 +136,9 @@ class Realm(models.Model):
     
     def __unicode__(self):
         return "%s" % self.site.domain
+        
+    def natural_key(self):
+        return (self.keyname)
         
     def _primary_section(self):
         "Returns the first active section for this realm, or None"
@@ -206,7 +217,7 @@ class Section(models.Model):
     }, verbose_name = _("Type of BaseHierarchyElement"))
     element = generic.GenericForeignKey('element_type', 'element_id')
     
-    objects = models.Manager()
+    objects = SectionManager()
     localised = localised_section_manager()
     
     class Meta:
@@ -218,6 +229,9 @@ class Section(models.Model):
         
     def __unicode__(self):
         return "%s [%s]" % (self.element, self.element_type.name)
+        
+    def natural_key(self):
+        return (realm.keyname, self.keyname)
         
     def breadcrumb_helper(self):
         """Returns fully dotted path to section, including path up for everything extended."""
@@ -242,7 +256,6 @@ class BaseHierarchyElement(models.Model):
     name = models.CharField(_("Display Name"), max_length = 100)
     description = models.TextField(null = True, blank = True)
 
-    objects = models.Manager()
     localised = localised_element_manager()
     
     class Meta:
@@ -250,6 +263,9 @@ class BaseHierarchyElement(models.Model):
     
     def __unicode__(self):
         return "%s" % self.name
+        
+    def natural_key(self):
+        return (self.realm.keyname, self.keyname)
         
     def _container(self):
         """Returns the section that holds this hierarchy element. used in templates."""
@@ -291,6 +307,8 @@ class Commune(BaseHierarchyElement):
     """
     theme = models.ForeignKey(Theme)
     
+    objects = CommuneManager()
+    
     class Meta:
         verbose_name = "CMS Page"
         verbose_name_plural = "CMS Pages"
@@ -309,12 +327,16 @@ class Slice(models.Model):
     commune = models.ForeignKey(Commune)
     display_order = models.PositiveSmallIntegerField(_("Display Order"), help_text = u"1-Ordered") 
     
+    objects = SliceManager()
+    
     class Meta:
         unique_together = ('commune', 'display_order')
     
     def __unicode__(self):
         return "%s > %s > #%d" % (self.commune.realm, self.commune.keyname, self.display_order)
-    
+
+    def natural_key(self):
+        return (self.commune.keyname, self.display_order)
     
 class NamedBoxTemplate(models.Model):
     """Provides the ability to style a named box generically.
@@ -361,23 +383,21 @@ class NamedBox(models.Model):
         (2, 'Column #2'),
         (3, 'Column #3'),
     )
-   
     #structural
     slice = models.ForeignKey(Slice)
     gridx = models.PositiveSmallIntegerField(_("Column"), choices = column_choices)
     gridy = models.PositiveSmallIntegerField(_("Sub Slice"), help_text = u"1-Ordered")
     display_order = models.PositiveSmallIntegerField(_("Display Order"), help_text = u"1-Ordered")
-    
     #display
     name = models.CharField(_("Reference Name"), max_length = 100)
     display_name = models.CharField(_("Optional Box Title"), help_text = u"", max_length = 50, blank = True)
     template = models.ForeignKey(NamedBoxTemplate)
-    
     #reference
     keyname = models.SlugField(_("Template/HTML Identifier"), max_length = 20)
     active = models.BooleanField(default = True, db_index=True)
-    
     content = models.ForeignKey("conduit.DynamicPicker", null = True, blank = True, on_delete=models.SET_NULL)
+    
+    objects = NamedBoxManager()
     
     class Meta:
         unique_together = (('slice', 'gridx', 'gridy', 'display_order'), ('slice', 'keyname'))
@@ -388,6 +408,9 @@ class NamedBox(models.Model):
     
     def __unicode__(self):
         return "%s Column #%d, %d" % (self.name, self.gridx, self.display_order)
+        
+    def natural_key(self):
+        return (self.slice.commune.keyname, self.slice.commune.display_order, self.gridy, self.gridx, self.display_order, self.keyname)
     
     def _picker(self):
         if self.content:
@@ -411,6 +434,8 @@ class Application(BaseHierarchyElement):
     namespace = models.CharField(_("URL Namespace"), max_length = 25, null = True, blank = True)
     app_name = models.CharField(_("Django Application Name"), max_length = 50)
     default_view = models.CharField(_("Django View Function"), max_length = 50)
+    
+    objects = ApplicationManager()
     
     class Meta:
         verbose_name = "CMS Offload"

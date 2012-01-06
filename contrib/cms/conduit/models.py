@@ -13,6 +13,7 @@ from libscampi.utils.functional import cached_property
 #local imports
 from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template
 from libscampi.contrib.cms.conduit.picker import manifest
+from libscampi.contrib.cms.conduit.managers import DynamicPickerManager, StaticPickerManager
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.models')
 
@@ -58,6 +59,8 @@ class DynamicPicker(PickerBase):
     include_filters = PickledObjectField(editable = False, compress = True)
     exclude_filters = PickledObjectField(editable = False, compress = True)
     
+    objects = DynamicPickerManager()
+    
     class Meta:
         unique_together = ('commune', 'keyname')
         verbose_name = "Dynamic Content Picker"
@@ -65,6 +68,11 @@ class DynamicPicker(PickerBase):
         
     def __unicode__(self):
         return self.name
+        
+    def natural_key(self):
+        if self.commune:
+            return (self.commune.keyname, self.keyname)
+        return (None, self.keyname)
     
     def picked(self):
         try:
@@ -106,9 +114,14 @@ class StaticPicker(PickerBase):
     stylesheet = models.ManyToManyField('communism.StyleSheet', blank = True)
     javascript = models.ManyToManyField('communism.Javascript', blank = True)
     
+    objects = StaticPickerManager()
+    
     class Meta:
         verbose_name = "Static Content Picker"
         verbose_name_plural = "Static Content Pickers"
         
     def __unicode__(self):
         return self.name
+        
+    def natural_key(self):
+        return (self.commune.keyname, self.commune.display_order, self.namedbox.gridy, self.namedbox.gridx, self.namedbox.display_order, self.namedbox.keyname)

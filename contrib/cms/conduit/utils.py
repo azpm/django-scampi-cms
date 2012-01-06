@@ -133,14 +133,6 @@ def unmap_orphan_picker(sender, instance, **kwargs):
         instance.content.commune = None
         instance.content.save()
         
-    try:
-        picker = instance.staticpicker
-    except ObjectDoesNotExist:
-        pass
-    else:
-        picker.commune = None
-        picker.save()
-        
 def cache_picker_template(sender, instance, **kwargs):
     cache_key = "conduit:dp:tpl:%d" % instance.pk
     tpl = instance.content

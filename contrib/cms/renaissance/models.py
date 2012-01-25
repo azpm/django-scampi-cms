@@ -177,7 +177,7 @@ class Media(models.Model):
         return ''
     
     def save(self, *args, **kwargs):
-        if self.file and not self.mime_type:
+        if hasattr(self,'file') and getattr(self,'file', None) and not self.mime_type:
             self.mime_type = mimetypes.guess_type(self.file.path)[0]
             
         super(Media, self).save(*args, **kwargs)

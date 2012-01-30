@@ -70,6 +70,13 @@ class MediaType(models.Model):
         abstract = True
     
     def __unicode__(self):
+        if hasattr(self,'width') and  hasattr(self,'height'):
+            width = getattr(self,'width', None)
+            height = getattr(self,'height', None)
+            
+            if width & height:
+                return u"%s [%d x %d]" % (self.title, width, height)
+    
         return "%s" % self.title 
 
 class ImageType(MediaType):

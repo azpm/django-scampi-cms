@@ -77,13 +77,15 @@ class SectionMixin(object):
             else:
                 #no keyname specified, we need the "primary" section
                 self.section = self.realm.primary_section #get the primary section of this realm
+                
+                if self.section.generates_navigation:
+                    #this section has a keyword argument, we should use it
+                    return redirect(self.section.element.get_absolute_url())
             
             if not self.section:
                 raise Http404("Section Not Found")
                 
-            if self.section.generates_navigation:
-                #this section has a keyword argument, we should use it
-                return redirect(self.section.element.get_absolute_url())
+            
                    
         #finally return the parent get method
         return super(SectionMixin, self).get(request, *args, **kwargs)

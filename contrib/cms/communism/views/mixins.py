@@ -64,9 +64,23 @@ class SectionMixin(object):
             
             self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
         else:
-            #no keyname specified, we need the "primary" section
-            self.section = self.realm.primary_section #get the primary section of this realm
+            try:
+                #we'll see if the section is embedded in the url (it's always the first thing after the domain)
+                current_section = request.path.split('/',2)[1]
+            except IndexError:
+                logger.critical("something bad went wrong with the request, %s" % request.path)
+                raise HttpResponseServerError
             
+            if current_section != '':
+                #section keyname is in the url but not in the view graph/passed args
+                self.section = get_object_or_404(Section.localised.select_related(), keyname = current_section)          
+            else:
+                #no keyname specified, we need the "primary" section
+                self.section = self.realm.primary_section #get the primary section of this realm
+            
+            if not self.section:
+                raise Http404("Section Not Found")
+                
             if self.section.generates_navigation:
                 #this section has a keyword argument, we should use it
                 return redirect(self.section.element.get_absolute_url())

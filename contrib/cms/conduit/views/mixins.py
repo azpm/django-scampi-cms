@@ -21,7 +21,7 @@ class PickerMixin(object):
         else:
             raise Http404
             
-        if self.picker.content != ContentType.objects.get_by_natural_key('newsengine','Publish')
+        if self.picker.content != ContentType.objects.get_by_natural_key('newsengine','Publish'):
         #ContentType.objects.get_for_model(Publish):
             raise Http404("Picker Archives only work for Published Stories")
             

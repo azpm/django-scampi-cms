@@ -118,9 +118,6 @@ class Story(models.Model):
     def __unicode__(self):
         return u"%s" % self.article
     
-#moderate publish comments
-moderator.register(Story, StoryModerator)
-    
 class PublishCategory(models.Model):
     keyname = models.SlugField(max_length = 100, db_index = True)
     title = models.CharField(max_length = 100)
@@ -190,6 +187,9 @@ class PublishPicking(django_filters.FilterSet):
     def static_chain(qs):
         qs = qs.select_related('thumbnail','story','story__article')
         return qs
+        
+#moderate publish comments
+moderator.register(Story, StoryModerator)
 
 #picking
 picker.manifest.register(Publish, PublishPicking)

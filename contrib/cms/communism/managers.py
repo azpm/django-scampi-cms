@@ -11,7 +11,6 @@ class localised_element_manager(models.Manager):
     def get_query_set(self):
         return super(localised_element_manager, self).get_query_set().filter(section__realm__site=Site.objects.get_current())
         
-        
 class ThemeManager(models.Manager):
     def get_by_natural_key(self, keyname):
         return self.get(keyname = keyname)

@@ -14,8 +14,8 @@ from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orp
 from libscampi.utils.functional import cached_property
 
 #local imports
-from .managers import *
-from .utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up, cache_namedbox_template
+from libscampi.contrib.cms.communism.managers import *
+from libscampi.contrib.cms.communism.utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up, cache_namedbox_template
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
 

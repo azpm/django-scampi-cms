@@ -17,6 +17,8 @@ from libscampi.contrib.cms.conduit.managers import DynamicPickerManager, StaticP
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.models')
 
+__all__ = ['PickerTemplate','DynamicPicker','StaticPicker']
+
 class PickerTemplate(models.Model):
     """
     A picker template for dynamic picker rendering.  Each template is given a RequestContext

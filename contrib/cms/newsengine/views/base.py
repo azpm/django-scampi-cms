@@ -22,7 +22,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     
         #keyname specified in url
         if 'c' in request.GET:
-            limits = request.GET.get('c','').split('+')
+            limits = request.GET.get('c','').split(' ')
             logger.debug(limits)
             
             filters = [Q(keyname=value) for value in limits]

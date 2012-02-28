@@ -107,7 +107,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         
         #give the template the current picker
         context.update({'picker': self.picker, 'categories': self.available_categories, 'limits': self.limits})
-        ogger.debug("NewsEngineArchivePage.get_context_data ended")
+        logger.debug("NewsEngineArchivePage.get_context_data ended")
         return context
 
 

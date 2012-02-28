@@ -160,6 +160,29 @@ def build_pagelist(pages, currentpage):
             
     return "".join(html)
     
+@register.simple_tag
+def chain_categories_from_get(needle, haystack):
+    
+    if haystack:
+        category_pathing = "%s+%s" % ("+".join([t.keyname for t in haystack]), needle.keyname)
+    else:
+        category_pathing = "%s" % needle.keyname
+        
+    url = "?c=%s" % category_pathing
+    
+    return url
+    
+@register.simple_tag
+def dechain_categories_from_get(needle, haystack):
+    category_pathing = "%s" % "+".join([t.keyname for t in haystack if t != needle])
+    
+    if category_pathing == '':
+        url = "#"
+    else:
+        url = "?c=%s" % category_pathing
+    
+    return url
+    
 """
 Some helpers for our ridiculously large website configuration & commenting
 """

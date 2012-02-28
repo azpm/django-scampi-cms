@@ -14,7 +14,25 @@ from .mixins import PublishStoryMixin
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.views')
 
 class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
-    picker_categories = None
+    limits = None
+    available_categories = None
+    
+    def get(self, request, *args, **kwargs):
+        #keyname specified in url
+        if 'c' in request.GET:
+            limits = request.GET.get('c','').split('+')
+            
+            filters = [Q(keyname=value) for value in limits]
+            query = filters.pop()            
+            # Or the Q object with the ones remaining in the list
+            for filter in filters:
+                query |= filter
+            
+            self.limits = StoryCategory.objects.filter(Q(browsable=True) & query)
+            
+        #finally return the parent get method
+        return super(NewsEngineArchivePage, self).get(request, *args, **kwargs)
+    
     
     """
     Base page for newsengine archives
@@ -68,7 +86,14 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
             categories = StoryCategory.genera.for_cloud(qs)
             cache.set(cat_cache_key, categories, 60*60)
             
-        self.picker_categories = categories
+        if self.limits:
+            filters = [Q(story__categories__pk=value[0]) for value in self.limits.values_list('id')]
+            for filter in filters:
+                qs = qs.filter(filter)
+                
+            self.available_categories = categories.exclude(pk__in=self.limits.values_list('id'))
+        else:
+            self.available_categories = categories
         
         
         return qs
@@ -76,11 +101,9 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     def get_context_data(self, *args, **kwargs):
         #get the existing context
         context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
-            
-       
         
-        #give the templat the current picker
-        context.update({'picker': self.picker, 'categories': self.picker_categories})
+        #give the template the current picker
+        context.update({'picker': self.picker, 'categories': self.available_categories, 'limits': self.limits})
             
         return context
 

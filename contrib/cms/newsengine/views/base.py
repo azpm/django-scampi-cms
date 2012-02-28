@@ -148,7 +148,7 @@ class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
     
 
 class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
-    
+    make_object_list = True
     def get_template_names(self):
         logger.degug("should be called")
         tpl_list = (

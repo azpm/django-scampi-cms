@@ -18,6 +18,8 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     available_categories = None
     
     def get(self, request, *args, **kwargs):
+        logger.debug(request.GET)
+    
         #keyname specified in url
         if 'c' in request.GET:
             limits = request.GET.get('c','').split('+')

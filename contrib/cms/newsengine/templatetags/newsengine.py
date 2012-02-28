@@ -177,7 +177,7 @@ def dechain_categories_from_get(needle, haystack):
     category_pathing = "%s" % "+".join([t.keyname for t in haystack if t != needle])
     
     if category_pathing == '':
-        url = "../"
+        url = "./"
     else:
         url = "?c=%s" % category_pathing
     

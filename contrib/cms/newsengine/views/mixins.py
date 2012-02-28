@@ -12,4 +12,4 @@ class PublishStoryMixin(object):
     slug_url_kwarg = 'slug'
     date_field = 'start'
     month_format = '%m'
-    paginate_by = 24
+    paginate_by = 16

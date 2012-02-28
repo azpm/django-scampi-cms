@@ -57,7 +57,7 @@ class PickerMixin(object):
         context = super(PickerMixin, self).get_context_data(*args, **kwargs)
         
         #give the template the current picker
-        context.update({'picker': self.picker, 'base_categories': self.base_categories, })
+        context.update({'picker': self.picker, 'base_categories': self.base_categories})
         logger.debug("PickerMixin.get_context_data ended")
         
         return context

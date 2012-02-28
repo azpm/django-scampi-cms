@@ -1,3 +1,6 @@
+import logging
+
+from django.core.cache import cache
 from django.db.models import Q, Max
 from django.http import Http404, HttpResponseServerError
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect
@@ -9,6 +12,7 @@ from libscampi.contrib.cms.conduit.models import DynamicPicker
 
 class PickerMixin(object):
     picker = None
+    base_categories = None
     
     def get(self, request, *args, **kwargs):
         """
@@ -22,7 +26,36 @@ class PickerMixin(object):
             raise Http404
             
         if self.picker.content != ContentType.objects.get_by_natural_key('newsengine','Publish'):
-        #ContentType.objects.get_for_model(Publish):
             raise Http404("Picker Archives only work for Published Stories")
             
+        #every PublishPicking picker has base story categories that define it
+        cat_cache_key = "picker:base:categories:%d" % self.picker.id
+        categories = cache.get(cat_cache_key, set())
+        
+        if not categories:
+            keep_these = ('story__categories__id__in','story__categories__id__exact')
+            if isinstance(self.picker.include_filters, list):
+                for f in self.picker.include_filters:
+                    for k in f.keys():
+                        if k in keep_these:
+                            categories|=set(f[k]) #build a set of our base categories
+            else:
+                logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
+            
+            categories = StoryCategory.objects.filter(pk__in=categories, browsable=True)
+            cache.set(cat_cache_key, categories, 60*60)
+            
+        self.base_categories = categories
+            
         return super(PickerMixin, self).get(request, *args, **kwargs)
+        
+    def get_context_data(self, *args, **kwargs):
+        logger.debug("PickerMixin.get_context_data started")
+        #get the existing context
+        context = super(PickerMixin, self).get_context_data(*args, **kwargs)
+        
+        #give the template the current picker
+        context.update({'picker': self.picker, 'base_categories': self.base_categories, })
+        logger.debug("PickerMixin.get_context_data ended")
+        
+        return context

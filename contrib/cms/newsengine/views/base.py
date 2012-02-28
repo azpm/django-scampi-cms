@@ -58,7 +58,6 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         We do this because the archives themselves will exclude things that
         haven't been published yet, and will always show expired stories.
         """
-        
         exclude_these = ('start', 'end', 'end__isnull')
         
         #loop over the inclusion filters and update the qs
@@ -70,7 +69,8 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
                             f.pop(k) #this strips anything we dont want
                     qs = qs.filter(**f)
             else:
-                qs = qs.filter(**f)
+                logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
+                
         
         if self.picker.exclude_filters:
             if isinstance(self.picker.include_filters, list):
@@ -80,13 +80,13 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
                             f.pop(k) #strips unneeded filters
                     qs = qs.exclude(**f)
             else:
-                qs = qs.exclude(**f)
+                logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
         
-        cat_cache_key = "picker:categories:%d" % self.picker.id
+        cat_cache_key = "picker:avail:categories:%d" % self.picker.id
         categories = cache.get(cat_cache_key, None)
         
         if not categories:
-            categories = StoryCategory.genera.for_cloud(qs)
+            categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=self.base_category)
             cache.set(cat_cache_key, categories, 60*60)
             
         if self.limits:
@@ -106,7 +106,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
         
         #give the template the current picker
-        context.update({'picker': self.picker, 'categories': self.available_categories, 'limits': self.limits})
+        context.update({'categories': self.available_categories, 'limits': self.limits})
         logger.debug("NewsEngineArchivePage.get_context_data ended")
         return context
 

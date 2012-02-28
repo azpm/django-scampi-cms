@@ -1,4 +1,14 @@
 import math
+import logging
+
+from django.core.cache import cache
+from django.db.models import Q, Max
+from django.contrib.contenttypes.models import ContentType
+
+from libscampi.contrib.cms.newsengine.models import StoryCategory
+
+logger = logging.getLogger('libscampi.contrib.cms.newsengine.utils')
+
 # Font size distribution algorithms
 LOGARITHMIC, LINEAR = 1, 2
 
@@ -46,3 +56,21 @@ def calculate_cloud(categories, steps=4, distribution=LOGARITHMIC):
                     font_set = True
     
     return categories
+    
+def cache_publishpicker_base_cats(sender, instance, **kwargs):
+    if instance.content == ContentType.objects.get_by_natural_key('newsengine','Publish'):
+        #every PublishPicking picker has base story categories that define it
+        cat_cache_key = "picker:base:categories:%d" % instance.pk
+        keep_these = ('story__categories__id__in','story__categories__id__exact')
+        categories = set()
+        
+        if isinstance(instance.include_filters, list):
+            for f in self.picker.include_filters:
+                for k in f.keys():
+                    if k in keep_these:
+                        categories|=set(f[k]) #build a set of our base categories
+        else:
+            logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
+            
+        base_cats = StoryCategory.objects.filter(pk__in=categories, browsable=True)
+        cache.set(cat_cache_key, base_cats, 60*60)

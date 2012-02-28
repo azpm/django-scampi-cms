@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from libscampi.core.fields import PickledObjectField 
 from libscampi.contrib.cms.communism.models import Commune
 from libscampi.utils.functional import cached_property
+from libscampi.contrib.cms.newsengine.util import cache_publishpicker_base_cats
 
 #local imports
 from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template
@@ -42,8 +43,6 @@ class PickerTemplate(models.Model):
         
     def __unicode__(self):
         return self.name
-
-models.signals.post_save.connect(cache_picker_template, sender=PickerTemplate)
 
 class PickerBase(models.Model):
     name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
@@ -127,3 +126,6 @@ class StaticPicker(PickerBase):
         
     def natural_key(self):
         return (self.commune.keyname, self.commune.display_order, self.namedbox.gridy, self.namedbox.gridx, self.namedbox.display_order, self.namedbox.keyname)
+        
+models.signals.post_save.connect(cache_publishpicker_base_cats, sender=DynamicPicker)
+models.signals.post_save.connect(cache_picker_template, sender=PickerTemplate)

@@ -160,8 +160,8 @@ def build_pagelist(pages, currentpage):
             
     return "".join(html)
     
-@register.simple_tag
-def chain_categories_from_get(needle, haystack):
+@register.simple_tag(takes_context=True)
+def chain_archival_categories(context, needle, haystack):
     
     if haystack:
         category_pathing = "%s+%s" % ("+".join([t.keyname for t in haystack]), needle.keyname)
@@ -172,8 +172,8 @@ def chain_categories_from_get(needle, haystack):
     
     return url
     
-@register.simple_tag
-def dechain_categories_from_get(needle, haystack):
+@register.simple_tag(takes_context=True)
+def dechain_archival_categories(context, needle, haystack):
     category_pathing = "%s" % "+".join([t.keyname for t in haystack if t != needle])
     
     if category_pathing == '':

@@ -17,12 +17,10 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     limits = None
     available_categories = None
     
-    def get(self, request, *args, **kwargs):
-        logger.debug(request.GET)
-    
+    def get(self, request, *args, **kwargs):    
         #keyname specified in url
-        if 'c' in request.GET:
-            limits = request.GET.get('c','').split(' ')
+        if 'categories' in kwargs:
+            limits = kwargs.pop('categories').split('+')
             logger.debug(limits)
             
             filters = [Q(keyname=value) for value in limits]

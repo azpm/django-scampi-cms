@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from libscampi.core.fields import PickledObjectField 
 from libscampi.contrib.cms.communism.models import Commune
 from libscampi.utils.functional import cached_property
-from libscampi.contrib.cms.newsengine.util import cache_publishpicker_base_cats
+from libscampi.contrib.cms.newsengine.utils import cache_publishpicker_base_cats
 
 #local imports
 from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template

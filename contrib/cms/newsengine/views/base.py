@@ -124,6 +124,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         
     def get_context_data(self, *args, **kwargs):
         logger.debug("NewsEngineArchivePage.get_context_data started")
+        logger.debug(kwargs)
         #get the existing context
         context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
         

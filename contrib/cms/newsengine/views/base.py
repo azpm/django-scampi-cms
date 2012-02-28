@@ -125,6 +125,7 @@ class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
 class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
     
     def get_template_names(self):
+        logger.degug("should be called")
         tpl_list = (
             "%s/newsengine/archive/%s/%s/%s/year.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
             "%s/newsengine/archive/%s/%s/year.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),

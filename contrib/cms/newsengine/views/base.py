@@ -14,6 +14,8 @@ from .mixins import PublishStoryMixin
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.views')
 
 class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
+    picker_categories = None
+    
     """
     Base page for newsengine archives
     
@@ -59,24 +61,26 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
             else:
                 qs = qs.exclude(**f)
         
-        
-        return qs
-        
-    def get_context_data(self, *args, **kwargs):
-        #get the existing context
-        context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
-        
-        qs = context['object_list']
-        
         cat_cache_key = "picker:categories:%d" % self.picker.id
         categories = cache.get(cat_cache_key, None)
         
         if not categories:
             categories = StoryCategory.genera.for_cloud(qs)
             cache.set(cat_cache_key, categories, 60*60)
+            
+        self.picker_categories = categories
+        
+        
+        return qs
+        
+    def get_context_data(self, *args, **kwargs):
+        #get the existing context
+        context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
+            
+       
         
         #give the templat the current picker
-        context.update({'picker': self.picker, 'categories': categories})
+        context.update({'picker': self.picker, 'categories': self.picker_categories})
             
         return context
 

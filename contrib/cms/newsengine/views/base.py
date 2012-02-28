@@ -43,7 +43,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     provides the picker-pruned initial queryset
     """
     def get_queryset(self):
-        logger.debug("NewsEngineArchivePage.get_queryset called")
+        assert False
         
         qs = self.model.objects.distinct().select_related().all()
         

@@ -129,6 +129,37 @@ def category_cloud(parser, token):
                 })
     return cloud_node(bits[1], bits[3], **kwargs)
     
+@register.simple_tag
+def build_pagelist(pages, currentpage):
+    if currentpage > pages[-1]:
+        return u""
+
+    if currentpage < 8:
+        if currentpage-4 > pages[0]:
+            list = pages[currentpage-4:currentpage+4:1]
+        else:
+            max = 8-currentpage
+            list = pages[0:currentpage+max:1]
+    elif currentpage >= 8:
+        if currentpage+4 < pages[-1]:
+            list = pages[currentpage-4:currentpage+4:1]
+        else:
+            max = pages[-1] - currentpage
+            list = pages[currentpage-4:currentpage+max:1]
+    
+    li = """<li %(class)s><a href="?page=%(page)d">%(page)d</a></li>"""
+    html = []
+    
+    for page in list:
+        if page == currentpage:
+            css = 'class="active"'
+        else:
+            css = ""
+            
+        html.append(li % {'class': css, 'page': page})
+            
+    return "".join(html)
+    
 """
 Some helpers for our ridiculously large website configuration & commenting
 """

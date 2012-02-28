@@ -7,6 +7,7 @@ from libscampi.contrib.cms.communism.models import Javascript, StyleSheet
 from libscampi.contrib.cms.communism.views.mixins import html_link_refs
 from libscampi.contrib.cms.views.base import CMSPageNoView
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
+from libscampi.contrib.cms.newsengine.models import StoryCategory
 
 from .mixins import PublishStoryMixin
 
@@ -65,8 +66,17 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         #get the existing context
         context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
         
+        qs = context['object_list']
+        
+        cat_cache_key = "picker:categories:%d" % self.picker.id
+        categories = cache.get(cat_cache_key, None)
+        
+        if not categories:
+            categories = StoryCategory.genera.for_cloud(qs)
+            cache.set(cat_cache_key, categories, 60*60)
+        
         #give the templat the current picker
-        context.update({'picker': self.picker})
+        context.update({'picker': self.picker, 'categories': categories})
             
         return context
 

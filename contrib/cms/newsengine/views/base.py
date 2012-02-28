@@ -18,6 +18,8 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     available_categories = None
     
     def get(self, request, *args, **kwargs):    
+        logger.debug("NewsEngineArchivePage.get called")
+        
         #keyname specified in url
         if 'categories' in kwargs:
             limits = kwargs.pop('categories').split('+')
@@ -41,6 +43,8 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     provides the picker-pruned initial queryset
     """
     def get_queryset(self):
+        logger.debug("NewsEngineArchivePage.get_queryset called")
+        
         qs = self.model.objects.distinct().select_related().all()
         
         """
@@ -100,12 +104,13 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         return qs
         
     def get_context_data(self, *args, **kwargs):
+        logger.debug("NewsEngineArchivePage.get_context_data started")
         #get the existing context
         context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
         
         #give the template the current picker
         context.update({'picker': self.picker, 'categories': self.available_categories, 'limits': self.limits})
-            
+        ogger.debug("NewsEngineArchivePage.get_context_data ended")
         return context
 
 

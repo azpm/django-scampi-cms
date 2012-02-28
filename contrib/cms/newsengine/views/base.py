@@ -100,6 +100,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         else:
             self.available_categories = categories
         
+        logger.debug(qs)
         
         return qs
         

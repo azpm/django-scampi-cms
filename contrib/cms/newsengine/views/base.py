@@ -42,9 +42,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     
     provides the picker-pruned initial queryset
     """
-    def get_queryset(self):
-        assert False
-        
+    def get_queryset(self):        
         qs = self.model.objects.distinct().select_related().all()
         
         """
@@ -100,9 +98,29 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         else:
             self.available_categories = categories
         
-        logger.debug(qs)
-        
         return qs
+        
+    def paginate_queryset(self, queryset, page_size):
+        assert False
+        """
+        Paginate the queryset, if needed.
+        """
+        paginator = self.get_paginator(queryset, page_size, allow_empty_first_page=self.get_allow_empty())
+        page = self.kwargs.get('page') or self.request.GET.get('page') or 1
+        try:
+            page_number = int(page)
+        except ValueError:
+            if page == 'last':
+                page_number = paginator.num_pages
+            else:
+                raise Http404(_(u"Page is not 'last', nor can it be converted to an int."))
+        try:
+            page = paginator.page(page_number)
+            return (paginator, page, page.object_list, page.has_other_pages())
+        except InvalidPage:
+            raise Http404(_(u'Invalid page (%(page_number)s)') % {
+                                'page_number': page_number
+            })
         
     def get_context_data(self, *args, **kwargs):
         logger.debug("NewsEngineArchivePage.get_context_data started")

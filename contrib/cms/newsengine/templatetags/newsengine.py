@@ -213,7 +213,7 @@ def dechain_archival_categories(context, needle, haystack, section, picker):
             else:
                 url = reverse("cat-limited-published-story-archive-year", args=[section,picker,category_pathing,year])
         else:
-            url = reverse("cat-limited-published-story-archive", kwargs={section,picker,category_pathing])
+            url = reverse("cat-limited-published-story-archive", args=[section,picker,category_pathing])
     
     return url
     

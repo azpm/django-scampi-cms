@@ -43,7 +43,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     provides the picker-pruned initial queryset
     """
     def get_queryset(self):        
-        qs = self.model.objects.distinct()
+        qs = self.model.objects.distinct().aggregate(latest_date=Max('start'))
         
         """.select_related(
             "story__categories",

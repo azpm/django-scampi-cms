@@ -175,15 +175,15 @@ def chain_archival_categories(context, needle, haystack, section, picker):
         if month:
             if day:
                 url_kwargs.update({'year': year, 'month': month, 'day': day})
-                url = reverse("cat-limited-published-story-archive-day", kwargs=url_kwargs)
+                url = reverse("newsengine:cat-limited-published-story-archive-day", kwargs=url_kwargs)
             else:
                 url_kwargs.update({'year': year, 'month': month})
-                url = reverse("cat-limited-published-story-archive-month", kwargs=url_kwargs)
+                url = reverse("newsengine:cat-limited-published-story-archive-month", kwargs=url_kwargs)
         else:
             url_kwargs.update({'year': year})
-            url = reverse("cat-limited-published-story-archive-year", kwargs=url_kwargs)
+            url = reverse("newsengine:cat-limited-published-story-archive-year", kwargs=url_kwargs)
     else:
-        url = reverse("cat-limited-published-story-archive", kwargs=url_kwargs)
+        url = reverse("newsengine:cat-limited-published-story-archive", kwargs=url_kwargs)
     
     return url
     

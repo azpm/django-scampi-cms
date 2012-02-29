@@ -7,4 +7,4 @@ class PublishedManager(models.Manager):
         
 class CategoryGenera(models.Manager):
     def for_cloud(self, qs):
-        return super(CategoryGenera, self).get_query_set().filter(story__publish__in=qs, browsable=True).distinct().annotate(occurances=Count('story'))
+        return super(CategoryGenera, self).get_query_set().distinct().filter(story__publish__in=qs, browsable=True).annotate(occurances=Count('story')).values('id','title','keyname','occurances')

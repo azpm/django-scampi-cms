@@ -106,7 +106,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
         
         if self.limits:
-            get_args = "+".join([t.keyname for t in self.limits])
+            get_args = u"c=%s" % "+".join([t.keyname for t in self.limits])
         else:
             get_args = None
         

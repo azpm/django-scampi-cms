@@ -131,7 +131,7 @@ def category_cloud(parser, token):
     return cloud_node(bits[1], bits[3], **kwargs)
     
 @register.simple_tag
-def build_pagelist(pages, currentpage):
+def build_pagelist(pages, currentpage, get_args = None):
     if currentpage > pages[-1]:
         return u""
 
@@ -148,7 +148,10 @@ def build_pagelist(pages, currentpage):
             max = pages[-1] - currentpage
             list = pages[currentpage-4:currentpage+max:1]
     
-    li = """<li %(class)s><a href="?page=%(page)d">%(page)d</a></li>"""
+    if get_args:
+        li = """<li %(class)s><a href="?page=%(page)d&%(get_args)s">%(page)d</a></li>"""
+    else:
+        li = """<li %(class)s><a href="?page=%(page)d">%(page)d</a></li>"""
     html = []
     
     for page in list:
@@ -156,8 +159,11 @@ def build_pagelist(pages, currentpage):
             css = 'class="active"'
         else:
             css = ""
-            
-        html.append(li % {'class': css, 'page': page})
+        
+        if get_args:
+            html.append(li % {'class': css, 'page': page, 'get_args': get_args})
+        else:
+            html.append(li % {'class': css, 'page': page})
             
     return "".join(html)
     

@@ -105,8 +105,13 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         #get the existing context
         context = super(NewsEngineArchivePage, self).get_context_data(*args, **kwargs)
         
+        if self.limits:
+            get_args = "+".join([t.keyname for t in self.limits])
+        else:
+            get_args = None
+        
         #give the template the current picker
-        context.update({'categories': self.available_categories, 'limits': self.limits})
+        context.update({'categories': self.available_categories, 'limits': self.limits, 'get_args': get_args})
         logger.debug("NewsEngineArchivePage.get_context_data ended")
         return context
 

@@ -43,7 +43,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     provides the picker-pruned initial queryset
     """
     def get_queryset(self):        
-        qs = self.model.objects.distinct().aggregate(latest_date=Max('start'))
+        qs = self.model.objects.distinct()
         
         """.select_related(
             "story__categories",
@@ -119,8 +119,10 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         else:
             get_args = None
         
+        qs = context['object_list']
+        
         #give the template the current picker
-        context.update({'categories': self.available_categories, 'limits': self.limits, 'get_args': get_args})
+        context.update({'categories': self.available_categories, 'limits': self.limits, 'get_args': get_args, 'latest_date': qs.aggregate(latest_date=Max('start'))})
         logger.debug("NewsEngineArchivePage.get_context_data ended")
         return context
 

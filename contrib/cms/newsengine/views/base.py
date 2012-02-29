@@ -82,12 +82,12 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
             else:
                 logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
         
-        cat_cache_key = "picker:avail:categories:%d" % self.picker.id
-        categories = cache.get(cat_cache_key, None)
+        #cat_cache_key = "picker:avail:categories:%d" % self.picker.id
+        #categories = cache.get(cat_cache_key, None)
         
-        if not categories:
-            categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=self.base_categories)
-            cache.set(cat_cache_key, categories, 60*60)
+        #if not categories:
+        categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=self.base_categories)
+        #    cache.set(cat_cache_key, categories, 60*60)
             
         if self.limits:
             filters = [Q(story__categories__pk=value[0]) for value in self.limits.values_list('id')]

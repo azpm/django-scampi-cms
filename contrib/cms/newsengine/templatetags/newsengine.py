@@ -169,17 +169,21 @@ def chain_archival_categories(context, needle, haystack, section, picker):
         category_pathing = "%s+%s" % ("+".join([t.keyname for t in haystack]), needle.keyname)
     else:
         category_pathing = "%s" % needle.keyname
-        
+    
+    url_kwargs = {'keyname': section, 'picker': picker, 'categories': category_pathing}
     if year:
         if month:
             if day:
-                url = reverse("cat-limited-published-story-archive-day", args=[section,picker,category_pathing,year,month,day])
+                url_kwargs.update({'year': year, 'month': month, 'day': day})
+                url = reverse("cat-limited-published-story-archive-day", kwargs=url_kwargs)
             else:
-                url = reverse("cat-limited-published-story-archive-month", args=[section,picker,category_pathing,year,month])
+                url_kwargs.update({'year': year, 'month': month})
+                url = reverse("cat-limited-published-story-archive-month", kwargs=url_kwargs)
         else:
-            url = reverse("cat-limited-published-story-archive-year", args=[section,picker,category_pathing,year])
+            url_kwargs.update({'year': year})
+            url = reverse("cat-limited-published-story-archive-year", kwargs=url_kwargs])
     else:
-        url = reverse("cat-limited-published-story-archive", args=[section,picker,category_pathing])
+        url = reverse("cat-limited-published-story-archive", kwargs=url_kwargs)
     
     return url
     
@@ -209,7 +213,7 @@ def dechain_archival_categories(context, needle, haystack, section, picker):
             else:
                 url = reverse("cat-limited-published-story-archive-year", args=[section,picker,category_pathing,year])
         else:
-            url = reverse("cat-limited-published-story-archive", args=[section,picker,category_pathing])
+            url = reverse("cat-limited-published-story-archive", kwargs={section,picker,category_pathing])
     
     return url
     

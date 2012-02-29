@@ -181,7 +181,7 @@ def chain_archival_categories(context, needle, haystack, section, picker):
                 url = reverse("cat-limited-published-story-archive-month", kwargs=url_kwargs)
         else:
             url_kwargs.update({'year': year})
-            url = reverse("cat-limited-published-story-archive-year", kwargs=url_kwargs])
+            url = reverse("cat-limited-published-story-archive-year", kwargs=url_kwargs)
     else:
         url = reverse("cat-limited-published-story-archive", kwargs=url_kwargs)
     

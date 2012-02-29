@@ -43,7 +43,14 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
     provides the picker-pruned initial queryset
     """
     def get_queryset(self):        
-        qs = self.model.objects.distinct().select_related().all()
+        qs = self.model.objects.distinct().select_related(
+            "story__categories",
+            "story__author__firstname",
+            "story__author__lastname",
+            "thumbnail__file",
+            "thumbnail__caption",
+            "story__article__video__inlines",
+        )
         
         """
         this is a hardcoded "hack"

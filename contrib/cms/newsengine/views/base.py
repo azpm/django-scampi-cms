@@ -21,8 +21,8 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         logger.debug("NewsEngineArchivePage.get called")
         
         #keyname specified in url
-        if 'categories' in kwargs:
-            limits = kwargs.pop('categories').split('+')
+        if 'c' in request.GET:
+            limits = request.GET.get('c','').split(' ')
             logger.debug(limits)
             
             filters = [Q(keyname=value) for value in limits]

@@ -162,58 +162,25 @@ def build_pagelist(pages, currentpage):
     return "".join(html)
     
 @register.simple_tag(takes_context=True)
-def chain_archival_categories(context, needle, haystack, section, picker):
-    year, month, day = context.get('year',None),  context.get('month',None), context.get('day',None)
+def chain_archival_categories(context, needle, haystack):
     
     if haystack:
         category_pathing = "%s+%s" % ("+".join([t.keyname for t in haystack]), needle.keyname)
     else:
         category_pathing = "%s" % needle.keyname
-    
-    url_kwargs = {'keyname': section, 'picker': picker, 'categories': category_pathing}
-    if year:
-        if month:
-            if day:
-                url_kwargs.update({'year': year, 'month': month, 'day': day})
-                url = reverse("cms:cat-limited-published-story-archive-day", kwargs=url_kwargs)
-            else:
-                url_kwargs.update({'year': year, 'month': month})
-                url = reverse("cms:cat-limited-published-story-archive-month", kwargs=url_kwargs)
-        else:
-            url_kwargs.update({'year': year})
-            url = reverse("cms:cat-limited-published-story-archive-year", kwargs=url_kwargs)
-    else:
-        url = reverse("cms:cat-limited-published-story-archive", kwargs=url_kwargs)
+        
+    url = "?c=%s" % category_pathing
     
     return url
     
 @register.simple_tag(takes_context=True)
-def dechain_archival_categories(context, needle, haystack, section, picker):
-    year, month, day = context.get('year',None),  context.get('month',None), context.get('day',None)
-    
+def dechain_archival_categories(context, needle, haystack):
     category_pathing = "%s" % "+".join([t.keyname for t in haystack if t != needle])
-    if category_pathing == "":
-        if year:
-            if month:
-                if day:
-                    url = reverse("published-story-archive-day", args=[section,picker,year,month,day])
-                else:
-                    url = reverse("published-story-archive-month", args=[section,picker,year,month])
-            else:
-                url = reverse("published-story-archive-year", args=[section,picker,year])
-        else:
-            url = reverse("published-story-archive", args=[section,picker])
+    
+    if category_pathing == '':
+        url = "./"
     else:
-        if year:
-            if month:
-                if day:
-                    url = reverse("cat-limited-published-story-archive-day", args=[section,picker,category_pathing,year,month,day])
-                else:
-                    url = reverse("cat-limited-published-story-archive-month", args=[section,picker,category_pathing,year,month])
-            else:
-                url = reverse("cat-limited-published-story-archive-year", args=[section,picker,category_pathing,year])
-        else:
-            url = reverse("cat-limited-published-story-archive", args=[section,picker,category_pathing])
+        url = "?c=%s" % category_pathing
     
     return url
     

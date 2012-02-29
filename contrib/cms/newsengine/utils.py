@@ -41,30 +41,18 @@ def calculate_cloud(categories, steps=4, distribution=LOGARITHMIC):
     ``distribution`` defines the type of font size distribution
     algorithm which will be used - logarithmic or linear. It must be
     one of ``LOGARITHMIC`` or ``LINEAR``.
-    """
-    if isinstance(categories, dict):
-        cat_is_dict = True
-    else:
-        cat_is_dict  = False
-    
+    """    
     if len(categories) > 0:
-        if cat_is_dict:
-            counts = [category['occurances'] for category in categories]
-        else:
-            counts = [category.occurances for category in categories]
+        counts = [category['occurances'] for category in categories]
         min_weight = float(min(counts))
         max_weight = float(max(counts))
         thresholds = _calculate_thresholds(min_weight, max_weight, steps)
         for category in categories:
             font_set = False
-            if cat_is_dict:
-                weight = _calculate_weight(category['occurances'], max_weight, distribution)
-            else:
-                weight = _calculate_weight(category.occurances, max_weight, distribution)
-            
+            weight = _calculate_weight(category['occurances'], max_weight, distribution)            
             for i in range(steps):
                 if not font_set and weight <= thresholds[i]:
-                    category.font_size = i + 1
+                    category['font_size'] = i + 1
                     font_set = True
     
     return categories

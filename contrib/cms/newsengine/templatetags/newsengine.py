@@ -198,7 +198,7 @@ def dechain_archival_categories(context, needle, haystack):
             else:
                 url = reverse("published-story-archive-year", args=[year])
         else:
-            url = reverse("published-story-archive"])
+            url = reverse("published-story-archive")
     else:
         if year:
             if month:

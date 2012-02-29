@@ -6,6 +6,6 @@ from libscampi.contrib.cms.newsengine.urls import urlpatterns as newsengine_arch
 
 urlpatterns = patterns('libscampi.contrib.cms.communism.views',
     url(r'^(?P<keyname>[\w\.\-]+)/(?P<picker>[\w-]+)/', include(newsengine_archive_urls)),
-    url(r'^(?P<keyname>[\w\.\-]+)/$', view_commune, name="view-commune"),
+    url(r'^(?P<keyname>[\w\.\-]+)/$', view_commune, name="view-section"),
     url(r'^$', primary_section, name="primary-section"),
 )

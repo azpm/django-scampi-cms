@@ -235,7 +235,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 Q(mediainlinetemplate__imagetype__image__id__in=article.image_inlines.values_list('id')) |
                 Q(mediainlinetemplate__audiotype__audio__id__in=article.audio_inlines.values_list('id')) |
                 Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
-                Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')) |
+                Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id'))
             ).order_by('precedence')
             cache.set(cached_css_key, styles, 60*10)
            

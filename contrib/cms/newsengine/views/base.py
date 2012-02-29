@@ -227,7 +227,6 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 #force to the current theme
                 Q(theme__id=theme.id)
             ).order_by('precedence')
-            logger.debug("stylsheet sql: %s" % styles.query)
             cache.set(cached_css_key, styles, 60*10)
            
         #build a simple collection of styles
@@ -271,7 +270,6 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 #force to the current theme
                 Q(theme__id=theme.id)
             ).order_by('precedence')
-            logger.debug("scripts sql: %s" % scripts.query)
             cache.set(cached_scripts_key, scripts, 60*20)
                        
         #build a simple collection of styles

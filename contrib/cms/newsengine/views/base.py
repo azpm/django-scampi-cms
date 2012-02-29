@@ -86,7 +86,7 @@ class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
         categories = cache.get(cat_cache_key, None)
         
         if not categories:
-            categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=self.base_categories)
+            categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=self.base_categories).values('id','name','keyname')
             cache.set(cat_cache_key, categories, 60*60)
             
         if self.limits:

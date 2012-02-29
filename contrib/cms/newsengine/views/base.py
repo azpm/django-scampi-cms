@@ -211,11 +211,11 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
             logger.debug("missed css cache on %s" % cached_css_key)
             styles = StyleSheet.objects.filter(active=True, theme__id=theme.id).filter(
                 #playlist finders
-                Q(story.video_playlist_id__isnull=False) & Q(mediaplaylisttemplate__videoplaylist__pk = story.video_playlist_id) |
-                Q(story.image_playlist_id__isnull=False) & Q(mediaplaylisttemplate__imageplaylist__pk = story.image_playlist_id) |
-                Q(story.audio_playlist_id__isnull=False) & Q(mediaplaylisttemplate__audioplaylist__pk = story.audio_playlist_id) |
-                Q(story.document_playlist_id__isnull=False) & Q(mediaplaylisttemplate__documentplaylist__pk = story.document_playlist_id) |
-                Q(story.object_playlist_id__isnull=False) & Q(mediaplaylisttemplate__objectplaylist__pk = story.object_playlist_id) |
+                Q(mediaplaylisttemplate__videoplaylist__pk__isnull=False) & Q(mediaplaylisttemplate__videoplaylist__pk = story.video_playlist_id) |
+                Q(mediaplaylisttemplate__imageplaylist__pk__isnull=False) & Q(mediaplaylisttemplate__imageplaylist__pk = story.image_playlist_id) |
+                Q(mediaplaylisttemplate__audioplaylist__pk__isnull=False) & Q(mediaplaylisttemplate__audioplaylist__pk = story.audio_playlist_id) |
+                Q(mediaplaylisttemplate__documentplaylist__pk__isnull=False) & Q(mediaplaylisttemplate__documentplaylist__pk = story.document_playlist_id) |
+                Q(mediaplaylisttemplate__objectplaylist__pk__isnull=False) & Q(mediaplaylisttemplate__objectplaylist__pk = story.object_playlist_id) |
                 #inline finders
                 Q(mediainlinetemplate__videotype__video__id__in=article.video_inlines.values_list('id')) |
                 Q(mediainlinetemplate__imagetype__image__id__in=article.image_inlines.values_list('id')) |

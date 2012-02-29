@@ -171,9 +171,9 @@ def build_pagelist(pages, currentpage, get_args = None):
 def chain_archival_categories(context, needle, haystack):
     
     if haystack:
-        category_pathing = "%s+%s" % ("+".join([t.keyname for t in haystack]), needle.keyname)
+        category_pathing = "%s+%s" % ("+".join([t.keyname for t in haystack]), needle['keyname'])
     else:
-        category_pathing = "%s" % needle.keyname
+        category_pathing = "%s" % needle['keyname']
         
     url = "?c=%s" % category_pathing
     
@@ -181,7 +181,7 @@ def chain_archival_categories(context, needle, haystack):
     
 @register.simple_tag(takes_context=True)
 def dechain_archival_categories(context, needle, haystack):
-    category_pathing = "%s" % "+".join([t.keyname for t in haystack if t != needle])
+    category_pathing = "%s" % "+".join([t.keyname for t in haystack if t.id != needle['id']])
     
     if category_pathing == '':
         url = "./"

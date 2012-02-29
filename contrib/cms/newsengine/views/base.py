@@ -224,9 +224,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')) |
                 #always include base
                 Q(base=True),
-                #force to the current theme
-                Q(theme__id=theme.id)
-            ).order_by('precedence')
+            ).filter(theme__id=theme.id).order_by('precedence')
             cache.set(cached_css_key, styles, 60*10)
            
         #build a simple collection of styles
@@ -267,9 +265,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')) |
                 #always include base
                 Q(base=True),
-                #force to the current theme
-                Q(theme__id=theme.id)
-            ).order_by('precedence')
+            ).filter(theme__id=theme.id).order_by('precedence')
             cache.set(cached_scripts_key, scripts, 60*20)
                        
         #build a simple collection of styles

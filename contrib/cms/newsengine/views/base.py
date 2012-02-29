@@ -209,7 +209,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
         #cache empty, get the styles and refill the cache
         if not styles:
             logger.debug("missed css cache on %s" % cached_css_key)
-            styles = StyleSheet.objects.filter(active=True).filter(
+            styles = StyleSheet.objects.filter(active=True, theme__id=theme.id).filter(
                 #playlist finders
                 Q(mediaplaylisttemplate__videoplaylist__pk = story.video_playlist_id) |
                 Q(mediaplaylisttemplate__imageplaylist__pk = story.image_playlist_id) |
@@ -223,8 +223,8 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
                 Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')) |
                 #always include base
-                Q(base=True),
-            ).filter(theme__id=theme.id).order_by('precedence')
+                Q(base=True)
+            ).order_by('precedence')
             cache.set(cached_css_key, styles, 60*10)
            
         #build a simple collection of styles
@@ -250,7 +250,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
         #cache empty, get the scripts and refill the cache
         if not scripts:
             logger.debug("missed css cache on %s" % cached_scripts_key)
-            scripts = Javascript.objects.filter(active=True).filter(
+            scripts = Javascript.objects.filter(active=True, theme__id=theme.id).filter(
                 #playlist finders
                 Q(mediaplaylisttemplate__videoplaylist__pk = story.video_playlist_id) |
                 Q(mediaplaylisttemplate__imageplaylist__pk = story.image_playlist_id) |
@@ -264,8 +264,8 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
                 Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')) |
                 #always include base
-                Q(base=True),
-            ).filter(theme__id=theme.id).order_by('precedence')
+                Q(base=True)
+            ).order_by('precedence')
             cache.set(cached_scripts_key, scripts, 60*20)
                        
         #build a simple collection of styles

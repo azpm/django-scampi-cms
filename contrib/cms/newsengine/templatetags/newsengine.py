@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django import template
+from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.conf import settings
 from django.contrib.markup.templatetags.markup import markdown
@@ -162,24 +163,53 @@ def build_pagelist(pages, currentpage):
     
 @register.simple_tag(takes_context=True)
 def chain_archival_categories(context, needle, haystack):
+    year, month, day = context.get('year',None),  context.get('month',None), context.get('day',None)
     
     if haystack:
         category_pathing = "%s+%s" % ("+".join([t.keyname for t in haystack]), needle.keyname)
     else:
         category_pathing = "%s" % needle.keyname
         
-    url = "?c=%s" % category_pathing
+    if year:
+        if month:
+            if day:
+                url = reverse("cat-limited-published-story-archive-day", args=[category_pathing,year,month,day])
+            else:
+                url = reverse("cat-limited-published-story-archive-month", args=[category_pathing,year,month])
+        else:
+            url = reverse("cat-limited-published-story-archive-year", args=[category_pathing,year])
+    else:
+        url = reverse("cat-limited-published-story-archive", args=[category_pathing])
     
     return url
     
 @register.simple_tag(takes_context=True)
 def dechain_archival_categories(context, needle, haystack):
-    category_pathing = "%s" % "+".join([t.keyname for t in haystack if t != needle])
+    year, month, day = context.get('year',None),  context.get('month',None), context.get('day',None)
     
-    if category_pathing == '':
-        url = "./"
+    category_pathing = "%s" % "+".join([t.keyname for t in haystack if t != needle])
+    if category_pathing == "":
+        if year:
+            if month:
+                if day:
+                    url = reverse("published-story-archive-day", args=[year,month,day])
+                else:
+                    url = reverse("published-story-archive-month", args=[year,month])
+            else:
+                url = reverse("published-story-archive-year", args=[year])
+        else:
+            url = reverse("published-story-archive"])
     else:
-        url = "?c=%s" % category_pathing
+        if year:
+            if month:
+                if day:
+                    url = reverse("cat-limited-published-story-archive-day", args=[category_pathing,year,month,day])
+                else:
+                    url = reverse("cat-limited-published-story-archive-month", args=[category_pathing,year,month])
+            else:
+                url = reverse("cat-limited-published-story-archive-year", args=[category_pathing,year])
+        else:
+            url = reverse("cat-limited-published-story-archive", args=[category_pathing])
     
     return url
     

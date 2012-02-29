@@ -14,7 +14,7 @@ class CMSSite(object):
         cms_urls = patterns(None, 
             url(r'', include(page_urls)),
         )    
-        return cms_urls, None, None
+        return cms_urls, "cms", None
         return cms_urls, "cms", realm.keyname
     urls = property(urls)
         

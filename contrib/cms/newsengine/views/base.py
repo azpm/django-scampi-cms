@@ -262,21 +262,32 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
         #cache empty, get the scripts and refill the cache
         if not scripts:
             logger.debug("missed css cache on %s" % cached_scripts_key)
+            
+            playlist_filters = Q(base = True)
+            
+            if story.video_playlist:
+                playlist_filters |= Q(mediaplaylisttemplate__videoplaylist__pk = story.video_playlist_id)
+            
+            if story.image_playlist:
+                playlist_filters |= Q(mediaplaylisttemplate__imageplaylist__pk = story.image_playlist_id)
+                
+            if story.audio_playlist:
+                playlist_filters |= Q(mediaplaylisttemplate__audioplaylist__pk = story.audio_playlist_id)
+                
+            if story.document_playlist:
+                playlist_filters |= Q(mediaplaylisttemplate__documentplaylist__pk = story.document_playlist_id)
+                
+            if story.object_playlist:
+                playlist_filters |= Q(mediaplaylisttemplate__objectplaylist__pk = story.object_playlist_id)
+            
             scripts = Javascript.objects.filter(active=True, theme__id=theme.id).filter(
-                #playlist finders
-                Q(mediaplaylisttemplate__videoplaylist__pk = story.video_playlist_id) |
-                Q(mediaplaylisttemplate__imageplaylist__pk = story.image_playlist_id) |
-                Q(mediaplaylisttemplate__audioplaylist__pk = story.audio_playlist_id) |
-                Q(mediaplaylisttemplate__documentplaylist__pk = story.document_playlist_id) |
-                Q(mediaplaylisttemplate__objectplaylist__pk = story.object_playlist_id) |
+                playlist_filters |
                 #inline finders
                 Q(mediainlinetemplate__videotype__video__id__in=article.video_inlines.values_list('id')) |
                 Q(mediainlinetemplate__imagetype__image__id__in=article.image_inlines.values_list('id')) |
                 Q(mediainlinetemplate__audiotype__audio__id__in=article.audio_inlines.values_list('id')) |
                 Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
-                Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')) |
-                #always include base
-                Q(base=True)
+                Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id')
             ).order_by('precedence')
             cache.set(cached_scripts_key, scripts, 60*20)
                        

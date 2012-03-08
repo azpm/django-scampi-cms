@@ -58,7 +58,9 @@ def calculate_cloud(categories, steps=4, distribution=LOGARITHMIC):
     return categories
     
 def cache_publishpicker_base_cats(sender, instance, **kwargs):
-    if instance.content == ContentType.objects.get_by_natural_key('newsengine','Publish'):
+    created = kwargs.get('created', False)
+    
+    if instance.content == ContentType.objects.get_by_natural_key('newsengine','Publish') and not created:
         #every PublishPicking picker has base story categories that define it
         cat_cache_key = "picker:base:categories:%d" % instance.pk
         keep_these = ('story__categories__id__in','story__categories__id__exact')
@@ -70,7 +72,7 @@ def cache_publishpicker_base_cats(sender, instance, **kwargs):
                     if k in keep_these:
                         categories|=set(f[k]) #build a set of our base categories
         else:
-            logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
+            logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (instance.name, instance.id))
             
         base_cats = StoryCategory.objects.filter(pk__in=categories, browsable=True)
         cache.set(cat_cache_key, base_cats, 60*60)

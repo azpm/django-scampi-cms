@@ -33,7 +33,7 @@ class PickerMixin(object):
         #every PublishPicking picker has base story categories that define it
         cat_cache_key = "picker:base:categories:%d" % self.picker.id
         categories = cache.get(cat_cache_key, set())
-        assert False
+        
         if not categories:
             keep_these = ('story__categories__id__in','story__categories__id__exact')
             if isinstance(self.picker.include_filters, list):
@@ -44,9 +44,10 @@ class PickerMixin(object):
             else:
                 logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
             
-            if categories:
-                categories = StoryCategory.objects.filter(pk__in=categories, browsable=True)
-                cache.set(cat_cache_key, categories, 60*60)
+            assert False
+            
+            categories = StoryCategory.objects.filter(pk__in=categories, browsable=True)
+            cache.set(cat_cache_key, categories, 60*60)
             
         self.base_categories = categories
             

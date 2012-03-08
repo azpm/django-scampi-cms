@@ -40,11 +40,11 @@ class PickerMixin(object):
                 for f in self.picker.include_filters:
                     for k in f.keys():
                         if k in keep_these:
+                            logger.debug(type(categories))
+                            logger.debug(type(f[k]))
                             categories|=set(f[k]) #build a set of our base categories
             else:
                 logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
-            
-            
             
             categories = StoryCategory.objects.filter(pk__in=list(categories), browsable=True)
             cache.set(cat_cache_key, categories, 60*60)

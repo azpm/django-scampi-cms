@@ -66,6 +66,7 @@ class MediaTypeAdmin(admin.ModelAdmin):
     
 class DimensionalMediaTypeAdmin(MediaTypeAdmin, admin.ModelAdmin):
     fieldsets = MediaTypeAdmin.fieldsets + ( ('Attributes', {'fields': ('width', 'height')}), )
+    list_display =  MediaTypeAdmin.list_display + ('width', 'height')
     
 class InlineTemplateAdmin(admin.ModelAdmin):
     list_display = ('title',)

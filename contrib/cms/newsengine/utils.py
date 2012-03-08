@@ -67,7 +67,7 @@ def cache_publishpicker_base_cats(sender, instance, **kwargs):
         categories = set()
         
         if isinstance(instance.include_filters, list):
-            for f in self.picker.include_filters:
+            for f in instance.include_filters:
                 for k in f.keys():
                     if k in keep_these:
                         categories|=set(f[k]) #build a set of our base categories

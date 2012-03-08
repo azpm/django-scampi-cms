@@ -79,6 +79,7 @@ class MediaTypeOverrideAdmin(admin.ModelAdmin):
     
 class DimensionalMediaTypeOverrideAdmin(MediaTypeOverrideAdmin, admin.ModelAdmin):
     fieldsets = MediaTypeOverrideAdmin.fieldsets + ( ('Attributes', {'fields': ('width', 'height')}), )
+    list_display =  MediaTypeOverrideAdmin.list_display + ('width', 'height')
     
 admin.site.register(Image, FileBasedMediaAdmin)
 admin.site.register(Video, VideoMediaAdmin)

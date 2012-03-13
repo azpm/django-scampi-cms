@@ -181,7 +181,7 @@ def chain_archival_categories(context, needle, haystack):
     
 @register.simple_tag(takes_context=True)
 def dechain_archival_categories(context, needle, haystack):
-    category_pathing = "%s" % "+".join([t.keyname for t in haystack if t.id != needle['id']])
+    category_pathing = "%s" % "+".join([t.keyname for t in haystack if t.id != needle.id])
     
     if category_pathing == '':
         url = "./"

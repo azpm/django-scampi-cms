@@ -136,8 +136,10 @@ class ArticleAdmin(admin.ModelAdmin):
             if all_valid(formsets) and form_validated:
                 #self.save_model(request, new_object, form, change=False)
                 #form.save_m2m()
-                #for formset in formsets:
-                #    self.save_formset(request, form, formset, change=False)
+                arts = []
+                for formset in formsets:
+                    logger.debug(dir(formset))
+                    arts.append(formset.save(commit=False))
 
                 #self.log_addition(request, new_object)
                 #return self.response_add(request, new_object)

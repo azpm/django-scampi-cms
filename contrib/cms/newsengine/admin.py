@@ -17,8 +17,8 @@ logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
 class ArticleTranslationInline(admin.StackedInline):
     model = ArticleTranslation
     fieldsets = (
-        ('Dialect', {'fields': ['language']}),
         ('Discourse', {'fields': ('headline', 'sub_headline', 'body')}),
+        ('Dialect', {'fields': ['language']}),
     )
     extra = 1
     min_num = 1

@@ -138,7 +138,7 @@ class ArticleAdmin(admin.ModelAdmin):
                 #form.save_m2m()
                 arts = []
                 for formset in formsets:
-                    logger.debug(dir(formset))
+                    logger.debug(formset.model)
                     arts.append(formset.save(commit=False))
 
                 #self.log_addition(request, new_object)

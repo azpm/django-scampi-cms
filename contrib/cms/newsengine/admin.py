@@ -64,7 +64,7 @@ class ArticleAdmin(admin.ModelAdmin):
             'http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js',
         )
         css = {
-            'screen': ('gravity-plugins/bootstrap/css/bootstrap.css',),
+            'screen': ('gravity-plugins/bootstrap/css/bootstrap.buttons.css',),
         }
     
     """

@@ -115,7 +115,7 @@ class ArticleAdmin(admin.ModelAdmin):
             form = ModelForm(request.POST, request.FILES)
             
             if form.is_valid():
-                new_object = self.save_form(request, form, change=False)
+                new_object = form.save(commit=False)
                 form_validated = True
             else:
                 form_validated = False

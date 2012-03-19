@@ -8,6 +8,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.mail import mail_admins
 from django.template.defaultfilters import slugify
+from django.core.exceptions import PermissionDenied, ValidationError
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
 from .forms import ArticleTranslationForm, StoryForm, PublishForm
@@ -100,9 +101,48 @@ class ArticleAdmin(admin.ModelAdmin):
         return my_urls + urls
                 
     def preview(self, request, *args, **kwargs):
-        
-        
-        assert False
+        "The 'add' admin view for this model."
+        model = self.model
+        opts = model._meta
+
+        if not self.has_add_permission(request) or not self.has_change_permission(request):
+            raise PermissionDenied
+
+        ModelForm = self.get_form(request)
+        formsets = []
+        if request.method == 'POST':
+            form = ModelForm(request.POST, request.FILES)
+            
+            if form.is_valid():
+                new_object = self.save_form(request, form, change=False)
+                form_validated = True
+            else:
+                raise ValidationError
+            
+            prefixes = {}
+            for FormSet, inline in zip(self.get_formsets(request), self.inline_instances):
+                prefix = FormSet.get_default_prefix()
+                prefixes[prefix] = prefixes.get(prefix, 0) + 1
+                if prefixes[prefix] != 1:
+                    prefix = "%s-%s" % (prefix, prefixes[prefix])
+                formset = FormSet(data=request.POST, files=request.FILES,
+                                  instance=new_object,
+                                  save_as_new="_saveasnew" in request.POST,
+                                  prefix=prefix, queryset=inline.queryset(request))
+                formsets.append(formset)
+            
+            if all_valid(formsets) and form_validated:
+                #self.save_model(request, new_object, form, change=False)
+                #form.save_m2m()
+                #for formset in formsets:
+                #    self.save_formset(request, form, formset, change=False)
+
+                #self.log_addition(request, new_object)
+                #return self.response_add(request, new_object)
+                assert False
+        else:
+            raise PermissionDenied
+            
         
 class StoryAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'

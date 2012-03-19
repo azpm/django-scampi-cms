@@ -81,7 +81,7 @@ class ArticleAdmin(admin.ModelAdmin):
     #override the urls method to add our picking form fields return
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
-        urls = super(DynamicPickerAdmin, self).get_urls()
+        urls = super(ArticleAdmin, self).get_urls()
         
         my_urls = patterns('',
             url(r'^preview/$', self.admin_site.admin_view(self.preview), name="newsengine-article-preview"),

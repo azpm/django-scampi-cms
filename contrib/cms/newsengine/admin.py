@@ -20,7 +20,7 @@ class ArticleTranslationInline(admin.StackedInline):
         ('Discourse', {'fields': ('headline', 'sub_headline', 'body')}),
         ('Dialect', {'fields': ['language']}),
     )
-    extra = 1
+    extra = 0
     form = ArticleTranslationForm
 
 class ArticleAdmin(admin.ModelAdmin):

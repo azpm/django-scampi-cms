@@ -31,14 +31,6 @@
     });
     
 </script>
-{% else %}
-<script type="text/javascript">
-    django.jQuery(document).ready(function() {
-        //override the save method to bundle up the filters correctly
-        django.jQuery(".add-row > a").trigger("click");
-    });
-</script>
-
 {% endif %}
 
 {% endblock %}

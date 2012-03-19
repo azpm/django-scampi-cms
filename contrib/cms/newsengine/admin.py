@@ -118,7 +118,8 @@ class ArticleAdmin(admin.ModelAdmin):
                 new_object = self.save_form(request, form, change=False)
                 form_validated = True
             else:
-                raise PermissionDenied
+                form_validated = False
+                new_object = self.model()
             
             prefixes = {}
             for FormSet, inline in zip(self.get_formsets(request), self.inline_instances):

@@ -19,18 +19,13 @@
 
 {% block extrahead %}
 {{ block.super }}
-{% if object_id and original %}
 <script type="text/javascript">
     jQuery(document).ready(function() {
         var preview_url = "{% url admin:newsengine-article-preview %}";
         
-        //override the save method to bundle up the filters correctly
-        jQuery("#dynamicpicker_form").submit(function() {
-            return picker_form.bundle_filters();
-        });
+        
     });
     
 </script>
-{% endif %}
 
 {% endblock %}

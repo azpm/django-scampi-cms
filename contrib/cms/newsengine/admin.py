@@ -57,6 +57,13 @@ class ArticleAdmin(admin.ModelAdmin):
         return cls.sub_headline
     sub_headline.short_description = u"Sub Headline"
     
+     #provide the JS for the picking filter magic
+    class Media:
+        js = (
+            'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
+            'http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js',
+        )
+    
     """
     In addition to showing a user's username in related fields, show their full
     name too (if they have one and it differs from the username).

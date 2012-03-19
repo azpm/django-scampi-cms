@@ -141,6 +141,8 @@ class ArticleAdmin(admin.ModelAdmin):
                 #self.log_addition(request, new_object)
                 #return self.response_add(request, new_object)
                 assert False
+            else:
+                assert False
         else:
             raise PermissionDenied
             

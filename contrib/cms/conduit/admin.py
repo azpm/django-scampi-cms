@@ -26,9 +26,8 @@ class PickerTemplateAdmin(admin.ModelAdmin):
         (None, {'fields': ['content']}),
     )
     save_as = True
+    save_on_top = True
     
-
-
 class DynamicPickerAdmin(admin.ModelAdmin):
     list_display = ('name', 'keyname', 'commune', 'content', 'max_count','template')
     list_editable = ('max_count','template')
@@ -46,6 +45,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         (_('Display'), {'fields': ('template', )}),
         (_('Picking'), {'fields': ('content', 'max_count')}),
     )
+    
+    save_on_top = True
     
     def get_readonly_fields(self, request, obj=None):
         """
@@ -192,6 +193,7 @@ class StaticPickerAdmin(admin.ModelAdmin):
         ('Information', {'fields': ('namedbox', 'commune')}),
         ('HTML Links', {'fields': ('stylesheet', 'javascript')}), 
     )
+    save_on_top = True
     
     def get_readonly_fields(self, request, obj=None):
         """

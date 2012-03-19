@@ -35,6 +35,7 @@ class ArticleAdmin(admin.ModelAdmin):
     raw_id_fields = ('contributors','image_inlines', 'video_inlines', 'audio_inlines', 'document_inlines', 'object_inlines', 'external_inlines')
     readonly_fields = ('author',)
     inlines = [ArticleTranslationInline]
+    save_on_top = True
     
     def queryset(self, request):
         qs = super(ArticleAdmin, self).queryset(request)
@@ -107,6 +108,8 @@ class StoryAdmin(admin.ModelAdmin):
     raw_id_fields = ('article', 'image_playlist', 'video_playlist', 'audio_playlist', 'document_playlist', 'object_playlist','peers')
     filter_horizontal = ['categories']
 
+    save_on_top = True
+
     def headline(self, cls):
         try:
             val = ArticleTranslation.objects.get(language__code = 'en', model = cls.article_id)
@@ -137,12 +140,14 @@ class StoryAdmin(admin.ModelAdmin):
     form = StoryForm
     
 class PublishCategoryAdmin(admin.ModelAdmin):
+    save_on_top = True
     fieldsets = (
         ('Information', {'fields': ('title','keyname')}),
         ('Description', {'fields': ('description',), 'classes': ('collapse',)}),
     )
     
 class PublishStoryAdmin(admin.ModelAdmin):
+    save_on_top = True
     list_display = ('site','headline','category','start','end','published','approved_by')
     list_display_links = ('headline',)
     list_editable = ('published',)

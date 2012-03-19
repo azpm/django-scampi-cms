@@ -15,16 +15,19 @@ class RealmAdmin(admin.ModelAdmin):
         ('Meta', {'fields': ('display_order','active','secure','direct_link')}),
         ('Google Related', {'fields': (('searchable','search_collection'), 'googleid')})
     )
+    save_on_top = True
 
 class RealmNotificationAdmin(admin.ModelAdmin):
     list_display = ('realm', 'name', 'display_start', 'display_end')
     list_filter = ('realm',)
+    save_on_top = True
     
 class SectionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'realm', 'keyname', 'extends','active','display_order','generates_navigation')
     list_editable = ('active','display_order','generates_navigation')
     
     list_filter = ('realm',)
+    save_on_top = True
 
 class SectionInline(generic.GenericTabularInline):
     ct_field = 'element_type'
@@ -40,6 +43,7 @@ class SliceAdmin(admin.ModelAdmin):
     list_display = ('name', 'my_location', 'display_order')
     list_editable = ('display_order',)
     search_fields = ('name','commune__name')
+    save_on_top = True
     
     def queryset(self, request):
         qs = super(SliceAdmin, self).queryset(request)
@@ -64,6 +68,7 @@ class SliceInline(admin.TabularInline):
 class NamedBoxTemplateAdmin(admin.ModelAdmin):
     list_display = ('name',)
     fields = ('name', 'description', 'content')
+    save_on_top = True
 
 class BoxAdmin(admin.ModelAdmin):
     list_display = ('name', 'keyname', 'display_name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
@@ -79,6 +84,7 @@ class BoxAdmin(admin.ModelAdmin):
     inlines = [StaticPickerInlineAdmin]
     search_fields = ('name','keyname')
     list_per_page = 20
+    save_on_top = True
     
     def queryset(self, request):
         qs = super(BoxAdmin, self).queryset(request)
@@ -89,6 +95,7 @@ class BaseHierarchyElementAdmin(admin.ModelAdmin):
     list_display = ('name','realm','traverse_up','keyname')
     list_filter = ('section__realm',)
     search_fields = ['name','section__realm__name',]
+    save_on_top = True
     
     def traverse_up(self, cls):
         return section_path_up([cls.container], " > ")
@@ -117,6 +124,7 @@ class GenericDOMElementAdmin(admin.ModelAdmin):
     list_display = ('name', 'precedence', 'active','base', 'theme')
     list_editable = ('precedence', 'active', 'base')
     list_filter = ['theme']
+    save_on_top = True
 
 admin.site.register(Theme)
 admin.site.register(StyleSheet, GenericDOMElementAdmin)

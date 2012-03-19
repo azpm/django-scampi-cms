@@ -15,6 +15,7 @@ class MediaAdmin(object):
     date_hierarchy = 'creation_date'
     prepopulated_fields = {'slug': ('title',)}
     search_fields = ['title', 'caption']
+    save_on_top = True
 
 class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
     fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file','type')}), )
@@ -39,6 +40,7 @@ class PlaylistAdmin(object):
     date_hierarchy = 'creation_date'
     prepopulated_fields = {'slug': ('title',)}
     search_fields = ['title', 'caption']
+    save_on_top = True
    
 #play list inline block
 class RankedItemInline(object): extra = 5
@@ -63,6 +65,7 @@ class MediaTypeAdmin(admin.ModelAdmin):
     )
     
     list_display = ('title', 'keyname', 'inline_template')
+    save_on_top = True
     
 class DimensionalMediaTypeAdmin(MediaTypeAdmin, admin.ModelAdmin):
     fieldsets = MediaTypeAdmin.fieldsets + ( ('Attributes', {'fields': ('width', 'height')}), )
@@ -77,6 +80,7 @@ class MediaTypeOverrideAdmin(admin.ModelAdmin):
         ('Display', {'fields': ('template',)})
     )
     list_display = ('type', 'template')
+    save_on_top = True
     
 class DimensionalMediaTypeOverrideAdmin(MediaTypeOverrideAdmin, admin.ModelAdmin):
     fieldsets = MediaTypeOverrideAdmin.fieldsets + ( ('Attributes', {'fields': ('width', 'height')}), )

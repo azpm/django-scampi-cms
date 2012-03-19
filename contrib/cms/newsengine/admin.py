@@ -63,6 +63,9 @@ class ArticleAdmin(admin.ModelAdmin):
             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
             'http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js',
         )
+        css = {
+            'screen': ('gravity-plugins/css/bootstrap.css'),
+        }
     
     """
     In addition to showing a user's username in related fields, show their full

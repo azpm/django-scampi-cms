@@ -100,7 +100,9 @@ class ArticleAdmin(admin.ModelAdmin):
         return my_urls + urls
                 
     def preview(self, request, *args, **kwargs):
-        pass
+        
+        
+        assert False
         
 class StoryAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'

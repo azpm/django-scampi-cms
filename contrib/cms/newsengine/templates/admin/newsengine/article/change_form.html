@@ -24,7 +24,7 @@
         var preview_url = "{% url admin:newsengine-article-preview %}";
         var preview_button = "<input type='submit' value='Preview' class='preview' name='_preview'/>";
         
-        jQuery(".submit-row input").filter(":first").append(preview_button);
+        jQuery(".submit-row input").filter(":first").before(preview_button);
     });
     
 </script>

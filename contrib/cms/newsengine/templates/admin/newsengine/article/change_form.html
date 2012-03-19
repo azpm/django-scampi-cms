@@ -11,7 +11,7 @@
             {% trans "View on site" %}</a>
         </li>
     {% endif%}
-    <li><a href="{% url admin:newsengine-article-preview %}" class="viewsitelink">Preview</a>
+    <li><a href="{% url admin:newsengine-article-preview %}" id="preview-link" class="viewsitelink">Preview</a>
   </ul>
 {% endif %}{% endif %}
 
@@ -22,20 +22,7 @@
 {% if object_id and original %}
 <script type="text/javascript">
     jQuery(document).ready(function() {
-        var path = jQuery.makeArray(window.location.pathname.split("/"));
-        
-        var picker_id = {{ object_id }};
-        var content_id = {{ original.content.id }};
-    
-        var load_filters_url = "{% url admin:conduit-picking-filters-fields %}";
-        
-        var get_args = {'content_id': content_id, 'picker_id': picker_id};
-              
-        var picker_form = new Pickers();        
-        
-        //load the appropriate filter sets
-        jQuery.getJSON(load_filters_url, get_args, function(data) { picker_form.process_available(data); });
-        
+        var preview_url = "{% url admin:newsengine-article-preview %}";
         
         //override the save method to bundle up the filters correctly
         jQuery("#dynamicpicker_form").submit(function() {
@@ -43,15 +30,6 @@
         });
     });
     
-    /*
-    global errors:
-    {{errors}}
-    
-    non field errors:
-    {{adminform.form.non_field_errors}}
-    
-    
-    */
-</script>
+    </script>
 {% endif %}
 {% endblock %}

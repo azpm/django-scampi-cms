@@ -70,7 +70,6 @@ class ArticleAdmin(admin.ModelAdmin):
             field.label_from_instance = self.get_user_label
         return field
 
-    
     def get_user_label(self, user):
         name = user.get_full_name()
         username = user.username
@@ -78,6 +77,20 @@ class ArticleAdmin(admin.ModelAdmin):
             return name or username
         return (name and name != username and '%s (%s)' % (name, username)
                 or username)
+                
+    #override the urls method to add our picking form fields return
+    def get_urls(self):
+        from django.conf.urls.defaults import patterns, url
+        urls = super(DynamicPickerAdmin, self).get_urls()
+        
+        my_urls = patterns('',
+            url(r'^preview/$', self.admin_site.admin_view(self.preview), name="newsengine-article-preview"),
+        )
+
+        return my_urls + urls
+                
+    def preview(self, request, *args, **kwargs):
+        pass
         
 class StoryAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
@@ -147,8 +160,6 @@ class PublishStoryAdmin(admin.ModelAdmin):
     save_as = True
     
     ordering = ['-id']
-    
-    #form = PublishForm
     
     def headline(self, cls):
         try:

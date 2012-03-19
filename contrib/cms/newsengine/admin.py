@@ -138,8 +138,8 @@ class ArticleAdmin(admin.ModelAdmin):
                 #form.save_m2m()
                 arts = []
                 for formset in formsets:
-                    logger.debug(formset.model)
-                    arts.append(formset.save(commit=False))
+                    if formset.model == ArticleTranslation:
+                        arts.append(formset.save(commit=False))
 
                 #self.log_addition(request, new_object)
                 #return self.response_add(request, new_object)

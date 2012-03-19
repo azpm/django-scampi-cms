@@ -14,13 +14,13 @@ from .forms import ArticleTranslationForm, StoryForm, PublishForm
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
 
-class ArticleTranslationInline(admin.TabularInline):
+class ArticleTranslationInline(admin.StackedInline):
     model = ArticleTranslation
     fieldsets = (
         ('Discourse', {'fields': ('headline', 'sub_headline', 'body')}),
         ('Dialect', {'fields': ['language']}),
     )
-    extra = 1
+    extra = 0
     min_num = 1
     form = ArticleTranslationForm
 

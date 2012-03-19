@@ -30,6 +30,15 @@
         });
     });
     
-    </script>
+</script>
+{% else %}
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        //override the save method to bundle up the filters correctly
+        jQuery(".add-row > a").click();
+    });
+</script>
+
 {% endif %}
+
 {% endblock %}

@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from django.db import IntegrityError, DatabaseError
 from django.db.models import Count
 from django.contrib import admin
+from django.forms.formsets import all_valid
 from django.contrib.auth.models import User
 from django.core.mail import mail_admins
 from django.template.defaultfilters import slugify
@@ -117,7 +118,7 @@ class ArticleAdmin(admin.ModelAdmin):
                 new_object = self.save_form(request, form, change=False)
                 form_validated = True
             else:
-                raise ValidationError
+                raise PermissionDenied
             
             prefixes = {}
             for FormSet, inline in zip(self.get_formsets(request), self.inline_instances):

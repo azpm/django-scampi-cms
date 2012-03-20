@@ -8,7 +8,7 @@ class ArticleTranslationForm(forms.ModelForm):
     headline = forms.CharField(widget = forms.TextInput(attrs={'size': 80}))
     sub_headline = forms.CharField(widget = forms.TextInput(attrs={'size': 80}))
     body = forms.CharField(widget = forms.Textarea(attrs={'cols': 120, 'rows': 30}))
-    language = forms.ModelChoiceField(queryset=Language.objects.all(), initial = Language.objects.get(code = "en"))
+    #language = forms.ModelChoiceField(queryset=Language.objects.all(), initial = Language.objects.get(code = "en"))
     
     class Meta:
         model = ArticleTranslation

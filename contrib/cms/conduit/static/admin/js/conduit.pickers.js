@@ -93,20 +93,36 @@ Pickers.prototype.bundle_filters = function()
     return true;
 }
 
-Pickers.prototype.add_filter = function(type, group_suffix)
+Pickers.prototype.add_filter = function(type, group_suffix, picker, value)
 {
 	var self = this;
 	var id_pointer = type+group_suffix;
     
-	var index = jQuery("#"+id_pointer+"_picking_element").val();
- 	if (index in self.available_pickers)
- 	{
- 		var picking_filter = self.available_pickers[index];
- 	}
- 	else
- 	{
- 		return;
- 	}
+    if (picker == null)
+    {
+    	var index = jQuery("#"+id_pointer+"_picking_element").val();
+    	
+    	if (index in self.available_pickers)
+		{
+			var picking_filter = self.available_pickers[index];
+		}
+		else
+		{
+			if (window.console && console.log) {
+				console.log('cannot add filter', type, group_suffix, index, id_pointer);
+			};
+			
+			return;
+		}
+    }
+    else
+    {
+    	var index = jQuery("#"+id_pointer+"_picking_element option:contains('"+picker.name+"')").val()
+    	var picking_filter = picker;
+    	console.log('picker: ', picker, 'value', value);
+    }
+	
+ 	
     
     //remove ability to add this filter element to the group again
     jQuery("#"+id_pointer+"_picking_element option[value='"+index+"']").remove();
@@ -213,7 +229,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     
     //First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
     jQuery("#"+id_pointer+"_add_filter").append(img.clone());
-    jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix); });
+    jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix, null, null); });
    
 }
 
@@ -225,6 +241,7 @@ Pickers.prototype.delete_fieldset = function(elem)
 
 Pickers.prototype.process_available = function(data) {
     var self = this;
+    var picker_ids = new Array();
     
     jQuery.each(data.filters, function(index, value) {
         var picker = {
@@ -235,25 +252,56 @@ Pickers.prototype.process_available = function(data) {
             html: value[2]
         };
         
+        picker_ids.push(value[0]);
         self.available_pickers.push(picker);
     });
     
     if (window.console && console.log) {
         console.log('existing inclusion filters', data.existing.incl);
-    };
-    
-    if (window.console && console.log) {
         console.log('existing exclusion filters', data.existing.excl);
+        console.log('availabile pickers', self.available_pickers);
     };
-    
     
     this.create_fieldsets();
-    /*
+	var picker_regex = new RegExp("^("+picker_ids.join("|")+")?");
+    var num = 0
+    
     jQuery.each(data.existing.incl, function(index, value) 
     {
+    	if (index > 0)
+    	{
+    		self.create_fieldset(self.incl, num);
+    	}
+    	
         jQuery.each(value, function(i, property)
         {
-            alert(i);
+        	var match = picker_regex.exec(i);
+        	if (match[0])
+        	{
+        		self.add_filter(self.incl.prefix, '_group_'+num, self.available_pickers[picker_ids.indexOf(match[0])], property);
+        	}
         });
-    });*/
+        
+        num+=1;
+    });
+    
+    num = 0
+    jQuery.each(data.existing.excl, function(index, value) 
+    {
+    	if (index > 0)
+    	{
+    		self.create_fieldset(self.excl, num);
+    	}
+    	
+        jQuery.each(value, function(i, property)
+        {
+        	var match = picker_regex.exec(i);
+        	if (match[0])
+        	{
+        		self.add_filter(self.excl.prefix, '_group_'+num, self.available_pickers[picker_ids.indexOf(match[0])], property);
+        	}
+        });
+        
+        num+=1;
+    });
 }

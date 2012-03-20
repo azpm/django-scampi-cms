@@ -238,6 +238,15 @@ Pickers.prototype.process_available = function(data) {
         self.available_pickers.push(picker);
     });
     
+    if (window.console && console.log) {
+        console.log('existing inclusion filters', data.existing.incl);
+    };
+    
+    if (window.console && console.log) {
+        console.log('existing exclusion filters', data.existing.excl);
+    };
+    
+    
     this.create_fieldsets();
     /*
     jQuery.each(data.existing.incl, function(index, value) 

@@ -223,7 +223,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 if field.name in excl_picking_fields[i]:
                     saved_exclusion.append((field.name, field.label, field.__unicode__()))    
         
-        returns['existing'] = {'incl': saved_inclusion, 'excl': picker.saved_exclusion}
+        returns['existing'] = {'incl': saved_inclusion, 'excl': saved_exclusion}
             
         response = HttpResponse(simplejson.dumps(returns), content_type="application/json")
         

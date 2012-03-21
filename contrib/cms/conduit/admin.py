@@ -211,17 +211,19 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         produced = factory(initial=incl_picking_fields)
         for i in range(0, len(produced)-1):
             form = produced[i]
+            saved_inclusion.append([])
             for field in form:
                 if field.name in incl_picking_fields[i]:
-                    saved_inclusion.append((field.name, field.label, field.__unicode__()))
+                    saved_inclusion[i].append((field.name, field.label, field.__unicode__()))
 
 
         produced = factory(initial=excl_picking_fields)
         for i in range(0, len(produced)-1):
             form = produced[i]
+            saved_exclusion.append([])
             for field in form:
                 if field.name in excl_picking_fields[i]:
-                    saved_exclusion.append((field.name, field.label, field.__unicode__()))    
+                    saved_exclusion[i].append((field.name, field.label, field.__unicode__()))    
         
         returns['existing'] = {'incl': saved_inclusion, 'excl': saved_exclusion}
             

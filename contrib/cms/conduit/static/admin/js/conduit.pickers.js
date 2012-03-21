@@ -93,15 +93,14 @@ Pickers.prototype.bundle_filters = function()
     return true;
 }
 
-Pickers.prototype.add_filter = function(type, group_suffix, picker, value)
+Pickers.prototype.add_filter = function(type, group_suffix, initial)
 {
 	var self = this;
 	var id_pointer = type+group_suffix;
-    
-    if (picker == null)
+	
+    if (initial == null)
     {
-    	var index = jQuery("#"+id_pointer+"_picking_element").val();
-    	
+    	var index = jQuery("#"+id_pointer+"_picking_element").val();    	
     	if (index in self.available_pickers)
 		{
 			var picking_filter = self.available_pickers[index];
@@ -117,13 +116,13 @@ Pickers.prototype.add_filter = function(type, group_suffix, picker, value)
     }
     else
     {
-    	var index = jQuery("#"+id_pointer+"_picking_element option:contains('"+picker.name+"')").val()
-    	var picking_filter = picker;
-    	console.log('picker: ', picker, 'value', value);
+    	var index = jQuery("#"+id_pointer+"_picking_element option:contains('"+initial[1]+"')").val()
+    	var picking_filter = {
+    		name: initial[1],
+    		html: initial[2],
+    	};
     }
-	
- 	
-    
+
     //remove ability to add this filter element to the group again
     jQuery("#"+id_pointer+"_picking_element option[value='"+index+"']").remove();
  	//add the filter box
@@ -229,7 +228,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     
     //First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
     jQuery("#"+id_pointer+"_add_filter").append(img.clone());
-    jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix, null, null); });
+    jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix, null); });
    
 }
 
@@ -263,8 +262,7 @@ Pickers.prototype.process_available = function(data) {
     };
     
     this.create_fieldsets();
-	/*
-    var picker_regex = new RegExp("^("+picker_ids.join("|")+")?");
+	
     var num = 0
     
     jQuery.each(data.existing.incl, function(index, value) 
@@ -276,13 +274,9 @@ Pickers.prototype.process_available = function(data) {
     	
         jQuery.each(value, function(i, property)
         {
-        	var match = picker_regex.exec(i);
-        	if (match[0])
-        	{
-        		self.add_filter(self.incl.prefix, '_group_'+num, self.available_pickers[picker_ids.indexOf(match[0])], property);
-        	}
+        	self.add_filter(self.incl.prefix, '_group_'+num, property);
         });
-        
+          
         num+=1;
     });
     
@@ -294,16 +288,12 @@ Pickers.prototype.process_available = function(data) {
     		self.create_fieldset(self.excl, num);
     	}
     	
-        jQuery.each(value, function(i, property)
+    	jQuery.each(value, function(i, property)
         {
-        	var match = picker_regex.exec(i);
-        	if (match[0])
-        	{
-        		self.add_filter(self.excl.prefix, '_group_'+num, self.available_pickers[picker_ids.indexOf(match[0])], property);
-        	}
+        	self.add_filter(self.excl.prefix, '_group_'+num, property);
         });
-        
+
         num+=1;
     });
-    */
+    
 }

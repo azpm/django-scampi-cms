@@ -174,7 +174,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
         factory = formset_factory(picking_filterset.form.__class__)
         clean_produced = factory()
-        clean_form = produced[0]
+        clean_form = clean_produced[0]
         
         returns = {'existing': {}, 'filters': []}
         

@@ -190,7 +190,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     
     var html = '\
         <fieldset class="module aligned" name="'+type.prefix+'_group" id="'+id_pointer+'_filters"> \
-            <h2 id="'+id_pointer+'" style="background-color:'+type.bar_color+' !important;">'+type.label+' Picking Group</h2> \
+            <h2 id="'+id_pointer+'" style="background:'+type.bar_color+' !important;">'+type.label+' Picking Group</h2> \
             <div class="description"></div> \
             <div class="form-row" id="'+id_pointer+'_filter_adder" name="filter_adder"> \
                 <div> \

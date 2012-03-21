@@ -263,7 +263,8 @@ Pickers.prototype.process_available = function(data) {
     };
     
     this.create_fieldsets();
-	var picker_regex = new RegExp("^("+picker_ids.join("|")+")?");
+	/*
+    var picker_regex = new RegExp("^("+picker_ids.join("|")+")?");
     var num = 0
     
     jQuery.each(data.existing.incl, function(index, value) 
@@ -304,4 +305,5 @@ Pickers.prototype.process_available = function(data) {
         
         num+=1;
     });
+    */
 }

@@ -1,4 +1,4 @@
-import logging
+import logging, re
 
 from django import forms
 from django.contrib import admin
@@ -15,7 +15,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from .models import DynamicPicker, StaticPicker, PickerTemplate
 from .forms import DynamicPickerInitialForm, DynamicPickerForm
 from .picker import manifest
-from .utils import build_filters, coerce_filters
+from .utils import build_filters, coerce_filters, uncoerce_pickled_value
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.admin')
 
@@ -173,14 +173,57 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         picking_filterset = manifest.get_registration_info(content_model.model_class())()
         
         factory = formset_factory(picking_filterset.form.__class__)
-        produced = factory()
-        form = produced[0]
+        clean_produced = factory()
+        clean_form = produced[0]
         
         returns = {'existing': {}, 'filters': []}
-        for field in form:
+        
+        base_fields = []
+        for field in clean_form:
+            base_fields.append(field.name)
             returns['filters'].append((field.name, field.label, field.__unicode__()))
             
-        returns['existing'] = {'incl': picker.include_filters, 'excl': picker.exclude_filters}
+        field_matcher = re.compile("^(%s)?" % "|".join(base_fields))
+        incl = dp.include_filters
+        excl = dp.exclude_filters
+        
+        incl_picking_fields = []
+        incl_sets = len(incl)
+        for i in range(0, incl_sets):
+            incl_picking_fields.append({})
+            for key, val in incl[i].iteritems():
+                m = field_matcher.match(key)
+                if m != None:
+                    incl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
+        
+        excl_picking_fields = []
+        excl_sets = len(excl)
+        for i in range(0, excl_sets):
+            excl_picking_fields.append({})
+            for key, val in excl[i].iteritems():
+                m = field_matcher.match(key)
+                if m != None:
+                    excl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
+                    
+        saved_inclusion = []
+        saved_exclusion = []
+        
+        produced = factory(initial=incl_picking_fields)
+        for i in range(0, len(produced)-1):
+            form = produced[i]
+            for field in form:
+                if field.name in incl_picking_fields[i]:
+                    saved_inclusion.append((field.name, field.label, field.__unicode__()))
+
+
+        produced = factory(initial=excl_picking_fields)
+        for i in range(0, len(produced)-1):
+            form = produced[i]
+            for field in form:
+                if field.name in excl_picking_fields[i]:
+                    saved_exclusion.append((field.name, field.label, field.__unicode__()))    
+        
+        returns['existing'] = {'incl': saved_inclusion, 'excl': picker.saved_exclusion}
             
         response = HttpResponse(simplejson.dumps(returns), content_type="application/json")
         

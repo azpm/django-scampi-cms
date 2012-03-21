@@ -117,8 +117,8 @@ def coerce_filters(filters):
                 continue
                 
 def uncoerce_pickled_value(value):
-    if type(t) is tuple and t[0] == "coerce-datetime":
-        return (DATE_RANGE_UNCOERCE[t[2]], t[1])
+    if type(value) is tuple and value[0] == "coerce-datetime":
+        return (DATE_RANGE_UNCOERCE[value[2]], value[1])
     else:
         #don't modify the value
         return value

@@ -184,8 +184,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             returns['filters'].append((field.name, field.label, field.__unicode__()))
             
         field_matcher = re.compile("^(%s)?" % "|".join(base_fields))
-        incl = dp.include_filters
-        excl = dp.exclude_filters
+        incl = picker.include_filters
+        excl = picker.exclude_filters
         
         incl_picking_fields = []
         incl_sets = len(incl)

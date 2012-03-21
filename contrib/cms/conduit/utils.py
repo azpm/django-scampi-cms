@@ -26,6 +26,13 @@ DATE_RANGE_PICKLE_MAPPING = {
     4: lambda name, lookup: {'%s' % name: ('coerce-datetime', lookup, '-thisyear')},
 }
 
+DATE_RANGE_UNCOERCE = {
+    '-today': 1,
+    '-past7days': 2,
+    '-thismonth': 3,
+    '-thisyear': 4,
+}
+
 def build_filters(filterset):
     picking_form = filterset.form
     
@@ -108,6 +115,13 @@ def coerce_filters(filters):
                 filters.update(newfilter)
             except (ValueError, KeyError, TypeError):
                 continue
+                
+def uncoerce_pickled_value(value):
+    if type(t) is tuple and t[0] == "coerce-datetime":
+        return (DATE_RANGE_UNCOERCE[t[2]], t[1])
+    else:
+        #don't modify the value
+        return value
                 
                 
 #map a picker (static or dynamic) to a commune

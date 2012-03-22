@@ -62,12 +62,12 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     #provide the JS for the picking filter magic
     class Media:
         js = (
+            "admin/js/core.js",
+            "admin/js/SelectBox.js",
+            "admin/js/SelectFilter2.js",
             'https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js',
             'http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js',
             'admin/js/conduit.pickers.js',
-            "admin/js/core.js",
-            "admin/js/SelectBox.js",
-            "admin/js/SelectFilter2.js"
         )
 
     #we have the "adding a picker" form and the "changing the picker" form

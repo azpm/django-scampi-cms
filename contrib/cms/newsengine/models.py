@@ -7,7 +7,6 @@ from django.db import models
 from django.db.models import Count, Max, Avg, Min
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes import generic
-from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -19,6 +18,7 @@ from django.contrib.comments.moderation import moderator
 from libscampi.contrib.multilingual.models import Language, MultilingualModel
 from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External, ImagePlaylist, VideoPlaylist, AudioPlaylist, DocumentPlaylist, ObjectPlaylist, ImageTypeOverride, VideoTypeOverride, AudioTypeOverride, DocumentTypeOverride, ObjectTypeOverride
 from libscampi.contrib.cms.conduit import picker
+from libscampi.contrib.cms.conduit.widgets import PickerFilterSelectMultiple
 from libscampi.contrib.cms.newsengine.managers import PublishedManager, CategoryGenera
 from libscampi.contrib.cms.newsengine.commenting import StoryModerator
 
@@ -179,18 +179,11 @@ class PublishInlineMediaOverride(models.Model):
 class PublishPicking(django_filters.FilterSet):
     start = django_filters.filters.DateRangeFilter(lookup_type=('lt','gt','lte','gte'))
     end = django_filters.filters.DateRangeFilter(name="end", lookup_type=('lt','gt','lte','gte'))
-    story__categories = django_filters.filters.ModelMultipleChoiceFilter(queryset=StoryCategory.objects.all(), widget=FilteredSelectMultiple("Story Categories",False))
-    #categories = django_filters.filters.ModelMultipleChoiceFilter(label="story__categories")    
+    story__categories = django_filters.filters.ModelMultipleChoiceFilter(queryset=StoryCategory.objects.all(), widget=PickerFilterSelectMultiple("Story Categories",False))  
     
     class Meta:
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
-    """
-    def __init__(self, *args, **kwargs):
-            super(PublishPicking, self).__init__(*args, **kwargs)
-            
-            self.filters['story__categories'].field.widget = FilteredSelectMultiple("Categories", False)
-    """
     
     @staticmethod
     def static_chain(qs):

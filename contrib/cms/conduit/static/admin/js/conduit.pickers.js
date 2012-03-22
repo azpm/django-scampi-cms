@@ -49,8 +49,12 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
 		}
         if (ptr.attr('id'))
         {
+            var curr_id = ptr.attr('id');
             ptr.attr('id', ptr.attr('id').replace(idRegex, replacement));
-            jQuery.event.trigger('filter_id_update', [ptr.attr('id')]);
+            if (curr_id  != ptr.attr('id'))
+            {
+                jQuery.event.trigger('filter_id_update', [ptr.attr('id')]);
+            }
         }
         if (ptr.attr('name'))
         {

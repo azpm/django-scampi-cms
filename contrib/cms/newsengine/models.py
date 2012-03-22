@@ -185,6 +185,7 @@ class PublishPicking(django_filters.FilterSet):
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
     
+    """
     def __init__(self, *args, **kwargs):
             super(PublishPicking, self).__init__(*args, **kwargs)
             

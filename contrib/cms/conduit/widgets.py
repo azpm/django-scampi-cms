@@ -20,7 +20,7 @@ class PickerFilterSelectMultiple(FilteredSelectMultiple):
         output = [super(FilteredSelectMultiple, self).render(name, value, attrs, choices)]
         output.append(u"""
             <script type="text/javascript">jQuery(document).bind('filter_id_update', function (e, id) { 
-                var form_field = jQuery(id);
+                var form_field = jQuery("#"+id);
                 if (window.console && console.log) 
                 {
                     console.log('id', id);

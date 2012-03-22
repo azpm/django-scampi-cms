@@ -21,7 +21,7 @@ class PickerFilterSelectMultiple(FilteredSelectMultiple):
         output.append(u"""
             <script type="text/javascript">jQuery(document).bind('filter_id_update', function (e, id) { 
                 var form_field = jQuery("#"+id);
-                if (window.console && console.log) 
+                if (form_field.is('select') && form_field.attr('multiple') == 'multiple' && form_field.attr('class') == 'selectfilter') 
                 {
                     console.log('id', id);
                     console.log('field', form_field);

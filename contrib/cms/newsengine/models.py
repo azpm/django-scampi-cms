@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Count, Max, Avg, Min
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes import generic
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -178,6 +179,8 @@ class PublishInlineMediaOverride(models.Model):
 class PublishPicking(django_filters.FilterSet):
     start = django_filters.filters.DateRangeFilter(lookup_type=('lt','gt','lte','gte'))
     end = django_filters.filters.DateRangeFilter(name="end", lookup_type=('lt','gt','lte','gte'))
+    story_categories = django_filters.filters.ModelMultipleChoiceFilter(name="story__categories", widget=FilteredSelectMultiple("Subjects",False,attrs={'rows':'10'}))
+    
     
     class Meta:
         model = Publish

@@ -43,10 +43,20 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
     	//get the jQuery friendly value
 		var ptr = jQuery(value);
 		//update the prefix-# values for each element
-		if (ptr.attr("for")) ptr.attr("for", ptr.attr("for").replace(idRegex, replacement));
-		if (ptr.attr('id')) ptr.attr('id', ptr.attr('id').replace(idRegex, replacement));
-		if (ptr.attr('name')) ptr.attr('name', ptr.attr('name').replace(idRegex, replacement));
-	});
+		if (ptr.attr("for"))
+        {
+            ptr.attr("for", ptr.attr("for").replace(idRegex, replacement));
+		}
+        if (ptr.attr('id'))
+        {
+            ptr.attr('id', ptr.attr('id').replace(idRegex, replacement));
+            jQuery.event.trigger('filter_id_update', [ptr.attr('id')]);
+        }
+        if (ptr.attr('name'))
+        {
+            ptr.attr('name', ptr.attr('name').replace(idRegex, replacement));
+        }
+    });
 }
 
 Pickers.prototype.bundle_filters = function() 
@@ -261,7 +271,7 @@ Pickers.prototype.process_available = function(data) {
         console.log('existing inclusion filters', data.existing.incl);
         console.log('existing exclusion filters', data.existing.excl);
         console.log('availabile pickers', self.available_pickers);
-    };
+    }
     
     this.create_fieldsets();
 	

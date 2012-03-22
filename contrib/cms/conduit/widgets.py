@@ -23,6 +23,7 @@ class PickerFilterSelectMultiple(FilteredSelectMultiple):
                 var form_field = jQuery(id);
                 if (window.console && console.log) 
                 {
+                    console.log('id', id);
                     console.log('field', form_field);
                 }
             });

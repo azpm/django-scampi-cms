@@ -18,9 +18,9 @@ class PickerFilterSelectMultiple(FilteredSelectMultiple):
         attrs['class'] = 'selectfilter'
         if self.is_stacked: attrs['class'] += 'stacked'
         output = [super(FilteredSelectMultiple, self).render(name, value, attrs, choices)]
-        output.append(u'<script type="text/javascript">jQuery("id_%s").ready(function() {')
+        output.append(u'<script type="text/javascript">jQuery("id_%s").ready(function() {' % name)
         # TODO: "id_" is hard-coded here. This should instead use the correct
         # API to determine the ID dynamically.
         output.append(u'SelectFilter.init("id_%s", "%s", %s, "%s"); });</script>\n' % \
-            (name, name, self.verbose_name.replace('"', '\\"'), int(self.is_stacked), settings.ADMIN_MEDIA_PREFIX))
+            (name, self.verbose_name.replace('"', '\\"'), int(self.is_stacked), settings.ADMIN_MEDIA_PREFIX))
         return mark_safe(u''.join(output))

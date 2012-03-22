@@ -137,6 +137,8 @@ Pickers.prototype.add_filter = function(type, group_suffix, initial)
  	//self.update_element_index(jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
     
     jQuery("#"+id_pointer+"_filters > div.form-row").filter(":last").find("a").bind("click", function() { self.remove_filter(this, id_pointer, index); });
+    
+    this.bundle_filters()
 }
 
 Pickers.prototype.remove_filter = function(elem, id_pointer, picker_id)

@@ -179,7 +179,7 @@ class PublishInlineMediaOverride(models.Model):
 class PublishPicking(django_filters.FilterSet):
     start = django_filters.filters.DateRangeFilter(lookup_type=('lt','gt','lte','gte'))
     end = django_filters.filters.DateRangeFilter(name="end", lookup_type=('lt','gt','lte','gte'))
-    story_categories = django_filters.filters.ModelMultipleChoiceFilter(widget=FilteredSelectMultiple("Subjects",False))
+    story__categories = django_filters.filters.ModelMultipleChoiceFilter(widget=FilteredSelectMultiple("Subjects",False))
     
     
     class Meta:

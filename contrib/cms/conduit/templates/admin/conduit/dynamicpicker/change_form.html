@@ -19,11 +19,12 @@
         //load the appropriate filter sets
         jQuery.getJSON(load_filters_url, get_args, function(data) { picker_form.process_available(data); });
         
-        
+        {% comment %}
         //override the save method to bundle up the filters correctly
         jQuery("#dynamicpicker_form").submit(function() {
             return picker_form.bundle_filters();
         });
+        {% endcomment %}
     });
     
 </script>

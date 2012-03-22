@@ -26,7 +26,7 @@ class PickerFilterSelectMultiple(FilteredSelectMultiple):
                     console.log('field', form_field);
                 }
             });
-        
+            </script>
         """)
         # TODO: "id_" is hard-coded here. This should instead use the correct
         # API to determine the ID dynamically.

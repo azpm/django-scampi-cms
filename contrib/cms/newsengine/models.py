@@ -185,6 +185,12 @@ class PublishPicking(django_filters.FilterSet):
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
     
+    def __init__(self, *args, **kwargs):
+            super(PublishPicking, self).__init__(*args, **kwargs)
+            
+            self.filters['story__categories'].field.widget = FilteredSelectMultiple("Categories", False)
+    
+    
     @staticmethod
     def static_chain(qs):
         qs = qs.select_related('thumbnail','story','story__article').distinct()

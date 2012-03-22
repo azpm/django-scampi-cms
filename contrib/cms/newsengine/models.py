@@ -179,17 +179,18 @@ class PublishInlineMediaOverride(models.Model):
 class PublishPicking(django_filters.FilterSet):
     start = django_filters.filters.DateRangeFilter(lookup_type=('lt','gt','lte','gte'))
     end = django_filters.filters.DateRangeFilter(name="end", lookup_type=('lt','gt','lte','gte'))
+    story__categories = django_filters.filters.ModelMultipleChoiceFilter(widget=FilteredSelectMultiple("Story Categories",False))
     #categories = django_filters.filters.ModelMultipleChoiceFilter(label="story__categories")    
     
     class Meta:
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
-    
+    """
     def __init__(self, *args, **kwargs):
             super(PublishPicking, self).__init__(*args, **kwargs)
             
             self.filters['story__categories'].field.widget = FilteredSelectMultiple("Categories", False)
-    
+    """
     
     @staticmethod
     def static_chain(qs):

@@ -47,6 +47,10 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
         {
             ptr.attr("for", ptr.attr("for").replace(idRegex, replacement));
 		}
+        if (ptr.attr('name'))
+        {
+            ptr.attr('name', ptr.attr('name').replace(idRegex, replacement));
+        }
         if (ptr.attr('id'))
         {
             var curr_id = ptr.attr('id');
@@ -56,10 +60,7 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
                 jQuery.event.trigger('filter_id_update', [ptr.attr('id')]);
             }
         }
-        if (ptr.attr('name'))
-        {
-            ptr.attr('name', ptr.attr('name').replace(idRegex, replacement));
-        }
+        
     });
 }
 

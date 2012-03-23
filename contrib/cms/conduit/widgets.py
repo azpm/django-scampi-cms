@@ -18,7 +18,7 @@ class PickerFilterSelectMultiple(FilteredSelectMultiple):
         attrs['class'] = 'selectfilter'
         if self.is_stacked: attrs['class'] += 'stacked'
         output = [super(FilteredSelectMultiple, self).render(name, value, attrs, choices)]
-        output.append(u"""
+        """output.append(u
             <script type="text/javascript">jQuery(document).bind('filter_id_update', function (e, id) { 
                 var form_field = jQuery("#"+id);
                 if (form_field.is('select') && form_field.attr('multiple') == 'multiple' && form_field.attr('class') == 'selectfilter') 
@@ -28,7 +28,7 @@ class PickerFilterSelectMultiple(FilteredSelectMultiple):
                 }
             });
             </script>
-        """)
+        )"""
         # TODO: "id_" is hard-coded here. This should instead use the correct
         # API to determine the ID dynamically.
         #output.append(u'SelectFilter.init("id_%s", "%s", %s, "%s"); });</script>\n' % \

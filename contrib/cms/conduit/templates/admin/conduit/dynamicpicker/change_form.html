@@ -26,6 +26,14 @@
         });
         {% endcomment %}
         
+        jQuery(document).bind('filter_id_update', function (e, id) { 
+            var form_field = jQuery("#"+id);
+            if (form_field.is('select') && form_field.attr('multiple') == 'multiple' && form_field.attr('class') == 'selectfilter') 
+            {
+                SelectFilter.init(id, form_field.attr('name') , 0, "{{ STATIC_URL}}admin/");
+            }
+        });
+            
     });
     
 </script>

@@ -205,7 +205,7 @@ class PublishCategoryAdmin(admin.ModelAdmin):
     
 class PublishStoryAdmin(admin.ModelAdmin):
     save_on_top = True
-    list_display = ('site','headline','category','start','end','published','approved_by')
+    list_display = ('headline','category','start','end','published','approved_by')
     list_display_links = ('headline',)
     list_editable = ('published',)
     list_filter = ('site','category','published','seen')

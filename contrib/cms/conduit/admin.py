@@ -191,22 +191,24 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         excl = picker.exclude_filters
         
         incl_picking_fields = []
-        incl_sets = len(incl)
-        for i in range(0, incl_sets):
-            incl_picking_fields.append({})
-            for key, val in incl[i].iteritems():
-                m = field_matcher.match(key)
-                if m != None:
-                    incl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
+        if incl:
+            incl_sets = len(incl)
+            for i in range(0, incl_sets):
+                incl_picking_fields.append({})
+                for key, val in incl[i].iteritems():
+                    m = field_matcher.match(key)
+                    if m != None:
+                        incl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
         
         excl_picking_fields = []
-        excl_sets = len(excl)
-        for i in range(0, excl_sets):
-            excl_picking_fields.append({})
-            for key, val in excl[i].iteritems():
-                m = field_matcher.match(key)
-                if m != None:
-                    excl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
+        if excl:
+            excl_sets = len(excl)
+            for i in range(0, excl_sets):
+                excl_picking_fields.append({})
+                for key, val in excl[i].iteritems():
+                    m = field_matcher.match(key)
+                    if m != None:
+                        excl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
                     
         saved_inclusion = []
         saved_exclusion = []

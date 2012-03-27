@@ -24,6 +24,8 @@ class PickledObject(str):
     in pre-encoded values anymore, but you can always just pass in the
     python objects themselves.
 
+    see: https://github.com/gintas/django-picklefield
+
     """
 
 
@@ -107,7 +109,7 @@ class PickledObjectField(models.Field):
                     raise
         return value
 
-    def get_db_prep_value(self, value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         """
         Pickle and b64encode the object, optionally compressing it.
 
@@ -140,4 +142,4 @@ class PickledObjectField(models.Field):
             raise TypeError('Lookup type %s is not supported.' % lookup_type)
         # The Field model already calls get_db_prep_value before doing the
         # actual lookup, so all we need to do is limit the lookup types.
-        return super(PickledObjectField, self).get_db_prep_lookup(lookup_type, value)
+        return super(PickledObjectField, self).get_db_prep_lookup(lookup_type, value, connection, prepared=False)

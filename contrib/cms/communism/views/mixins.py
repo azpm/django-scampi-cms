@@ -54,7 +54,7 @@ class SectionMixin(object):
         logger.debug("SectionMixin.get called") 
         #get the realm
         site = Site.objects.get_current()
-        self.realm = site.realm.prefetch_related('sections')
+        self.realm = site.realm
         
         #keyname specified in url
         if 'keyname' in kwargs:

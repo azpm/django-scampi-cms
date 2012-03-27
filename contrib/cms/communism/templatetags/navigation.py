@@ -22,14 +22,14 @@ class SiteMapNode(template.Node):
         realms = cache.get(realms_qs_key, None)
         
         if not realms:
-            realms = Realm.objects.select_related('site').filter(active = True).extra(select={'tls_count': 'select count(*) from communism_section where extends_id is null and realm_id = communism_realm.id'}).order_by('display_order')
+            realms = Realm.objects.select_related('site').prefect_related('sections').filter(active = True).extra(select={'tls_count': 'select count(*) from communism_section where extends_id is null and realm_id = communism_realm.id'}).order_by('display_order')
             cache.set(realms_qs_key, realms, 60*20)
             
         tla_sections_qs_key = "cms:sections:toplevel"
         sections = cache.get(tla_sections_qs_key, None)
         
         if not sections:
-            sections = Section.objects.select_related('realm').filter(active = True, generates_navigation = True, extends__isnull=True)
+            sections = Section.objects.select_related('realm').prefect_related('element').filter(active = True, generates_navigation = True, extends__isnull=True)
             cache.set(tla_sections_qs_key, sections, 60*20)
             
         c = {

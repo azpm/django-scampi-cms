@@ -54,7 +54,7 @@ class SectionMixin(object):
         logger.debug("SectionMixin.get called") 
         #get the realm
         site = Site.objects.get_current()
-        self.realm = site.realm
+        self.realm = site.realm.prefetch_related('sections')
         
         #keyname specified in url
         if 'keyname' in kwargs:
@@ -62,7 +62,8 @@ class SectionMixin(object):
             actual = keyname.split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
             logger.debug("requested cms section: %s" % actual)
             
-            self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
+            #self.section = get_object_or_404(Section.localised.select_related(), keyname = actual[-1])
+            self.section = get_object_or_404(Section.localised.prefetch_related('element'), keyname = actual[-1])
         else:
             try:
                 #we'll see if the section is embedded in the url (it's always the first thing after the domain)
@@ -73,7 +74,8 @@ class SectionMixin(object):
             
             if current_section != '':
                 #section keyname is in the url but not in the view graph/passed args
-                self.section = get_object_or_404(Section.localised.select_related(), keyname = current_section)          
+                #self.section = get_object_or_404(Section.localised.select_related(), keyname = current_section)          
+                self.section = get_object_or_404(Section.localised.prefetch_related('element'), keyname = current_section)
             else:
                 #no keyname specified, we need the "primary" section
                 self.section = self.realm.primary_section #get the primary section of this realm
@@ -102,7 +104,7 @@ class SectionMixin(object):
             actual = keyname.split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
             logger.debug("requested cms section: %s" % actual)
             
-            self.section = get_object_or_404(Section, keyname = actual[-1])
+            self.section = get_object_or_404(Section.localised.prefetch_related('element'), keyname = actual[-1])
         else:
             #no keyname specified, we need the "primary" section
             self.section = self.realm.primary_section #get the primary section of this realm

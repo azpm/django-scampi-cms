@@ -193,6 +193,7 @@ class PublishPicking(django_filters.FilterSet):
             'thumbnail__slug',
             'thumbnail__caption',
             'story__author',
+            'commune__keyname',
         ).distinct()
         return qs
         

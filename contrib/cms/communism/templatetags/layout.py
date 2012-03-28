@@ -14,7 +14,7 @@ class layout_node(template.Node):
         #get all boxes for this slice        
         box_collection = slice.namedbox_set.select_related(
             'template__id',
-            'template__content,
+            'template__content',
             'content',
             'content__template',
             'staticpicker__content'

@@ -184,15 +184,11 @@ class PublishPicking(django_filters.FilterSet):
     class Meta:
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
+        defer = ['end','approved_by','category','seen']
     
     @staticmethod
     def static_chain(qs):
-        qs = qs.defer(
-            'end',
-            'approved_by',
-            'category',
-            'seen',   
-        ).select_related(
+        qs = qs.select_related(
             'thumbnail__file',
             'thumbnail__title',
             'thumbnail__slug',

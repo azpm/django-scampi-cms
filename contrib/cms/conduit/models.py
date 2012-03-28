@@ -81,6 +81,8 @@ class DynamicPicker(PickerBase):
         except (NameError, TypeError):
             return {}
 
+        #if fs and hasattr(fs, '
+
         qs = model.objects.all()       
         if self.include_filters:
             for f in self.include_filters:

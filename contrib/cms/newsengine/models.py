@@ -194,7 +194,7 @@ class PublishPicking(django_filters.FilterSet):
             'thumbnail__caption',
             'story__author',
             'commune__keyname',
-        ).prefetch_related('story__article','story__comments').distinct()
+        ).prefetch_related('story__article','story__comment').distinct()
         return qs
         
 #moderate publish comments

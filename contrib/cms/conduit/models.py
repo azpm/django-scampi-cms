@@ -76,17 +76,32 @@ class DynamicPicker(PickerBase):
         return (None, self.keyname)
     
     def picked(self):
+        """
+        returns a query set of picked objects using inclusion and exclusion filters
+        """
         try:
             model, fs = manifest.get_for_picking(self.content)
         except (NameError, TypeError):
             return {}
 
+        #first we handle any static defers - performance optimisation
         if fs and hasattr(fs, 'static_defer'):
             defer = fs.static_defer()
             qs = model.objects.defer(*defer)
         else:
-            qs = model.objects.all()       
+            qs = model.objects.all() 
+            
+        #second we handle any static select_related fields - performance optimisation    
+        if fs and hasattr(fs, 'static_select_related'):
+            select_related = fs.static_select_related()
+            qs = qs.select_related(*select_related)
         
+        #third we handle any static prefetch_related fields - performance optimisation    
+        if fs and hasattr(fs, 'static_prefetch_related'):
+            prefetch_related = fs.static_prefetch_related()
+            qs = qs.prefetch_related(*prefetch_related)
+        
+        #fourth we apply our inclusion filters
         if self.include_filters:
             for f in self.include_filters:
                 if not f:
@@ -94,6 +109,7 @@ class DynamicPicker(PickerBase):
                 coerce_filters(f)
                 qs = qs.filter(**f)
         
+        #fifth we apply our exclusion filters
         if self.exclude_filters:
             for f in self.exclude_filters:
                 if not f:
@@ -101,9 +117,11 @@ class DynamicPicker(PickerBase):
                 coerce_filters(f)
                 qs = qs.exclude(**f)
     
+        #before we limit the qs we let the picking filterset apply any last minute operations
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):
             qs = fs.static_chain(qs)        
             
+        #limit the qs if necessary
         if self.max_count > 0:
             return qs[:self.max_count]
         return qs

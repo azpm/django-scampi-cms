@@ -187,12 +187,20 @@ class PublishPicking(django_filters.FilterSet):
     
     @staticmethod
     def static_chain(qs):
-        qs = qs.select_related(
+        qs = qs.defer(
+            'end',
+            'approved_by',
+            'category',
+            'seen',
+            'shared',        
+        ).select_related(
             'thumbnail__file',
             'thumbnail__title',
             'thumbnail__slug',
             'thumbnail__caption',
-            'story__author',
+            'story__author__first_name',
+            'story__author__last_name',
+            'story__author__username',
             'commune__keyname',
         ).prefetch_related('story__article').distinct()
         return qs

@@ -191,8 +191,7 @@ class PublishPicking(django_filters.FilterSet):
             'end',
             'approved_by',
             'category',
-            'seen',
-            'shared',        
+            'seen',   
         ).select_related(
             'thumbnail__file',
             'thumbnail__title',

@@ -201,14 +201,12 @@ class PublishPicking(django_filters.FilterSet):
             'story__author__first_name',
             'story__author__last_name',
             'story__author__username',
-            'commune__keyname',
         )
         
     @staticmethod
     def static_prefetch_related():
         return (
             'story__article',
-            'story__article__translations',
         )
         
     @staticmethod
@@ -218,6 +216,10 @@ class PublishPicking(django_filters.FilterSet):
             'approved_by',
             'category',
             'seen',
+            'story__seen',
+            'story__shared',
+            'story__creation_date',
+            'story__modifed',
             'story__image_playlist',
             'story__audio_playlist',
             'story__document_playlist',

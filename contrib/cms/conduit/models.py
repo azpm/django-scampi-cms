@@ -82,7 +82,8 @@ class DynamicPicker(PickerBase):
             return {}
 
         if fs and hasattr(fs, 'static_defer'):
-            qs = model.objects.defer(fs.static_defer())
+            defer = fs.static_defer()
+            qs = model.objects.defer(*defer)
         else:
             qs = model.objects.all()       
         

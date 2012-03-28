@@ -219,7 +219,7 @@ class PublishPicking(django_filters.FilterSet):
             'story__seen',
             'story__shared',
             'story__creation_date',
-            'story__modifed',
+            'story__modified',
             'story__image_playlist',
             'story__audio_playlist',
             'story__document_playlist',

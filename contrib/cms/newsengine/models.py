@@ -202,7 +202,11 @@ class PublishPicking(django_filters.FilterSet):
     def static_prefetch_related():
         return (
             'story__article',
+            'story__article__image_inlines',
             'story__article__video_inlines',
+            'story__article__audio_inlines',
+            'story__article__document_inlines',
+            'story__article__object_inlines',
         )
         
     @staticmethod

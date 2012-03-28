@@ -194,13 +194,8 @@ class PublishPicking(django_filters.FilterSet):
     @staticmethod
     def static_select_related():
         return (
-            'thumbnail__file',
-            'thumbnail__title',
-            'thumbnail__slug',
-            'thumbnail__caption',
-            'story__author__first_name',
-            'story__author__last_name',
-            'story__author__username',
+            'thumbnail'
+            'story__author'
         )
         
     @staticmethod
@@ -216,10 +211,17 @@ class PublishPicking(django_filters.FilterSet):
             'approved_by',
             'category',
             'seen',
+            'thumbnail__author',
+            'thumbnail__creation_date',
+            'thumbnail__reproduction_allowed',
+            'thumbnail__modified',
             'story__author__email',
             'story__author__password',
             'story__author__is_staff',
             'story__author__is_active',
+            'story__author__is_superuser',
+            'story__author__last_login',
+            'story__author__date_joined',
             'story__seen',
             'story__shared',
             'story__creation_date',

@@ -187,7 +187,7 @@ class PublishPicking(django_filters.FilterSet):
     
     @staticmethod
     def static_chain(qs):
-        qs = qs.select_related('thumbnail','story','story__article').distinct()
+        qs = qs.select_related('thumbnail','story','story__article').prefect_related('story__article__articletranslation').distinct()
         return qs
         
 #moderate publish comments

@@ -12,7 +12,13 @@ class layout_node(template.Node):
         slice = self.slice.resolve(context)
         
         #get all boxes for this slice        
-        box_collection = slice.namedbox_set.select_related('template','content','content__template','staticpicker').filter(active=True)
+        box_collection = slice.namedbox_set.select_related(
+            'template__id',
+            'template__content,
+            'content',
+            'content__template',
+            'staticpicker__content'
+        ).filter(active=True)
         maximum_y = box_collection.aggregate(max_y = Max('gridy'))['max_y']
         grid = []
         

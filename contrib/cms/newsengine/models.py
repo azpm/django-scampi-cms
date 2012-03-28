@@ -195,7 +195,6 @@ class PublishPicking(django_filters.FilterSet):
     def static_select_related():
         return (
             'thumbnail',
-            'story',
             'story__author',
         )
         

@@ -202,7 +202,16 @@ class PublishPicking(django_filters.FilterSet):
         
     @staticmethod
     def static_defer():
-        return ('end','approved_by','category','seen')
+        return (
+            'end',
+            'approved_by',
+            'category',
+            'seen',
+            'story__image_playlist',
+            'story__audio_playlist',
+            'story__document_playlist',
+            'story__object_playlist',
+        )
         
 #moderate publish comments
 moderator.register(Story, StoryModerator)

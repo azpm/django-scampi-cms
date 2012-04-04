@@ -42,7 +42,7 @@ def section_path_up(cls, glue):
 
 #updates the cache whenever you save a namedboxtemplate
 def cache_namedbox_template(sender, instance, **kwargs):    
-    cache_key = "namedbox-tpl-%d" % instance.pk
+    cache_key = "commune:namedbox:tpl:%d" % instance.pk
     tpl = instance.content
     cache.set(cache_key, tpl)
     

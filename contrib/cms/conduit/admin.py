@@ -245,7 +245,7 @@ class StaticPickerAdmin(admin.ModelAdmin):
     )
     save_on_top = True
     extra = 0
-    max_num = 1
+    max_num = 0
     
     def get_readonly_fields(self, request, obj=None):
         """

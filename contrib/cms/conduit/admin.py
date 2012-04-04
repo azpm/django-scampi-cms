@@ -244,6 +244,8 @@ class StaticPickerAdmin(admin.ModelAdmin):
         ('HTML Links', {'fields': ('stylesheet', 'javascript')}), 
     )
     save_on_top = True
+    extra = 0
+    max_num = 1
     
     def get_readonly_fields(self, request, obj=None):
         """

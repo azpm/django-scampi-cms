@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from django.db.models import Q, Max
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 
 from libscampi.contrib.cms.communism.models import *
 
@@ -78,8 +79,11 @@ class SectionMixin(object):
                 self.section = get_object_or_404(Section.localised.prefetch_related('element'), keyname = current_section)
             else:
                 #no keyname specified, we need the "primary" section
-                self.section = self.realm.primary_section #get the primary section of this realm
-                
+                try:
+                    self.section = self.realm.primary_section #get the primary section of this realm
+                except ObjectDoesNotExist:
+                    raise Http404("No CMS Sections Active")
+                    
                 if self.section.generates_navigation:
                     #this section has a keyword argument, we should use it
                     return redirect(self.section.element.get_absolute_url())

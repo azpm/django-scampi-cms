@@ -3,6 +3,7 @@ from datetime import datetime, time, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -146,7 +147,8 @@ class Realm(models.Model):
             t = Section.objects.filter(active = True, extends = None, realm__id = self.id).order_by('display_order')[0]
             #t = self.section_set.filter(active = True, extends = None).order_by('display_order')[0]
         except IndexError:
-            t = None
+            raise ObjectDoesNotExist("no communism.section available")
+        
         return t
     primary_section = cached_property(_primary_section)
     

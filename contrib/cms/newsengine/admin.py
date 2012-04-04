@@ -23,7 +23,7 @@ class ArticleTranslationInline(admin.StackedInline):
         ('Dialect', {'fields': ['language']}),
     )
     extra = 1
-    form = ArticleTranslationForm
+    #form = ArticleTranslationForm
 
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'

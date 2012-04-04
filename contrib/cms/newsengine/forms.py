@@ -5,14 +5,11 @@ from libscampi.contrib.multilingual.models import Language
 from .models import ArticleTranslation, Story, Publish
 
 class ArticleTranslationForm(forms.ModelForm):
-    headline = forms.CharField(widget = forms.TextInput(attrs={'size': 80}))
-    sub_headline = forms.CharField(widget = forms.TextInput(attrs={'size': 80}))
-    body = forms.CharField(widget = forms.Textarea(attrs={'cols': 120, 'rows': 30}))
-    #language = forms.ModelChoiceField(queryset=Language.objects.all(), initial = Language.objects.get(code = "en"))
+    #body = forms.CharField(widget = forms.Textarea(attrs={'cols': 120, 'rows': 30}))
     
     class Meta:
         model = ArticleTranslation
-        fields = ('language', 'headline', 'sub_headline', 'body')
+        fields = ('language', 'headline', 'sub_headline', 'synopsis', 'body')
         
 
 class StoryForm(forms.ModelForm):

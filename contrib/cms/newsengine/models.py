@@ -33,7 +33,9 @@ class ArticleTranslation(models.Model):
             help_text = _("Article Title. No markup allowed."))
     sub_headline = models.CharField(_('Article Tagline'), max_length = 255, 
             help_text = _("Will be truncated to 30 words when viewed as a spotlight.  No markup allowed."))
-    body = models.TextField(null = True, blank = True,
+    synopsis = models.TextField(blank = True,
+            help_text = _("Article Synopsis, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
+    body = models.TextField(blank = True,
             help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
             
     class Meta:
@@ -60,7 +62,7 @@ class Article(MultilingualModel):
     class Meta:
         translation = ArticleTranslation
         ordering = ('-creation_date',)
-        multilingual = ['headline','sub_headline','body']
+        multilingual = ['headline','sub_headline','synopsis','body']
         verbose_name = "Article"
         verbose_name_plural = "Articles"
     

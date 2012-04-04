@@ -370,8 +370,6 @@ class NamedBoxTemplate(models.Model):
     def __unicode__(self):
         return self.name
         
-models.signals.post_save.connect(cache_namedbox_template, sender=NamedBoxTemplate)
-        
 class NamedBox(models.Model):
     """Holds content, either static or picked
     
@@ -423,9 +421,7 @@ class NamedBox(models.Model):
             return None
     picker = property(_picker)
     
-#handle mapping pickers to communes        
-models.signals.post_save.connect(map_picker_to_commune, sender=NamedBox)
-models.signals.post_delete.connect(unmap_orphan_picker, sender=NamedBox)
+
 
 class Application(BaseHierarchyElement):
     """Application is a pre-existing DJANGO application with it's own urls, views, models, etc.
@@ -442,3 +438,9 @@ class Application(BaseHierarchyElement):
     class Meta:
         verbose_name = "CMS Offload"
         verbose_name_plural = "CMS Offloads"
+        
+#handle mapping pickers to communes        
+models.signals.post_save.connect(map_picker_to_commune, sender=NamedBox)
+models.signals.post_delete.connect(unmap_orphan_picker, sender=NamedBox)
+#update namedbox picker template cache
+models.signals.post_save.connect(cache_namedbox_template, sender=NamedBoxTemplate)

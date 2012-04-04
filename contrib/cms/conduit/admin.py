@@ -244,8 +244,6 @@ class StaticPickerAdmin(admin.ModelAdmin):
         ('HTML Links', {'fields': ('stylesheet', 'javascript')}), 
     )
     save_on_top = True
-    extra = 0
-    max_num = 0
     
     def get_readonly_fields(self, request, obj=None):
         """
@@ -266,7 +264,7 @@ class StaticPickerInlineAdmin(admin.StackedInline):
     )
     model = StaticPicker
     max_num = 1
-    extra = 1
+    extra = 0
     verbose_name = "Static Content"
     verbose_name_plural = "Static Content"
     

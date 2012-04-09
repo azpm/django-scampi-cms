@@ -17,7 +17,7 @@ class PublishTypeListFilter(SimpleListFilter):
     parameter_name = 'publish_kind'
 
     def lookups(self, request, model_admin):
-        return PublishCategory.objects.values('keyname','title')
+        return PublishCategory.objects.values_list('keyname','title')
 
     def queryset(self, request, queryset):
         if self.value() is not None:

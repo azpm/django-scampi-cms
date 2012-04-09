@@ -23,7 +23,7 @@ class ReviewedListFilter(SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value() == 'yes':
             return queryset.filter(seen=True)
-        if self.value() == 'no':
+        if self.value() == 'no' or self.value() is None:
             return queryset.filter(seen=False)
 
     def choices(self, cl):
@@ -59,7 +59,7 @@ class ArticleAuthorListFilter(SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'me':
+        if self.value() == 'me' or self.value() is None:
             return queryset.filter(story__article__author = request.user)
 
     def choices(self, cl):

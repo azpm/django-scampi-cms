@@ -208,7 +208,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     list_display = ('headline','category','start','end','sticky','order_me','published','approved_by')
     list_display_links = ('headline',)
     list_editable = ('sticky','order_me')
-    list_filter = (ReviewedListFilter, ArticleAuthorListFilter, 'published','sticky','category__keyname')
+    list_filter = (ReviewedListFilter, ArticleAuthorListFilter, 'published','sticky','category__title')
     date_hierarchy = 'start'
     raw_id_fields = ('story','thumbnail')
     search_fields = ['story__article__translations__headline']
@@ -233,7 +233,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
                 logger.debug("Tried to get a published story [%d] who's article [%d] had no available headlines" % (cls.id, cls.story.article_id))
                 return u""
         
-        return u"%s" % val.headline
+        return u"%s" % return u"%s" % truncatewords(val.headline, 5)
         
     def queryset(self, request):
         qs = super(PublishStoryAdmin, self).queryset(request)

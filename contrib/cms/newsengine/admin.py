@@ -258,7 +258,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
             mail_admins("couldn't publish a story", "%s" % locals(), fail_silently = True)
 
 class PublishQueueAdmin(PublishStoryAdmin):
-    list_filter = (ArticleAuthorListFilter)
+    list_filter = (ArticleAuthorListFilter,)
 
     def queryset(self, request):
         qs = super(PublishQueueAdmin, self).queryset(request)

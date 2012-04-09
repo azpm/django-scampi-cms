@@ -21,7 +21,7 @@ class PublishTypeListFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() is not None:
-            queryset.filter(category__keyname = self.value())
+            return queryset.filter(category__keyname = self.value())
 
 
 class ArticleAuthorListFilter(SimpleListFilter):

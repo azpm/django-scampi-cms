@@ -2,7 +2,7 @@ from datetime import date
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin import SimpleListFilter
-from django.models import Q
+from django.db import Q
 
 from libscampi.contrib.cms.newsengine.models import PublishCategory
 

@@ -166,6 +166,12 @@ class Publish(models.Model):
         delta = datetime.now() - self.start
         return delta.days < 30
 
+class PublishQueue(Publish):
+    class Meta:
+        proxy = True
+        verbose_name = "Publish Queue"
+        verbose_name_plural = "Publish Queue"
+
 class PublishInlineMediaOverride(models.Model):
     publish = models.OneToOneField(Publish)
     image_inlines = models.ManyToManyField(ImageTypeOverride)

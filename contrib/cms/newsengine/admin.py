@@ -11,7 +11,7 @@ from django.core.mail import mail_admins
 from django.template.defaultfilters import slugify, truncatewords
 from django.core.exceptions import PermissionDenied, ValidationError
 
-from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
+from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue, PublishInlineMediaOverride
 from .forms import ArticleTranslationForm, StoryForm, PublishForm
 from .filtering import ReviewedListFilter, ArticleAuthorListFilter
 
@@ -208,7 +208,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     list_display = ('headline','category','start','end','sticky','order_me','published','approved_by')
     list_display_links = ('headline',)
     list_editable = ('sticky','order_me')
-    list_filter = (ReviewedListFilter, ArticleAuthorListFilter, 'published','sticky','category__title')
+    list_filter = ('seen','published','sticky','category__title')
     date_hierarchy = 'start'
     raw_id_fields = ('story','thumbnail')
     search_fields = ['story__article__translations__headline']
@@ -256,10 +256,18 @@ class PublishStoryAdmin(admin.ModelAdmin):
             obj.save()
         except IntegrityError:
             mail_admins("couldn't publish a story", "%s" % locals(), fail_silently = True)
-                
+
+class PublishQueueAdmin(PublishStoryAdmin):
+    list_filter = (ArticleAuthorListFilter)
+
+    def queryset(self, request):
+        qs = super(PublishQueueAdmin, self).queryset(request)
+        return qs.filter(seen=False)
+
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(PublishInlineMediaOverride)
 admin.site.register(StoryCategory)
 admin.site.register(Story, StoryAdmin)
 admin.site.register(PublishCategory, PublishCategoryAdmin)
 admin.site.register(Publish, PublishStoryAdmin)
+admin.site.register(PublishQueue, PublishQueueAdmin)

@@ -129,7 +129,7 @@ class PublishCategory(models.Model):
         verbose_name_plural = "Publishing Words"
         
     def __unicode__(self):
-        return u"[%s] %s" % (self.keyname, self.title)
+        return u"%s" % (self.title)
     
 class Publish(models.Model):
     story = models.ForeignKey(Story)

@@ -262,7 +262,7 @@ class PublishQueueAdmin(PublishStoryAdmin):
 
     def queryset(self, request):
         qs = super(PublishQueueAdmin, self).queryset(request)
-        return qs.filter(seen=False)
+        return qs.filter(seen = False, published = False)
 
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(PublishInlineMediaOverride)

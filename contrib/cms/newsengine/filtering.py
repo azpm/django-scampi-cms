@@ -2,45 +2,27 @@ from datetime import date
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin import SimpleListFilter
+from django.models import Q
 
-class ReviewedListFilter(SimpleListFilter):
+from libscampi.contrib.cms.newsengine.models import PublishCategory
+
+class PublishTypeListFilter(SimpleListFilter):
     """
     Filter published list be things that have been seen
     """
 
     # title displayed on right
-    title = _("Reviewed")
+    title = _("Publish Kind")
     # url param name
-    parameter_name = 'reviewed'
+    parameter_name = 'publish_kind'
 
     def lookups(self, request, model_admin):
-        return (
-            ('no', _('No')),
-            ('yes', _('Yes')),
-            ('all', _('All')),
-        )
+        return PublishCategory.objects.values('keyname','title')
 
     def queryset(self, request, queryset):
-        if self.value() == 'yes':
-            return queryset.filter(seen=True)
-        if self.value() == 'no' or self.value() is None:
-            return queryset.filter(seen=False)
+        if self.value() is not None:
+            queryset.filter(category__keyname = self.value())
 
-    def choices(self, cl):
-        for lookup, title in self.lookup_choices:
-            yield {
-                'selected': self.selected_filter(lookup),
-                'query_string': cl.get_query_string({self.parameter_name: lookup}, []),
-                'display': title,
-            }
-
-    def selected_filter(self, lookup):
-        val = self.value()
-
-        if val is None and lookup =="no":
-            return True
-        else:
-            return val == lookup
 
 class ArticleAuthorListFilter(SimpleListFilter):
     """
@@ -48,9 +30,9 @@ class ArticleAuthorListFilter(SimpleListFilter):
     """
 
     # title on right
-    title = _("Article Author")
+    title = _("Author")
     # url param name
-    parameter_name = 'article_author'
+    parameter_name = 'author'
 
     def lookups(self, request, model_admin):
         return (
@@ -60,7 +42,7 @@ class ArticleAuthorListFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'me' or self.value() is None:
-            return queryset.filter(story__article__author = request.user)
+            return queryset.filter(Q(story__article__author = request.user) | Q(story__author = request.user))
 
     def choices(self, cl):
         for lookup, title in self.lookup_choices:

@@ -101,9 +101,7 @@ class Story(models.Model):
     creation_date = models.DateTimeField(verbose_name = "Creation Date", auto_now_add=True)    
     modified = models.DateTimeField(auto_now=True)
     peers = models.ManyToManyField('self', related_name='related_stories', null = True, blank = True)
-    
-    seen = models.PositiveIntegerField(default = 0, editable = False)
-    shared = models.PositiveIntegerField(default = 0, editable = False)
+    important = models.BooleanField(default = False)
     
     tags = TaggableManager(blank=True)
     
@@ -144,8 +142,10 @@ class Publish(models.Model):
     published = models.BooleanField(default = False, db_index = True)       
     
     slug = models.SlugField(max_length = 255, null = True, unique_for_date = start)
-    seen = models.BooleanField(default = False, editable = False)
-    
+    sticky = models.BooleanField(default=False)
+    order_me = models.PositiveSmallIntegerField(default=0)
+    seen = models.BooleanField(default=False)
+
     comments = generic.GenericRelation(Comment, object_id_field='object_pk') # reverse generic relation
     objects = models.Manager()
     active = PublishedManager()
@@ -153,7 +153,7 @@ class Publish(models.Model):
     class Meta:
         verbose_name = "Published Story"
         verbose_name_plural = "Published Stories"
-        ordering = ('-start',)
+        ordering = ('sticky','order_me','-start')
     
     def __unicode__(self):
         return "%s > %s" % (self.site, self.story.article.headline)

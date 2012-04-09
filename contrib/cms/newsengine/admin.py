@@ -13,6 +13,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
 from .forms import ArticleTranslationForm, StoryForm, PublishForm
+from .filtering import ReviewedListFilter, ArticleAuthorListFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
 
@@ -102,7 +103,7 @@ class ArticleAdmin(admin.ModelAdmin):
         return my_urls + urls
                 
     def preview(self, request, *args, **kwargs):
-        "The 'add' admin view for this model."
+        """"The 'add' admin view for this model."""
         model = self.model
         opts = model._meta
 
@@ -152,15 +153,14 @@ class ArticleAdmin(admin.ModelAdmin):
         
 class StoryAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
-    list_display = ['headline', 'author', 'creation_date']
+    list_display = ['headline', 'author', 'creation_date','important']
     list_filter = ['categories']
     search_fields = ['article__translations__headline']
     fieldsets = (
-        ('Meta Data', {'fields': ('author','categories','article','seen','shared')}),
+        ('Meta Data', {'fields': ('author','categories','article',)}),
         ('Media Playlists', {'fields': (('image_playlist', 'video_playlist', 'audio_playlist'),('document_playlist', 'object_playlist'))}),
-        ('Relationships', {'fields': ('peers',)}),
+        ('Relationships', {'fields': ('peers','important')}),
     )
-    readonly_fields = ('seen','shared')
     
     raw_id_fields = ('article', 'image_playlist', 'video_playlist', 'audio_playlist', 'document_playlist', 'object_playlist','peers')
     filter_horizontal = ['categories']
@@ -205,24 +205,24 @@ class PublishCategoryAdmin(admin.ModelAdmin):
     
 class PublishStoryAdmin(admin.ModelAdmin):
     save_on_top = True
-    list_display = ('headline','category','start','end','published','approved_by')
+    list_display = ('headline','category','start','end','sticky','order_me','published','approved_by')
     list_display_links = ('headline',)
-    list_editable = ('published',)
-    list_filter = ('site','category','published','seen')
+    list_editable = ('sticky','order_me')
+    list_filter = (ReviewedListFilter, ArticleAuthorListFilter, 'published','sticky','category__keyname')
     date_hierarchy = 'start'
     raw_id_fields = ('story','thumbnail')
     search_fields = ['story__article__translations__headline']
     fieldsets = (
         ('Publish Target', {'fields': ('site','category', ('story', 'thumbnail', 'slug'))}),
-        ('Publish Configuration', {'fields': ('start','end')}),
+        ('Publish Configuration', {'fields': ('start','end','sticky','order_me')}),
         ('Publish Auditing', {'fields': ('approved_by', 'published')}),
     )
     
     list_select_related = True
     save_as = True
     
-    ordering = ['-id']
-    
+    ordering = ('-start','sticky','order_me')
+
     def headline(self, cls):
         try:
             val = ArticleTranslation.objects.get(language__code = 'en', model = cls.story.article_id)

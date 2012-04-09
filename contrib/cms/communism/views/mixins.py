@@ -55,8 +55,11 @@ class SectionMixin(object):
         logger.debug("SectionMixin.get called") 
         #get the realm
         site = Site.objects.get_current()
-        self.realm = site.realm
-        
+        try:
+            self.realm = site.realm
+        except Realm.DoesNotExist:
+            raise Http404("No Realm Configured")
+
         #keyname specified in url
         if 'keyname' in kwargs:
             keyname = kwargs.pop('keyname')

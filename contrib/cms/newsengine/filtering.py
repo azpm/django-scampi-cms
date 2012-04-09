@@ -60,7 +60,7 @@ class ArticleAuthorListFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'me':
-            return queryset.filter(story__article__author == request.user)
+            return queryset.filter(story__article__author = request.user)
 
     def choices(self, cl):
         for lookup, title in self.lookup_choices:

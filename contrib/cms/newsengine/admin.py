@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.forms.formsets import all_valid
 from django.contrib.auth.models import User
 from django.core.mail import mail_admins
-from django.template.defaultfilters import slugify
+from django.template.defaultfilters import slugify, truncatewords
 from django.core.exceptions import PermissionDenied, ValidationError
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishInlineMediaOverride
@@ -177,7 +177,7 @@ class StoryAdmin(admin.ModelAdmin):
                 logger.debug("Tried to get a story [%d] who's article [%d] had no available headlines" % (cls.id, cls.article_id))
                 return u""
         
-        return u"%s" % val.headline
+        return u"%s" % truncatewords(val.headline, 5)
         
     def queryset(self, request):
         qs = super(StoryAdmin, self).queryset(request)

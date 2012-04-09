@@ -177,7 +177,7 @@ class StoryAdmin(admin.ModelAdmin):
                 logger.debug("Tried to get a story [%d] who's article [%d] had no available headlines" % (cls.id, cls.article_id))
                 return u""
         
-        return u"%s" % truncatewords(val.headline, 5)
+        return u"%s" % truncatewords(val.headline, 4)
         
     def queryset(self, request):
         qs = super(StoryAdmin, self).queryset(request)

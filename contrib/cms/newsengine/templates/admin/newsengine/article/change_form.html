@@ -33,6 +33,12 @@
             jQuery("form#article_form").submit();
         });
 
+        //handle the addition of inlined media
+        /*jQuery("input[name$='_inlines']").live("change textInput", function(e) {
+
+        });*/
+        jQuery("input[name$='_inlines']").inline_media_tags();
+
         //handle article translations
         var inline_formsets = {{ inline_admin_formsets.0.formset.total_form_count|default_if_none:"1" }};
         if (inline_formsets == 0)
@@ -41,11 +47,6 @@
             django.jQuery(".add-row a").click();
             django.jQuery("#id_translations-0-language").val("1").attr("selected","selected");
         }
-
-        //handle the addition of inlined media
-        jQuery("input[name$='_inlines']").live("change textInput", function(e) {
-                console.log(this);
-        });
 
     });
     

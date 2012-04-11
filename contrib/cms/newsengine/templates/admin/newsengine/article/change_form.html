@@ -11,7 +11,7 @@
         var name = windowname_to_id(win.name);
         var elem = document.getElementById(name);
         original_dismissRelatedLookupPopup.apply(this, arguments);
-        elem.trigger("change");
+        jQuery(elem).trigger("change");
     };
 
     jQuery(document).ready(function() {
@@ -43,7 +43,7 @@
         }
 
         //handle the addition of inlined media
-        jQuery("input[name$='_inlines']").live('change', function(e) {
+        jQuery("input[name$='_inlines']").live("change", function(e) {
                 console.log(this);
         });
 

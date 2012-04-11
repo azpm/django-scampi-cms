@@ -23,8 +23,10 @@ function dismissRelatedLookupPopup(win, chosenId) {
     } else {
         document.getElementById(name).value = chosenId;
     }
-    win.close();
     elem.change(); //trigger a change
+
+    win.close();
+
 }
 
 function showAddAnotherPopup(triggeringLink) {

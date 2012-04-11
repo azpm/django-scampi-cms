@@ -2,31 +2,43 @@
 
 {% load i18n %}
 
-{% block object-tools %}
-{% if change %}{% if not is_popup %}
-  <ul class="object-tools">
-    <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
-    {% if has_absolute_url %}
-        <li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">
-            {% trans "View on site" %}</a>
-        </li>
-    {% endif%}
-    <li><a href="{% url admin:newsengine-article-preview %}" id="preview-link" class="viewsitelink">Preview</a>
-  </ul>
-{% endif %}{% endif %}
-
-{% endblock %}
-
 {% block extrahead %}
 {{ block.super }}
 <script type="text/javascript">
     jQuery(document).ready(function() {
+        //handle preview button
+        var original_action = jQuery("form#article_form").attr('action');
         var preview_url = "{% url admin:newsengine-article-preview %}";
-        var preview_button = "<input type='submit' value='Preview' class='preview' name='_preview'/>";
-        
-        jQuery(".submit-row input:last").before(preview_button);
+        var preview_button = "<input type='submit' value='Preview' class='preview' name='_preview' />";
+
+        jQuery(".submit-row").find("input:last").before(preview_button);
+
+        jQuery("input[name='_preview']").click(function(e){
+            e.preventDefault();
+            jQuery("form#article_form").attr({"action": preview_url, "target": "_blank"});
+            jQuery("form#article_form").submit();
+        });
+        jQuery("input[type='submit'][name!='_preview']").click(function(e){
+            e.preventDefault();
+            jQuery("form#article_form").attr({"action": original_action, "target": "_self"});
+            jQuery("form#article_form").submit();
+        });
+
+        //handle article translations
+        var inline_formsets = {{ inline_admin_formsets.0.formset.total_form_count|default_if_none:"1" }};
+        if (inline_formsets == 0)
+        {
+            //this adds a translation and sets language to english, if no translation exists
+            django.jQuery(".add-row a").click();
+            django.jQuery("#id_translations-0-language").val("1").attr("selected","selected");
+        }
+
+        //handle the addition of inlined media
+        jQuery("input[name$='_inlines']").change(function(e) {
+           console.log(this);
+        });
+
     });
     
 </script>
-
 {% endblock %}

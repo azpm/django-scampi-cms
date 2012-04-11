@@ -1,11 +1,20 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from libscampi.core.fields import UserModelChoiceField, UserModelMultipleChoiceField
-from libscampi.contrib.multilingual.models import Language
+from libscampi.core.fields import UserModelChoiceField
 from .models import ArticleTranslation, Story, Publish
 
 class ArticleTranslationForm(forms.ModelForm):
-    #body = forms.CharField(widget = forms.Textarea(attrs={'cols': 120, 'rows': 30}))
+    headline = forms.CharField(label = _('Headline'), widget = forms.TextInput(attrs={'size': 100}))
+    sub_headline = forms.CharField(label = _('Tagline'), widget = forms.TextInput(attrs={'size': 100}))
+    synopsis = forms.CharField(
+        widget = forms.Textarea(attrs={'cols': 100, 'rows': 10}),
+        help_text = _("Article Synopsis, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help")
+    )
+    body = forms.CharField(
+        widget = forms.Textarea(attrs={'cols': 100, 'rows': 30}),
+    help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help")
+    )
     
     class Meta:
         model = ArticleTranslation

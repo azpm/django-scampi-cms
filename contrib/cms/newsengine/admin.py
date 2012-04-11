@@ -1,6 +1,6 @@
 import logging
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.db import IntegrityError, DatabaseError
 from django.db.models import Count
@@ -9,10 +9,10 @@ from django.forms.formsets import all_valid
 from django.contrib.auth.models import User
 from django.core.mail import mail_admins
 from django.template.defaultfilters import slugify, truncatewords
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue, PublishInlineMediaOverride
-from .forms import ArticleTranslationForm, StoryForm, PublishForm
+from .forms import StoryForm, ArticleTranslationForm
 from .filtering import PublishTypeListFilter, ArticleAuthorListFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
@@ -20,19 +20,24 @@ logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
 class ArticleTranslationInline(admin.StackedInline):
     model = ArticleTranslation
     fieldsets = (
-        ('Discourse', {'fields': ('headline', 'sub_headline', 'synopsis', 'body')}),
         ('Dialect', {'fields': ['language']}),
+        ('Discourse', {'fields': ('headline', 'sub_headline', 'synopsis', 'body')}),
     )
-    extra = 1
-    #form = ArticleTranslationForm
+    extra = 0
+    max_num = None
+
+    form = ArticleTranslationForm
 
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
     list_display = ['headline','sub_headline','languages','who_made_me']
     search_fields = ['translations__headline']
     fieldsets = (
-        ('Meta Data', {'fields': ('author', 'contributors')}),
-        ('Inline Media', {'fields': (('image_inlines', 'video_inlines', 'audio_inlines'), ('document_inlines', 'object_inlines', 'external_inlines')), 'classes': ('collapse',)})
+        ('Authorship', {'fields': ('author', 'contributors')}),
+        ('Media', {
+            'description': "Usage: <strong>{% inline [media-type] [media-slug]</strong> <em>[attr1=val1,attr2=val2]</em> <strong>%}</strong>",
+            'fields': (('image_inlines', 'video_inlines', 'audio_inlines'), ('document_inlines', 'object_inlines', 'external_inlines'))
+        })
     )
     raw_id_fields = ('contributors','image_inlines', 'video_inlines', 'audio_inlines', 'document_inlines', 'object_inlines', 'external_inlines')
     readonly_fields = ('author',)
@@ -69,11 +74,8 @@ class ArticleAdmin(admin.ModelAdmin):
         css = {
             'screen': ('gravity-plugins/bootstrap/css/bootstrap.buttons.css',),
         }
-    
-    """
-    In addition to showing a user's username in related fields, show their full
-    name too (if they have one and it differs from the username).
-    """
+
+    # show username w/ full name
     always_show_username = True  
     
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
@@ -93,7 +95,7 @@ class ArticleAdmin(admin.ModelAdmin):
                 
     #override the urls method to add our picking form fields return
     def get_urls(self):
-        from django.conf.urls.defaults import patterns, url
+        from django.conf.urls import patterns, url
         urls = super(ArticleAdmin, self).get_urls()
         
         my_urls = patterns('',
@@ -103,7 +105,9 @@ class ArticleAdmin(admin.ModelAdmin):
         return my_urls + urls
                 
     def preview(self, request, *args, **kwargs):
-        """"The 'add' admin view for this model."""
+        """
+        Preview an article
+        """
         model = self.model
         opts = model._meta
 
@@ -247,7 +251,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
             return ('slug', 'approved_by')
     
     def save_model(self, request, obj, form, change):
-        if obj.seen == False:
+        if not obj.seen:
             obj.seen = True
             obj.slug = "%d%d-%s" % (obj.start.hour, obj.start.minute, slugify(obj.story.article.headline))
         
@@ -255,7 +259,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
         try:
             obj.save()
         except IntegrityError:
-            mail_admins("couldn't publish a story", "%s" % locals(), fail_silently = True)
+            logger.critical("couldn't publish a story", "%s" % locals())
 
 class PublishQueueAdmin(PublishStoryAdmin):
     list_filter = (ArticleAuthorListFilter,PublishTypeListFilter)

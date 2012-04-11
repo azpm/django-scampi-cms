@@ -29,7 +29,7 @@ class ArticleTranslation(models.Model):
     language = models.ForeignKey(Language)
     model = models.ForeignKey('Article', related_name = 'translations')
     
-    headline = models.CharField(_('Article Title'), max_length = 255, 
+    headline = models.CharField(_('Article Headline'), max_length = 255,
             help_text = _("Article Title. No markup allowed."))
     sub_headline = models.CharField(_('Article Tagline'), max_length = 255, 
             help_text = _("Will be truncated to 30 words when viewed as a spotlight.  No markup allowed."))
@@ -47,17 +47,17 @@ class ArticleTranslation(models.Model):
         return u"%s" % self.headline
     
 class Article(MultilingualModel):
-    contributors = models.ManyToManyField(User, related_name = "contributors", null = True, blank = True, limit_choices_to={'is_staff':True})
+    contributors = models.ManyToManyField(User, related_name = "contributors", null = True, blank = True)
     creation_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, editable = False, null = True)
     modified = models.DateTimeField(auto_now=True)
     
-    image_inlines = models.ManyToManyField(Image, blank = True, help_text = "Images (inline)")
-    video_inlines = models.ManyToManyField(Video, blank = True, help_text = "Videos (inline)")
-    audio_inlines = models.ManyToManyField(Audio, blank = True, help_text = "Audios (inline)")
-    document_inlines = models.ManyToManyField(Document, blank = True, help_text = "Documents (inline)")
-    object_inlines = models.ManyToManyField(Object, blank = True, help_text = "Objects (inline)")
-    external_inlines = models.ManyToManyField(External, blank = True, help_text = "Externals (inline)")
+    image_inlines = models.ManyToManyField(Image, blank = True, verbose_name = _("Images"), help_text = "Images (inline)")
+    video_inlines = models.ManyToManyField(Video, blank = True, verbose_name = _("Videos"), help_text = "Videos (inline)")
+    audio_inlines = models.ManyToManyField(Audio, blank = True, verbose_name = _("Audio"), help_text = "Audios (inline)")
+    document_inlines = models.ManyToManyField(Document, blank = True, verbose_name = _("Documents"), help_text = "Documents (inline)")
+    object_inlines = models.ManyToManyField(Object, blank = True, verbose_name = _("HTML Objects"), help_text = "Objects (inline)")
+    external_inlines = models.ManyToManyField(External, blank = True, verbose_name = _("Widgets"), help_text = "Externals (inline)")
     
     class Meta:
         translation = ArticleTranslation

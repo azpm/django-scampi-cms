@@ -7,8 +7,8 @@
 <script type="text/javascript">
     original_dismissRelatedLookupPopup = window.dismissRelatedLookupPopup;
 
-    window.dismissRelatedLookupPopup = function () {
-        console.log(arguments);
+    window.dismissRelatedLookupPopup = function (win, chosenId) {
+        console.log(win.name);
         original_dismissRelatedLookupPopup.apply(this, arguments);
     };
 

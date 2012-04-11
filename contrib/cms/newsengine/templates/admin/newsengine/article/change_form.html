@@ -34,8 +34,10 @@
         }
 
         //handle the addition of inlined media
-        jQuery("input[name$='_inlines']").live('change', function(e) {
-           console.log(this);
+        jQuery("input[name$='_inlines']").each(function(index, value) {
+            value.addEventListener('textInput', function(e) {
+                console.log(this);
+            });
         });
 
     });

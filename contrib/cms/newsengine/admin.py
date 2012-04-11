@@ -30,7 +30,7 @@ class ArticleTranslationInline(admin.StackedInline):
 
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
-    list_display = ['headline','sub_headline','languages','who_made_me']
+    list_display = ['headline','sub_headline','languages','who_made_me','creation_date','modified']
     search_fields = ['translations__headline']
     fieldsets = (
         ('Authorship', {'fields': ('author', 'contributors')}),
@@ -58,12 +58,12 @@ class ArticleAdmin(admin.ModelAdmin):
         return u"%d" % cls.languages
     
     def headline(self, cls):
-        return cls.headline
+        return truncatewords(cls.headline, '5')
     headline.short_description = u"Headline"
     
     def sub_headline(self, cls):
-        return cls.sub_headline
-    sub_headline.short_description = u"Sub Headline"
+        return truncatewords(cls.sub_headline, '5')
+    sub_headline.short_description = u"Tagline"
     
      #provide the JS for the picking filter magic
     class Media:

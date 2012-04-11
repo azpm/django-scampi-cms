@@ -5,6 +5,14 @@
 {% block extrahead %}
 {{ block.super }}
 <script type="text/javascript">
+    original_dismissRelatedLookupPopup = window.dismissRelatedLookupPopup;
+
+    window.dismissRelatedLookupPopup = function () {
+        console.log(arguments);
+        original_dismissRelatedLookupPopup.apply(this, arguments);
+    };
+
+
     jQuery(document).ready(function() {
         //handle preview button
         var original_action = jQuery("form#article_form").attr('action');
@@ -34,10 +42,8 @@
         }
 
         //handle the addition of inlined media
-        jQuery("input[name$='_inlines']").each(function(index, value) {
-            value.addEventListener('textInput', function(e) {
+        jQuery("input[name$='_inlines']").live('change', function(e) {
                 console.log(this);
-            });
         });
 
     });

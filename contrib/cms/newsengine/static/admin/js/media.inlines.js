@@ -14,7 +14,14 @@
 
     var methods = {
         init : function( options ) {
-            console.log(this);
+            return this.each(function(){
+                var $this = $(this);
+
+                $this.live('change',update_tags);
+            });
+        },
+        update_tags : function(e) {
+            console.log(e);
         }
     }
 

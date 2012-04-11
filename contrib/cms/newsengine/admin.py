@@ -69,11 +69,9 @@ class ArticleAdmin(admin.ModelAdmin):
     class Media:
         js = (
             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
-            'http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js',
+            'admin/js/EventRelatedObjectLookups.js',
         )
-        css = {
-            'screen': ('gravity-plugins/bootstrap/css/bootstrap.buttons.css',),
-        }
+        
 
     # show username w/ full name
     always_show_username = True  

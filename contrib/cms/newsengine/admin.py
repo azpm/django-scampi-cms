@@ -71,7 +71,7 @@ class ArticleAdmin(admin.ModelAdmin):
             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
             'admin/js/EventRelatedObjectLookups.js',
         )
-        
+
 
     # show username w/ full name
     always_show_username = True  

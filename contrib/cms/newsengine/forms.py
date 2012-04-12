@@ -8,11 +8,11 @@ class ArticleTranslationForm(forms.ModelForm):
     headline = forms.CharField(label = _('Headline'), widget = forms.TextInput(attrs={'size': 100}))
     sub_headline = forms.CharField(label = _('Tagline'), widget = forms.TextInput(attrs={'size': 100}))
     synopsis = forms.CharField(
-        widget = forms.Textarea(attrs={'cols': 100, 'rows': 10}),
+        widget = forms.Textarea(attrs={'cols': 80, 'rows': 10}),
         help_text = _("Article Synopsis, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help")
     )
     body = forms.CharField(
-        widget = forms.Textarea(attrs={'cols': 100, 'rows': 30}),
+        widget = forms.Textarea(attrs={'cols': 80, 'rows': 30}),
     help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help")
     )
     

@@ -29,12 +29,12 @@
                     <h2>Generated Inline Helpers</h2>\
                         <table style="border: 1px solid #eee; width: 100%">\
                             <thead><tr>\
-                                <th style="min-width: 150px;">Images</th>\
-                                <th style="min-width: 150px;">Videos</th>\
-                                <th style="min-width: 150px;">Audio</th>\
-                                <th style="min-width: 150px;">Documents</th>\
-                                <th style="min-width: 150px;">Objects</th>\
-                                <th style="min-width: 150px;">Widgets</th>\
+                                <th>Images</th>\
+                                <th>Videos</th>\
+                                <th>Audio</th>\
+                                <th>Documents</th>\
+                                <th>Objects</th>\
+                                <th>Widgets</th>\
                             </tr></thead>\
                             <tr>\
                                 <td id="image_inlines"></td>\
@@ -79,7 +79,7 @@
         },
 
         build_inline : function(media) {
-            var html = $("<span>{% inline "+media.form_of+" "+media.slug+" %}</span>").attr("id", media.form_of+'_'+media.pk).append("<br/>");
+            var html = $("<br/>").appendTo("<span>{% inline "+media.form_of+" "+media.slug+" %}</span>").attr("id", media.form_of+'_'+media.pk);
 
             $(html)
                 .hide()

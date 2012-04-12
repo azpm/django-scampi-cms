@@ -124,7 +124,17 @@ class ArticleAdmin(admin.ModelAdmin):
         except ctype.model_class().DoesNotExist:
             raise Http404("matching media instance not found")
 
-        response = HttpResponse(simplejson.dumps([media]), content_type="application/json")
+        returnable = {
+            'pk': media.pk,
+            'title': media.title,
+            'slug': media.slug,
+            'type': {'name': media.type.title, 'keyname': media.type.keyname}
+        }
+
+        if hasattr(media, "file"):
+            returnable.update({'file': media.file.url})
+
+        response = HttpResponse(simplejson.dumps(returnable), content_type="application/json")
 
         return response
 

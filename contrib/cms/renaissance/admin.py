@@ -11,7 +11,8 @@ class MediaAdmin(object):
     
     list_display = ['title', 'slug', 'creation_date', 'reproduction_allowed']
     list_filter = ['reproduction_allowed']
-    
+
+    ordering = ['-creation_date']
     date_hierarchy = 'creation_date'
     prepopulated_fields = {'slug': ('title',)}
     search_fields = ['title', 'caption']

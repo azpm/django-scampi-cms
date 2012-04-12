@@ -38,8 +38,6 @@
                                 <td id="video_inlines"></td>\
                                 <td id="audio_inlines"></td>\
                             </tr>\
-                        </table>\
-                        <table style="border: 1px solid #eee; width: 100%">\
                             <thead><tr>\
                                 <th style="width: 33%">Documents</th>\
                                 <th style="width: 33%">Objects</th>\

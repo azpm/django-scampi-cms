@@ -56,12 +56,20 @@
                 var $this = $(this);
                 var data = $this.data('keys');
 
+                //shouldn't be an data set (we haven't built anything yet)
                 if (!data)
                 {
                     $this.data('keys',[]);
                 }
 
+                // listen for changes to each field
                 $this.on('change.rtg', methods.update_tags);
+
+                // if the field already has a saved value, trigger a change on it to generate the inline helper(s)
+                if ($this.val())
+                {
+                    $this.change();
+                }
             });
         },
         update_tags : function(e) {

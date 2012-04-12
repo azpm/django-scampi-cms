@@ -79,7 +79,8 @@
         },
 
         build_inline : function(media) {
-            $('<span id="'+media.form_of+'_'+media.pk+'">{% inline '+media.form_of+' '+media.slug+' %}</span><br/>')
+            $('<span id="'+media.form_of+'_'+media.pk+'">{% inline '+media.form_of+' '+media.slug+' %}</span>')
+                .append("<br/>")
                 .hide()
                 .appendTo("td#"+media.form_of+"_inlines")
                 .fadeIn();

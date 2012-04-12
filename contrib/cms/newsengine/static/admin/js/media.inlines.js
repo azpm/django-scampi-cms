@@ -61,7 +61,6 @@
             });
         },
         update_tags : function(e) {
-            console.log(settings);
             var input = $(this);
 
             var inline_type = input.attr("name");
@@ -72,17 +71,15 @@
             jQuery.each(entered_keys, function(key, value){
                 if (jQuery.inArray(value, existing_keys) == -1 && value != "")
                 {
-                    jQuery.getJSON(settings.helper_url, {'media_id': value, 'media_ctype': inline_name}, function(data) { methods.build_inline(data, inline_type); });
+                    jQuery.getJSON(settings.helper_url, {'media_id': value, 'media_ctype': inline_name}, function(data) { methods.build_inline(data); });
                     existing_keys.push(value);
                 }
             });
 
         },
 
-        build_inline : function(data, inline) {
-            console.log(data);
-            //jQuery("td#"+inline_type).append('<span id="'+inline_name+'_'+value+'">{% inline '+inline_name+' '+value+' %}</span><br/>').hide().fadeIn('slow');
-
+        build_inline : function(media) {
+            jQuery("td#"+inline_type).append('<span id="'+media.form_of+'_'+media.pk+'">{% inline '+media.form_of+' '+media.slug+' %}</span><br/>').hide().fadeIn('fast');
         }
     };
 

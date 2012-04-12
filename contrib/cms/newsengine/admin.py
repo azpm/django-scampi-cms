@@ -128,7 +128,8 @@ class ArticleAdmin(admin.ModelAdmin):
             'pk': media.pk,
             'title': media.title,
             'slug': media.slug,
-            'type': {'name': media.type.title, 'keyname': media.type.keyname}
+            'type': {'name': media.type.title, 'keyname': media.type.keyname},
+            'form_of': media_type
         }
 
         if hasattr(media, "file"):

@@ -79,8 +79,10 @@
         },
 
         build_inline : function(media) {
-            console.log(media);
-            jQuery("td#"+media.form_of+"_inlines").append('<span id="'+media.form_of+'_'+media.pk+'">{% inline '+media.form_of+' '+media.slug+' %}</span><br/>').hide().fadeIn('fast');
+            $('<span id="'+media.form_of+'_'+media.pk+'">{% inline '+media.form_of+' '+media.slug+' %}</span><br/>')
+                .hide()
+                .appendTo("td#"+media.form_of+"_inlines")
+                .fadeIn();
         }
     };
 

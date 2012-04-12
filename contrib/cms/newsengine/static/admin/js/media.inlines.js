@@ -29,17 +29,23 @@
                     <h2>Generated Inline Helpers</h2>\
                         <table style="border: 1px solid #eee; width: 100%">\
                             <thead><tr>\
-                                <th>Images</th>\
-                                <th>Videos</th>\
-                                <th>Audio</th>\
-                                <th>Documents</th>\
-                                <th>Objects</th>\
-                                <th>Widgets</th>\
+                                <th style="width: 33%">Images</th>\
+                                <th style="width: 33%">Videos</th>\
+                                <th style="width: 33%">Audio</th>\
                             </tr></thead>\
                             <tr>\
                                 <td id="image_inlines"></td>\
                                 <td id="video_inlines"></td>\
                                 <td id="audio_inlines"></td>\
+                            </tr>\
+                        </table>\
+                        <table style="border: 1px solid #eee; width: 100%">\
+                            <thead><tr>\
+                                <th style="width: 33%">Documents</th>\
+                                <th style="width: 33%">Objects</th>\
+                                <th style="width: 33%">Widgets</th>\
+                            </tr></thead>\
+                            <tr>\
                                 <td id="document_inlines"></td>\
                                 <td id="object_inlines"></td>\
                                 <td id="external_inlines"></td>\

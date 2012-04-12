@@ -82,10 +82,10 @@
             var html = $("<span>{% inline "+media.form_of+" "+media.slug+" %}</span>").attr("id", media.form_of+'_'+media.pk);
 
             $(html)
-                .after("<br/>")
                 .hide()
                 .appendTo("td#"+media.form_of+"_inlines")
-                .fadeIn();
+                .fadeIn()
+                .after("<br/>");
         }
     };
 

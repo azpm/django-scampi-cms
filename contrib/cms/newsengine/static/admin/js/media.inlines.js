@@ -2,7 +2,7 @@
 
 (function($) {
     // apply methods
-    $.fn.inline_media_tags = function (method) {
+    $.fn.RenassainceTagGenerator = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {
@@ -17,11 +17,11 @@
             return this.each(function(){
                 var $this = $(this);
 
-                $this.live('change',update_tags);
+                $this.live('change textInput', methods.update_tags);
             });
         },
         update_tags : function(e) {
-            console.log(e);
+            console.log(this);
         }
     }
 

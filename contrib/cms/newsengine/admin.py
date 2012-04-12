@@ -69,7 +69,8 @@ class ArticleAdmin(admin.ModelAdmin):
     class Media:
         js = (
             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
-            'admin/js/media.inlines.js'
+            'admin/js/media.inlines.js',
+            'admin/js/article.preview.js',
         )
 
 

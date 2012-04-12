@@ -15,33 +15,13 @@
     };
 
     jQuery(document).ready(function() {
-        //handle preview button
-        var original_action = jQuery("form#article_form").attr('action');
         var preview_url = "{% url admin:newsengine-article-preview %}";
-        var preview_button = "<input type='submit' value='Preview' class='preview' name='_preview' />";
-
-        jQuery(".submit-row").find("input:last").before(preview_button);
-
-        jQuery("input[name='_preview']").click(function(e){
-            e.preventDefault();
-            jQuery("form#article_form").attr({"action": preview_url, "target": "_blank"});
-            jQuery("form#article_form").submit();
-        });
-        jQuery("input[type='submit'][name!='_preview']").click(function(e){
-            e.preventDefault();
-            jQuery("form#article_form").attr({"action": original_action, "target": "_self"});
-            jQuery("form#article_form").submit();
-        });
-
-        //handle the addition of inlined media
-        /*jQuery("input[name$='_inlines']").live("change textInput", function(e) {
-
-        });*/
-        jQuery("input[name$='_inlines']").inline_media_tags();
+        jQuery().ArticlePreview(preview_url); //simple plugin which generates preview button
+        jQuery("input[name$='_inlines']").RenassainceTagGenerator(); //generates renaissance inline tags
 
         //handle article translations
-        var inline_formsets = {{ inline_admin_formsets.0.formset.total_form_count|default_if_none:"1" }};
-        if (inline_formsets == 0)
+        var inline_formsets = "{{ inline_admin_formsets.0.formset.total_form_count|default_if_none:'1' }}";
+        if (inline_formsets == "0")
         {
             //this adds a translation and sets language to english, if no translation exists
             django.jQuery(".add-row a").click();

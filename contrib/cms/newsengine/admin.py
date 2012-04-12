@@ -2,14 +2,17 @@ import logging
 
 from datetime import datetime
 
+from django.core.mail import mail_admins
+from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError, DatabaseError
 from django.db.models import Count
-from django.contrib import admin
+from django.http import Http404, HttpResponse
 from django.forms.formsets import all_valid
-from django.contrib.auth.models import User
-from django.core.mail import mail_admins
+from django.utils import simplejson
 from django.template.defaultfilters import slugify, truncatewords
-from django.core.exceptions import PermissionDenied
+from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue, PublishInlineMediaOverride
 from .forms import StoryForm, ArticleTranslationForm
@@ -99,10 +102,32 @@ class ArticleAdmin(admin.ModelAdmin):
         
         my_urls = patterns('',
             url(r'^preview/$', self.admin_site.admin_view(self.preview), name="newsengine-article-preview"),
+            url(r'^inline-media-helper/', self.admin_site.admin_view(self.inline_media_helper), name="newsengine-article-media-helper")
         )
 
         return my_urls + urls
-                
+
+    def inline_media_helper(self, request, *args, **kwargs):
+        media_id = request.REQUEST.get('media_id', None)
+        media_type = request.REQUEST.get('media_ctype', None)
+
+        if not media_id or not media_type:
+            raise Http404("no media_id or media_type")
+
+        try:
+            ctype = ContentType.objects.get_by_natural_key(app_label="renaissance", model=media_type)
+        except ContentType.DoesNotExist:
+            raise Http404("matching media type not found")
+
+        try:
+            media = ctype.get_object_for_this_type(pk=media_id)
+        except ctype.model_class().DoesNotExist:
+            raise Http404("matching media instance not found")
+
+        response = HttpResponse(simplejson.dumps([media]), content_type="application/json")
+
+        return response
+
     def preview(self, request, *args, **kwargs):
         """
         Preview an article

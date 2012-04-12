@@ -1,16 +1,12 @@
 import logging, re
 
-from django import forms
 from django.contrib import admin
-from django.shortcuts import render_to_response
-from django.http import Http404, HttpResponse, HttpResponseServerError
+from django.http import Http404, HttpResponse
 from django.contrib.contenttypes.models import ContentType
-from django.core.context_processors import csrf
 from django.utils import simplejson
-from django.conf import settings
 from django.contrib import messages
 from django.forms.formsets import formset_factory
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 from .models import DynamicPicker, StaticPicker, PickerTemplate
 from .forms import DynamicPickerInitialForm, DynamicPickerForm

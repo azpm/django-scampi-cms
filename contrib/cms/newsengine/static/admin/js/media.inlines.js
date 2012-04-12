@@ -12,19 +12,41 @@
         }
     };
 
+    var settings = {
+        helper_url: "",
+        uiMethod: "fadeIn"
+    };
+
     var methods = {
         init : function( options ) {
+            if (options)
+            {
+                jQuery.extend(settings, options);
+            }
+
             var tag_cp_area = '\
-                    <div class="form-row media-inlines">\
-                    <div><label>Media Inlines</label>\
-                        <section id="image_inlines"></section>\
-                        <section id="video_inlines"></section>\
-                        <section id="audio_inlines"></section>\
-                        <section id="document_inlines"></section>\
-                        <section id="object_inlines"></section>\
-                        <section id="external_inlines"></section>\
-                    </div></div>';
-            jQuery("div.form-row.field-body:first").before(tag_cp_area);
+                    <fieldset class="module aligned">\
+                    <h2>Generated Inline Helpers</h2>\
+                        <table style="border: 1px solid #eee; width: 100%">\
+                            <thead><tr>\
+                                <th style="min-width: 150px;">Images</th>\
+                                <th style="min-width: 150px;">Videos</th>\
+                                <th style="min-width: 150px;">Audio</th>\
+                                <th style="min-width: 150px;">Documents</th>\
+                                <th style="min-width: 150px;">Objects</th>\
+                                <th style="min-width: 150px;">Widgets</th>\
+                            </tr></thead>\
+                            <tr>\
+                                <td id="image_inlines"></td>\
+                                <td id="video_inlines"></td>\
+                                <td id="audio_inlines"></td>\
+                                <td id="document_inlines"></td>\
+                                <td id="object_inlines"></td>\
+                                <td id="external_inlines"></td>\
+                            </tr>\
+                        </table>\
+                    </fieldset>';
+            jQuery("div#translations-group").before(tag_cp_area);
 
             return this.each(function(){
                 var $this = $(this);
@@ -35,10 +57,11 @@
                     $this.data('keys',[]);
                 }
 
-                $this.on('change.rtg keyup.rtg', methods.update_tags);
+                $this.on('change.rtg', methods.update_tags);
             });
         },
         update_tags : function(e) {
+            console.log(settings);
             var input = $(this);
 
             var inline_type = input.attr("name");
@@ -49,11 +72,17 @@
             jQuery.each(entered_keys, function(key, value){
                 if (jQuery.inArray(value, existing_keys) == -1 && value != "")
                 {
+                    jQuery.getJSON(settings.helper_url, {'media_id': value, 'media_ctype': inline_name}, function(data) { methods.build_inline(data, inline_type); });
                     existing_keys.push(value);
-                    jQuery("section#"+inline_type).append('{% inline '+inline_name+' '+value+' %}');
                 }
             });
-            console.log(existing_keys,entered_keys);
+
+        },
+
+        build_inline : function(data, inline) {
+            console.log(data);
+            //jQuery("td#"+inline_type).append('<span id="'+inline_name+'_'+value+'">{% inline '+inline_name+' '+value+' %}</span><br/>').hide().fadeIn('slow');
+
         }
     };
 

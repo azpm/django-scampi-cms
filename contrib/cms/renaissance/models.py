@@ -169,7 +169,7 @@ class Media(models.Model):
     tags = TaggableManager()
     
     class Meta:
-        ordering = ('-creation_date',)
+        ordering = ['-creation_date']
         abstract = True
         
     def __unicode__(self):

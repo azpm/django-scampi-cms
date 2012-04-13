@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+{% load markup %}
+{% load newsengine_admin %}
+
+{% block content %}
+        <h1>Article Preview</h1>
+        {% for translation in translations %}
+        <h2>{{ translation.language }}</h2>
+        <h3>{{ translation.headline }}</h3>
+        <h4>{{ translation.sub_headline }}</h4>
+        <p class="synposis">
+            {{ translation.synopsis|markdown }}
+        </p>
+        <p class="body">
+            {% render_article_translation article translation %}
+        </p>
+        {% endfor %}
+{% endblock %}

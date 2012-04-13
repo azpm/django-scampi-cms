@@ -4,21 +4,25 @@ from datetime import datetime
 
 from django.core.mail import mail_admins
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.csrf import csrf_protect
 from django.db import IntegrityError, DatabaseError
 from django.db.models import Count
 from django.http import Http404, HttpResponse
 from django.forms.formsets import all_valid
 from django.utils import simplejson
+from django.template.response import SimpleTemplateResponse, TemplateResponse
 from django.template.defaultfilters import slugify, truncatewords
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue, PublishInlineMediaOverride
 from .forms import StoryForm, ArticleTranslationForm
 from .filtering import PublishTypeListFilter, ArticleAuthorListFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
+csrf_protect_m = method_decorator(csrf_protect)
 
 class ArticleTranslationInline(admin.StackedInline):
     model = ArticleTranslation
@@ -139,6 +143,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
         return response
 
+    @csrf_protect_m
     def preview(self, request, *args, **kwargs):
         """
         Preview an article
@@ -154,12 +159,18 @@ class ArticleAdmin(admin.ModelAdmin):
         inline_instances = self.get_inline_instances(request)
         if request.method == 'POST':
             form = ModelForm(request.POST, request.FILES)
-            if form.is_valid():
-                new_object = self.save_form(request, form, change=False)
-                form_validated = True
-            else:
-                form_validated = False
-                new_object = self.model()
+            if not form.is_valid():
+                raise Http404("Invalid Article to Preview")
+
+            article = {
+                'image_inines': form.cleaned_data['image_inlines'],
+                'video_inlines': form.cleaned_data['video_inlines'],
+                'audio_inlines': form.cleaned_data['audio_inlines'],
+                'document_inlines': form.cleaned_data['document_inlines'],
+                'object_inlines': form.cleaned_data['object_inlines'],
+                'external_inlines': form.cleaned_data['external_inlines'],
+            }
+
             prefixes = {}
             for FormSet, inline in zip(self.get_formsets(request), inline_instances):
                 prefix = FormSet.get_default_prefix()
@@ -167,18 +178,19 @@ class ArticleAdmin(admin.ModelAdmin):
                 if prefixes[prefix] != 1 or not prefix:
                     prefix = "%s-%s" % (prefix, prefixes[prefix])
                 formset = FormSet(data=request.POST, files=request.FILES,
-                    instance=new_object,
-                    save_as_new="_saveasnew" in request.POST,
+                    instance=self.model(),
+                    save_as_new=True,
                     prefix=prefix, queryset=inline.queryset(request))
                 formsets.append(formset)
-            if all_valid(formsets) and form_validated:
-                assert False
-                #self.save_model(request, new_object, form, False)
-                #self.save_related(request, form, formsets, False)
-                #self.log_addition(request, new_object)
-                return self.response_add(request, new_object)
+            if all_valid(formsets):
+                translations = formsets[0].cleaned_data
+
+                return TemplateResponse(request,
+                    "admin/newsengine/article/preview.html",
+                    {'article': article, 'translations': translations},
+                    current_app=self.admin_site.name)
             else:
-                assert False
+                raise Http404("Invalid Article to Preview")
         else:
             raise PermissionDenied
             

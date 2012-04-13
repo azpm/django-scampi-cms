@@ -1,6 +1,7 @@
 from django import template
 
 from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External
+from libscampi.contrib.cms.newsengine.models import Article
 
 register = template.Library()
 
@@ -29,49 +30,103 @@ class inline_media_node(template.Node):
         
         if self.type not in ["image", "video", "audio", "document", "object", "external"]:
             return u""
-            
-        #inline for image
-        if self.type == "image":
+
+        else:
             try:
-                media = article.image_inlines.select_related('inline_template').get(slug=self.slug)
+                media = Image.objects.select_related('type__inline_template').get(slug=self.slug)
             except Image.DoesNotExist:
                 media = Image.objects.none()
-        
-        #inline for video
-        if self.type == "video":
-            try:
-                media = article.video_inlines.select_related('inline_template').get(slug=self.slug)
-            except Video.DoesNotExist:
-                media = Video.objects.none()
-        
-        #inline for audio
-        if self.type == "audio":
-            try:
-                media = article.audio_inlines.select_related('inline_template').get(slug=self.slug)
-            except Audio.DoesNotExist:
-                media = Audio.objects.none()
-            
-        #inline for document
-        if self.type == "document":
-            try:
-                media = article.document_inlines.select_related('inline_template').get(slug=self.slug)
-            except Document.DoesNotExist:
-                media = Document.objects.none()
-        
-        #inline for object
-        if self.type == "object":
-            try:
-                media = article.object_inlines.select_related('inline_template').get(slug=self.slug)
-            except Object.DoesNotExist:
-                media = Object.objects.none()
-            
-        #inline for external
-        if self.type == "external":
-            try:
-                media = article.external_inlines.select_related('inline_template').get(slug=self.slug)
-            except External.DoesNotExist:
-                media = External.objects.none()
-        
+
+
+        # traditional code path if article is valid instance of newsengine: <Article>
+        if type(article) is Article:
+
+            #inline for image
+            if self.type == "image":
+                try:
+                    media = article.image_inlines.select_related('type__inline_template__content').get(slug=self.slug)
+                except Image.DoesNotExist:
+                    media = Image.objects.none()
+
+            #inline for video
+            if self.type == "video":
+                try:
+                    media = article.video_inlines.select_related('type__inline_template__content').get(slug=self.slug)
+                except Video.DoesNotExist:
+                    media = Video.objects.none()
+
+            #inline for audio
+            if self.type == "audio":
+                try:
+                    media = article.audio_inlines.select_related('type__inline_template__content').get(slug=self.slug)
+                except Audio.DoesNotExist:
+                    media = Audio.objects.none()
+
+            #inline for document
+            if self.type == "document":
+                try:
+                    media = article.document_inlines.select_related('type__inline_template__content').get(slug=self.slug)
+                except Document.DoesNotExist:
+                    media = Document.objects.none()
+
+            #inline for object
+            if self.type == "object":
+                try:
+                    media = article.object_inlines.select_related('type__inline_template__content').get(slug=self.slug)
+                except Object.DoesNotExist:
+                    media = Object.objects.none()
+
+            #inline for external
+            if self.type == "external":
+                try:
+                    media = article.external_inlines.select_related('type__inline_template__content').get(slug=self.slug)
+                except External.DoesNotExist:
+                    media = External.objects.none()
+
+        # new path where article is dictionary, e.g. admin article preview
+        else:
+
+            #inline for image
+            if self.type == "image":
+                try:
+                    media = Image.objects.select_related('type__inline_template__content').get(slug=self.slug)
+                except Image.DoesNotExist:
+                    media = Image.objects.none()
+
+            #inline for video
+            if self.type == "video":
+                try:
+                    media = Video.objects.select_related('type__inline_template__content').get(slug=self.slug)
+                except Video.DoesNotExist:
+                    media = Video.objects.none()
+
+            #inline for audio
+            if self.type == "audio":
+                try:
+                    media = Audio.objects.select_related('type__inline_template__content').get(slug=self.slug)
+                except Audio.DoesNotExist:
+                    media = Audio.objects.none()
+
+            #inline for document
+            if self.type == "document":
+                try:
+                    media = Document.objects.select_related('type__inline_template__content').get(slug=self.slug)
+                except Document.DoesNotExist:
+                    media = Document.objects.none()
+
+            #inline for object
+            if self.type == "object":
+                try:
+                    media = Object.objects.select_related('type__inline_template__content').get(slug=self.slug)
+                except Object.DoesNotExist:
+                    media = Object.objects.none()
+
+            #inline for external
+            if self.type == "external":
+                try:
+                    media = External.objects.select_related('type__inline_template__content').get(slug=self.slug)
+                except External.DoesNotExist:
+                    media = External.objects.none()
         
         #set the template
         try:

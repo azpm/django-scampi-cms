@@ -146,44 +146,37 @@ class ArticleAdmin(admin.ModelAdmin):
         model = self.model
         opts = model._meta
 
-        if not self.has_add_permission(request) or not self.has_change_permission(request):
+        if not self.has_add_permission(request):
             raise PermissionDenied
 
         ModelForm = self.get_form(request)
         formsets = []
+        inline_instances = self.get_inline_instances(request)
         if request.method == 'POST':
             form = ModelForm(request.POST, request.FILES)
-            
             if form.is_valid():
-                new_object = form.save(commit=False)
+                new_object = self.save_form(request, form, change=False)
                 form_validated = True
             else:
                 form_validated = False
                 new_object = self.model()
-            
             prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request), self.inline_instances):
+            for FormSet, inline in zip(self.get_formsets(request), inline_instances):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                if prefixes[prefix] != 1:
+                if prefixes[prefix] != 1 or not prefix:
                     prefix = "%s-%s" % (prefix, prefixes[prefix])
                 formset = FormSet(data=request.POST, files=request.FILES,
-                                  instance=new_object,
-                                  save_as_new="_saveasnew" in request.POST,
-                                  prefix=prefix, queryset=inline.queryset(request))
+                    instance=new_object,
+                    save_as_new="_saveasnew" in request.POST,
+                    prefix=prefix, queryset=inline.queryset(request))
                 formsets.append(formset)
-            
             if all_valid(formsets) and form_validated:
-                #self.save_model(request, new_object, form, change=False)
-                #form.save_m2m()
-                arts = []
-                for formset in formsets:
-                    if formset.model == ArticleTranslation:
-                        arts.append(formset.save(commit=False))
-
-                #self.log_addition(request, new_object)
-                #return self.response_add(request, new_object)
                 assert False
+                #self.save_model(request, new_object, form, False)
+                #self.save_related(request, form, formsets, False)
+                #self.log_addition(request, new_object)
+                return self.response_add(request, new_object)
             else:
                 assert False
         else:

@@ -160,7 +160,7 @@ class ArticleAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             form = ModelForm(request.POST, request.FILES)
             if not form.is_valid():
-                raise Http404("Invalid Article to Preview")
+                raise Http404("Invalid Article to Preview. Article Form.")
 
             article = {
                 'image_inines': form.cleaned_data['image_inlines'],
@@ -190,7 +190,7 @@ class ArticleAdmin(admin.ModelAdmin):
                     {'article': article, 'translations': translations},
                     current_app=self.admin_site.name)
             else:
-                raise Http404("Invalid Article to Preview")
+                raise Http404("Invalid Article to Preview. Translation Form")
         else:
             raise PermissionDenied
             

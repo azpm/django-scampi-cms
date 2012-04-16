@@ -161,7 +161,8 @@ class Realm(models.Model):
         "Returns True if realm has active sections, False otherwise"
         t = self.section_set.filter(active = True, extends = None, generates_navigation = True).exists()
         return t
-        
+
+    @cached_property
     def get_absolute_url(self):
         "Returns fully qualified link to realm, including http/https"
         ps = self.primary_section
@@ -182,8 +183,6 @@ class Realm(models.Model):
                 return "http://%s/" % (self.site.domain,)
         else:
             return "#"
-    get_absolute_url = cached_property(get_absolute_url)
-            
 
 class RealmNotification(models.Model):
     """Provides a simple notification system to globally publish alerts to a realm.

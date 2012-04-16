@@ -24,11 +24,6 @@ class SectionManager(models.Manager):
         return self.get(realm__keyname = realm, keyname = section)
         
 class CommuneManager(models.Manager):
-    #def get_query_set(self):
-    #   qs = super(CommuneManager, self).get_query_set()
-
-    #   return qs.prefetch_related('section','section__realm','section__realm__site')
-
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)
         

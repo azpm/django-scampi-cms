@@ -276,11 +276,13 @@ class BaseHierarchyElement(models.Model):
     def realm(self):
         """Returns the realm that the containing section exists on."""
         return self.container.realm
+    realm = property(realm)
 
     def keyname(self):
         """Returns the keyname of the containing section -- hierarchy elements treat this is read only member data."""
         return self.container.keyname
-    
+    keyname = property(keyname)
+
     def get_absolute_url(self):
         return "/%s/" % section_path_up([self.container], ".")
         

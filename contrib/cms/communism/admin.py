@@ -44,7 +44,10 @@ class SliceAdmin(admin.ModelAdmin):
     list_editable = ('display_order',)
     search_fields = ('name','commune__name')
     save_on_top = True
-    
+
+    ordering = ('commune','display_order')
+
+
     def queryset(self, request):
         qs = super(SliceAdmin, self).queryset(request)
         
@@ -92,7 +95,7 @@ class BoxAdmin(admin.ModelAdmin):
         return qs.select_related('slice').prefetch_related('template')
     
 class BaseHierarchyElementAdmin(admin.ModelAdmin):
-    list_display = ('name','realm','traverse_up','keyname')
+    list_display = ('name','realm','traverse_up','my_order','keyname')
     list_filter = ('section__realm',)
     search_fields = ['name','section__realm__name',]
     save_on_top = True
@@ -104,6 +107,9 @@ class BaseHierarchyElementAdmin(admin.ModelAdmin):
         return section_path_up([cls.container], " > ")
     traverse_up.short_description = "Section Hierarchy"
 
+    def my_order(self, cls):
+        return cls.container.display_order
+    my_order.short_description = "Display Order"
 
 class CommuneAdmin(BaseHierarchyElementAdmin):
     fieldsets = (
@@ -123,6 +129,8 @@ class GenericDOMElementAdmin(admin.ModelAdmin):
     list_editable = ('precedence', 'active', 'base')
     list_filter = ['theme']
     save_on_top = True
+
+
 
 admin.site.register(Theme)
 admin.site.register(StyleSheet, GenericDOMElementAdmin)

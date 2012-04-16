@@ -237,8 +237,6 @@ class PublishPicking(django_filters.FilterSet):
             'story__author__is_superuser',
             'story__author__last_login',
             'story__author__date_joined',
-            'story__seen',
-            'story__shared',
             'story__creation_date',
             'story__modified',
             'story__image_playlist',

@@ -9,6 +9,7 @@ class ArticleTranslationForm(forms.ModelForm):
     sub_headline = forms.CharField(label = _('Tagline'), widget = forms.TextInput(attrs={'size': 100}))
     synopsis = forms.CharField(
         widget = forms.Textarea(attrs={'cols': 80, 'rows': 10}),
+        required = False,
         help_text = _("Article Synopsis, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help")
     )
     body = forms.CharField(

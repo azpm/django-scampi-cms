@@ -262,6 +262,7 @@ class BaseHierarchyElement(models.Model):
     
     class Meta:
         abstract = True
+        ordering = ['section__display_order']
     
     def __unicode__(self):
         return "%s" % self.name

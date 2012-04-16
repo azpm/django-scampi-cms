@@ -20,6 +20,9 @@ class RealmManager(models.Manager):
         return self.get(keyname = keyname)
         
 class SectionManager(models.Manager):
+    def get_query_set(self):
+        return super(SectionManager, self).get_query_set().prefetch_related()
+
     def get_by_natural_key(self, realm, keyanme):
         return self.get(realm__keyname = realm, keyname = section)
         

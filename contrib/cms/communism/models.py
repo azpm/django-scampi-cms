@@ -1,24 +1,24 @@
 from django.db import models
-from datetime import datetime, time, timedelta
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.sites.models import Site
+from django.utils.functional import cached_property
 
 #libscampi imports
 from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orphan_picker
-from django.utils.functional import cached_property
+from libscampi.core.files.storage import OverwriteStorage
 
 #local imports
 from libscampi.contrib.cms.communism.managers import *
 from libscampi.contrib.cms.communism.utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up, cache_namedbox_template
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
+
+fs = OverwriteStorage()
 
 class Theme(models.Model):
     """Defines a theme that communes utilize to provide stylesheet(s), javascript(s)
@@ -66,7 +66,7 @@ class Javascript(HtmlLinkRef):
     Precedence represents an attempt to order the loading of scripts only.
     """
     
-    file = models.FileField(upload_to = theme_script_decorator, null = True, blank = True)
+    file = models.FileField(upload_to = theme_script_decorator, null = True, blank = True, storage=fs)
     external = models.URLField(null = True, blank = True, verbose_name = _("External URL"))
     
     class Meta:
@@ -89,7 +89,7 @@ class StyleSheet(HtmlLinkRef):
     )
     media = models.CharField(max_length = 200, help_text = "screen, print, etc")
     for_ie = models.PositiveSmallIntegerField(choices = ie_choices, null = True, blank = True, verbose_name = _("IE Version"))
-    file = models.FileField(upload_to = theme_style_decorator)
+    file = models.FileField(upload_to = theme_style_decorator, storage=fs)
     
     class Meta:
         verbose_name = "Theme Stylesheet"

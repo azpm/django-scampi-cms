@@ -18,8 +18,6 @@ from libscampi.contrib.cms.communism.utils import theme_style_decorator, theme_s
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
 
-fs = OverwriteStorage()
-
 class Theme(models.Model):
     """Defines a theme that communes utilize to provide stylesheet(s), javascript(s)
     and a set of templates that reside under a folder of keyname
@@ -66,7 +64,7 @@ class Javascript(HtmlLinkRef):
     Precedence represents an attempt to order the loading of scripts only.
     """
     
-    file = models.FileField(upload_to = theme_script_decorator, null = True, blank = True, storage=fs)
+    file = models.FileField(upload_to = theme_script_decorator, null = True, blank = True, storage = OverwriteStorage())
     external = models.URLField(null = True, blank = True, verbose_name = _("External URL"))
     
     class Meta:
@@ -89,7 +87,7 @@ class StyleSheet(HtmlLinkRef):
     )
     media = models.CharField(max_length = 200, help_text = "screen, print, etc")
     for_ie = models.PositiveSmallIntegerField(choices = ie_choices, null = True, blank = True, verbose_name = _("IE Version"))
-    file = models.FileField(upload_to = theme_style_decorator, storage=fs)
+    file = models.FileField(upload_to = theme_style_decorator, storage = OverwriteStorage())
     
     class Meta:
         verbose_name = "Theme Stylesheet"

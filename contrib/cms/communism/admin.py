@@ -104,20 +104,11 @@ class BaseHierarchyElementAdmin(admin.ModelAdmin):
         return section_path_up([cls.container], " > ")
     traverse_up.short_description = "Section Hierarchy"
 
-    def queryset(self, request):
-        qs = super(BaseHierarchyElementAdmin, self).queryset(request)
-        return qs.prefetch_related('section','section__realm','section__realm__site')
 
 class CommuneAdmin(BaseHierarchyElementAdmin):
     fieldsets = (
         ('General', {'fields': ('name', 'description', 'theme')}),
     )
-    
-    def queryset(self, request):
-        qs = super(CommuneAdmin, self).queryset(request)
-        
-        return qs.select_related('section')
-    
     inlines = (SectionInline, SliceInline)
        
 class ApplicationAdmin(BaseHierarchyElementAdmin):   

@@ -20,13 +20,15 @@ class RealmManager(models.Manager):
         return self.get(keyname = keyname)
         
 class SectionManager(models.Manager):
-    def get_query_set(self):
-        return super(SectionManager, self).get_query_set().prefetch_related()
-
     def get_by_natural_key(self, realm, keyanme):
         return self.get(realm__keyname = realm, keyname = section)
         
 class CommuneManager(models.Manager):
+    #def get_query_set(self):
+    #   qs = super(CommuneManager, self).get_query_set()
+
+    #   return qs.prefetch_related('section','section__realm','section__realm__site')
+
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)
         

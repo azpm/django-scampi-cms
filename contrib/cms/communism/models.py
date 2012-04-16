@@ -12,7 +12,7 @@ from django.contrib.sites.models import Site
 
 #libscampi imports
 from libscampi.contrib.cms.conduit.utils import map_picker_to_commune, unmap_orphan_picker
-from libscampi.utils.functional import cached_property
+from django.utils.functional import cached_property
 
 #local imports
 from libscampi.contrib.cms.communism.managers import *
@@ -140,8 +140,9 @@ class Realm(models.Model):
         
     def natural_key(self):
         return (self.keyname)
-        
-    def _primary_section(self):
+
+    @cached_property
+    def primary_section(self):
         "Returns the first active section for this realm, or None"
         try:
             t = Section.objects.filter(active = True, extends = None, realm__id = self.id).order_by('display_order')[0]
@@ -150,17 +151,16 @@ class Realm(models.Model):
             raise ObjectDoesNotExist("no communism.section available")
         
         return t
-    primary_section = cached_property(_primary_section)
-    
-    def _tla_sections(self):
+
+    @cached_property
+    def tla_sections(self):
         return self.section_set.filter(active = True, extends = None, generates_navigation = True)
-    tl_sections = cached_property(_tla_sections)
-    
-    def _has_navigable_sections(self):
+
+    @cached_property
+    def has_navigable_sections(self):
         "Returns True if realm has active sections, False otherwise"
         t = self.section_set.filter(active = True, extends = None, generates_navigation = True).exists()
         return t
-    has_navigable_sections = cached_property(_has_navigable_sections)
         
     def get_absolute_url(self):
         "Returns fully qualified link to realm, including http/https"
@@ -259,7 +259,7 @@ class BaseHierarchyElement(models.Model):
     description = models.TextField(null = True, blank = True)
 
     localised = localised_element_manager()
-    
+
     class Meta:
         abstract = True
         ordering = ['section__display_order']
@@ -269,21 +269,20 @@ class BaseHierarchyElement(models.Model):
         
     def natural_key(self):
         return (self.realm.keyname, self.keyname)
-        
-    def _container(self):
+
+    @cached_property
+    def container(self):
         """Returns the section that holds this hierarchy element. used in templates."""
+        #section =
         return self.section.select_related('realm','realm__site').get()
-    container = cached_property(_container)
-    
-    def _realm(self):
+
+    def realm(self):
         """Returns the realm that the containing section exists on."""
         return self.container.realm
-    realm = property(_realm)
-    
-    def _keyname(self):
+
+    def keyname(self):
         """Returns the keyname of the containing section -- hierarchy elements treat this is read only member data."""
         return self.container.keyname
-    keyname = property(_keyname)
     
     def get_absolute_url(self):
         return "/%s/" % section_path_up([self.container], ".")

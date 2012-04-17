@@ -142,9 +142,9 @@ class Publish(models.Model):
     published = models.BooleanField(default = False, db_index = True)       
     
     slug = models.SlugField(max_length = 255, null = True, unique_for_date = start)
-    sticky = models.BooleanField(default=False)
-    order_me = models.PositiveSmallIntegerField(default=0)
-    seen = models.BooleanField(default=False)
+    sticky = models.BooleanField(default=False, db_index = True)
+    order_me = models.PositiveSmallIntegerField(default=0, db_index = True)
+    seen = models.BooleanField(default=False, db_index = True)
 
     comments = generic.GenericRelation(Comment, object_id_field='object_pk') # reverse generic relation
     objects = models.Manager()

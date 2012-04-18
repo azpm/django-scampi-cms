@@ -230,26 +230,28 @@ class JScriptMixin(object):
             #invalidate on refresh_cache
             cache.delete(cached_scripts_key)
         script_ids = cache.get(cached_scripts_key, None)
-        
+
+        #build a simple collection of styles
+        script_collection = html_link_refs()
+
         #cache empty, get the scripts and refill the cache
         if not script_ids:
             logger.debug("missed css cache on %s" % cached_scripts_key)
-            script_ids = Javascript.objects.filter(active=True).filter(
+            scripts = Javascript.objects.filter(active=True).filter(
                 Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) & 
                 Q(pickertemplate__dynamicpicker__namedbox__active=True) | 
                 Q(staticpicker__namedbox__slice__commune=self.commune) &
                 Q(staticpicker__namedbox__active=True) |
                 Q(base=True),
                 Q(theme__pk=theme.id)
-            ).order_by('precedence').values_list('id', flat = True)
-            cache.set(cached_scripts_key, script_ids, 60*20)
-
-        scripts = Javascript.objects.in_bulk(script_ids)
-
-        #build a simple collection of styles
-        script_collection = html_link_refs()
-        for pk, script in scripts.items():
-            script_collection.add(script)
+            ).order_by('precedence')
+            cache.set(cached_scripts_key, scripts.values_list('id', flat = True), 60*20)
+            for script in scripts:
+                script_collection.add(script)
+        else:
+            scripts = Javascript.objects.in_bulk(script_ids)
+            for pk, script in scripts.items():
+                script_collection.add(script)
         
         return script_collection
 

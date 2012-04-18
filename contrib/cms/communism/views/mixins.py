@@ -53,7 +53,7 @@ class SectionMixin(object):
     
     def get(self, request, *args, **kwargs):
         logger.debug("SectionMixin.get called")
-        logger.debug(request.META)
+        logger.debug(request.META.get('HTTP_CACHE_CONTROL', None))
         #get the realm
         site = Site.objects.get_current()
         try:

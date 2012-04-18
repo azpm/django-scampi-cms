@@ -25,11 +25,12 @@ def swap_storage_engines(sender, instance, **kwargs):
     """
     logger.debug("called to swap storage engines")
     if hasattr(instance, "external") and instance.external:
-        instance.storage, instance.file.storage = URLStorage(), URLStorage()
+        instance.file.url = instance.external
         instance.file.name = instance.external
+        instance.file.path = instance.external
 
 def revert_storage_engines(sender, instance, raw, **kwargs):
-        instance.storage, instance.file.storage = OverwriteStorage(), OverwriteStorage()
+    if hasattr(instance, "external") and instance.external:
         instance.file.name = None
         
 # commune helper -- returns string of path up for child section

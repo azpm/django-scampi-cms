@@ -25,10 +25,11 @@ def swap_storage_engines(sender, instance, **kwargs):
     """
     logger.debug("called to swap storage engines")
     if hasattr(instance, "external") and instance.external:
-        instance.file.url = instance.external
+        instance.file._get_url = lambda: instance.external
         instance.file.name = instance.external
-        instance.file.path = instance.external
-
+        instance.file._get_path = lambda: instance.external
+        instance.file._get_size = lambda: 0
+        
 def revert_storage_engines(sender, instance, raw, **kwargs):
     if hasattr(instance, "external") and instance.external:
         instance.file.name = None

@@ -232,7 +232,7 @@ class JScriptMixin(object):
         script_ids = cache.get(cached_scripts_key, None)
         
         #cache empty, get the scripts and refill the cache
-        if not scripts:
+        if not script_ids:
             logger.debug("missed css cache on %s" % cached_scripts_key)
             script_ids = Javascript.objects.filter(active=True).filter(
                 Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) & 

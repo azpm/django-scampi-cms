@@ -37,6 +37,7 @@ class picker_node(template.Node):
             
             tpl = template.Template(cached_tpl, name="conduit.PickerTemplate [%s]" % picker.template_id)
 
+            logger.debug(request.META.get('Cache-Control', None))
             
             c = {
                 'picker': picker, 

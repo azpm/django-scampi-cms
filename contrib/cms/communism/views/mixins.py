@@ -52,7 +52,8 @@ class SectionMixin(object):
     realm = None
     
     def get(self, request, *args, **kwargs):
-        logger.debug("SectionMixin.get called") 
+        logger.debug("SectionMixin.get called")
+        logger.debug(request.META)
         #get the realm
         site = Site.objects.get_current()
         try:

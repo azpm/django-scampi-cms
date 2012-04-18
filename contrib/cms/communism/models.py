@@ -14,7 +14,7 @@ from libscampi.core.files.storage import OverwriteStorage
 
 #local imports
 from libscampi.contrib.cms.communism.managers import *
-from libscampi.contrib.cms.communism.utils import theme_style_decorator, theme_script_decorator, theme_banner_decorator, overrive_js_file_url, section_path_up, cache_namedbox_template
+from libscampi.contrib.cms.communism.utils import swap_storage_engines, theme_style_decorator, theme_script_decorator, theme_banner_decorator, section_path_up, cache_namedbox_template
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
 
@@ -71,8 +71,8 @@ class Javascript(HtmlLinkRef):
         verbose_name = "Theme Javacript"
         verbose_name_plural = "Theme Javascripts"
         
-#allow for externally hosted javascripts (like google code)        
-models.signals.post_init.connect(overrive_js_file_url, sender=Javascript)
+# allow for externally hosted javascripts (like google code)
+models.signals.post_init.connect(swap_storage_engines, sender=Javascript)
 
 class StyleSheet(HtmlLinkRef):
     """Provides stylesheet (css) capabilities to a theme.  Use the IE field to apply

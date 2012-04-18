@@ -2,12 +2,12 @@ import logging
 
 from django.core.cache import cache
 from django.template.defaultfilters import slugify
+from libscampi.core.files.storage import OverwriteStorage
+from libscampi.contrib.cms.communism.storage import URLStorage
 
 logger = logging.getLogger('libscampi.contrib.cms.communism.utils')
 
-"""
-Theme Helpers and Utility functions
-"""
+# theme helpers
 
 # put theme stylesheets in the right spot
 def theme_style_decorator(cls, f):
@@ -18,21 +18,17 @@ def theme_script_decorator(cls, f):
     
 def theme_banner_decorator(cls, f):
     return "%s/img/banner/%s" % (cls.keyname, f)
-    
-"""
-this is not as cool looking though
-"""
-class external_file_funtime(object):
-    def __init__(self, url):
-        self.url = url
 
-def overrive_js_file_url(sender, instance, **kwargs):
-    if instance.external and not instance.file:
-        instance.file = external_file_funtime(instance.external)
+def swap_storage_engines(sender, instance, **kwargs):
+    """
+    determine if the instance should use a URLStorage or OverwriteStorage engine, apply it
+    """
+    if hasattr(instance, "external") and instance.external and not instance.file:
+        instance.file.name = instance.external
+        instance.storage, instance.file.storage = URLStorage(), URLStorage()
+
         
-"""
-Commune Helpers and Utility Functions
-"""
+# commune helper -- returns string of path up for child section
 def section_path_up(cls, glue):
     elements = cls[:]
     if elements[0].extends is not None:
@@ -40,7 +36,7 @@ def section_path_up(cls, glue):
     return glue.join([z.keyname for z in elements])
     
 
-#updates the cache whenever you save a namedboxtemplate
+# updates the cache whenever you save a namedboxtemplate
 def cache_namedbox_template(sender, instance, **kwargs):    
     cache_key = "commune:namedbox:tpl:%d" % instance.pk
     tpl = instance.content

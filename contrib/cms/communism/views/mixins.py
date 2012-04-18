@@ -246,13 +246,13 @@ class JScriptMixin(object):
                 Q(theme__pk=theme.id)
             ).order_by('precedence')
             cache.set(cached_scripts_key, scripts.values_list('id', flat = True), 60*20)
-            for script in scripts:
-                script_collection.add(script)
+
         else:
-            scripts = Javascript.objects.in_bulk(script_ids)
-            for pk, script in scripts.items():
-                script_collection.add(script)
-        
+            scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')
+
+        for script in scripts:
+            script_collection.add(script)
+
         return script_collection
 
     def get_context_data(self, *args, **kwargs):

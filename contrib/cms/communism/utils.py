@@ -23,7 +23,7 @@ def swap_storage_engines(sender, instance, **kwargs):
     """
     determine if the instance should use a URLStorage or OverwriteStorage engine, apply it
     """
-    if hasattr(instance, "external") and instance.external and not instance.file:
+    if hasattr(instance, "external") and instance.external:
         instance.file.name = instance.external
         instance.storage, instance.file.storage = URLStorage(), URLStorage()
 

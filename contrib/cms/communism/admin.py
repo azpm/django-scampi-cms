@@ -125,13 +125,10 @@ class ApplicationAdmin(BaseHierarchyElementAdmin):
     inlines = (SectionInline,)
 
 class GenericDOMElementAdmin(admin.ModelAdmin):
-    list_display = ('name','url','precedence', 'active','base','theme')
+    list_display = ('name','precedence', 'active','base','theme')
     list_editable = ('precedence', 'active', 'base')
     list_filter = ['theme']
     save_on_top = True
-
-    def url(self, cls):
-        return cls.file.url
 
 admin.site.register(Theme)
 admin.site.register(StyleSheet, GenericDOMElementAdmin)

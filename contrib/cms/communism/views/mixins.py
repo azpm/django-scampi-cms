@@ -248,7 +248,7 @@ class JScriptMixin(object):
 
         #build a simple collection of styles
         script_collection = html_link_refs()
-        for pk, script in scripts.items:
+        for pk, script in scripts.items():
             script_collection.add(script)
         
         return script_collection

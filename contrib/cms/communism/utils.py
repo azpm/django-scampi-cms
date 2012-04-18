@@ -28,7 +28,7 @@ def swap_storage_engines(sender, instance, **kwargs):
         instance.file.name = instance.external
 
 def revert_storage_engines(sender, instance, raw, **kwargs):
-        instance.storage, instance.file.storage = OverwriteStorage()
+        instance.storage, instance.file.storage = OverwriteStorage(), OverwriteStorage()
         instance.file.name = None
         
 # commune helper -- returns string of path up for child section

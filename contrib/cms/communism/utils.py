@@ -23,17 +23,17 @@ def swap_storage_engines(sender, instance, **kwargs):
     """
     determine if the instance should use a URLStorage or OverwriteStorage engine, apply it
     """
-    logger.debug("called to swap storage engines")
-    if hasattr(instance, "external") and instance.external:
-        instance.file._get_url = lambda: instance.external
+    if instance.external and not instance.file:
         instance.file.name = instance.external
-        instance.file._get_path = lambda: instance.external
-        instance.file._get_size = lambda: 0
-        
-def revert_storage_engines(sender, instance, raw, **kwargs):
-    if hasattr(instance, "external") and instance.external:
+        instance.file.storage = URLStorage()
+
+    logger.debug("called to swap storage engines")
+
+def revert_storage_engines(sender, instance, **kwargs):
+    if type(instance.file.storage) is URLStorage:
         instance.file.name = None
-        
+        instance.file.storage = OverwriteStorage()
+
 # commune helper -- returns string of path up for child section
 def section_path_up(cls, glue):
     elements = cls[:]

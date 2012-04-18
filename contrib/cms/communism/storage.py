@@ -4,9 +4,6 @@ from django.core.files.storage import Storage, FileSystemStorage
 from libscampi.core.files.storage import OverwriteStorage
 from django.core.files.base import File
 
-class URLField(File):
-    pass
-
 class URLStorage(Storage):
     def delete(self, name):
         raise NotImplementedError()

@@ -244,7 +244,7 @@ class JScriptMixin(object):
             ).order_by('precedence').values_list('id', flat = True)
             cache.set(cached_scripts_key, script_ids, 60*20)
 
-        scripts = Javascript.objects.filter(id__in=script_ids)
+        scripts = Javascript.objects.in_bulk(script_ids)
 
         #build a simple collection of styles
         script_collection = html_link_refs()

@@ -27,6 +27,9 @@ def swap_storage_engines(sender, instance, **kwargs):
         instance.storage, instance.file.storage = URLStorage(), URLStorage()
         instance.file.name = instance.external
 
+def revert_storage_engines(sender, instance, raw, **kwargs):
+        instance.storage, instance.file.storage = OverwriteStorage()
+        instance.file.name = None
         
 # commune helper -- returns string of path up for child section
 def section_path_up(cls, glue):

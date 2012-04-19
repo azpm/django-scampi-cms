@@ -87,7 +87,7 @@ class DynamicPicker(PickerBase):
         cache_key = "conduit:dp:ids:%d" % self.pk
         cached_ids = cache.get(cache_key, None)
         if cached_ids:
-            qs = model.objects.filter(pk__in=list(cached_ids))
+            qs = model.objects.filter(pk__in=cached_ids)
             return qs
 
         logger.debug("cache miss on %s" % cache_key)
@@ -133,10 +133,11 @@ class DynamicPicker(PickerBase):
         if self.max_count > 0:
             for_cache = qs.values_list('id', flat=True)[:self.max_count]
             logger.debug(for_cache)
-            cache.set(cache_key, for_cache, 60*10)
+            cache.set(cache_key, list(for_cache), 60*10)
             return qs[:self.max_count]
 
-        cache.set(cache_key, qs.values_list('id', flat=True), 60*10)
+        # doesn't seem to make sense caching a huge list
+        #cache.set(cache_key, list(qs.values_list('id', flat=True)), 60*10)
         return qs
         
     def get_absolute_url(self):

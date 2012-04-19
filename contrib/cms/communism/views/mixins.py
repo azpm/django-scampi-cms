@@ -251,7 +251,7 @@ class JScriptMixin(object):
                 Q(base=True),
                 Q(theme__pk=theme.id)
             ).order_by('precedence')
-            cache.set(cached_scripts_key, scripts.values_list('id', flat = True), 60*20)
+            cache.set(cached_scripts_key, list(scripts.values_list('id', flat = True)), 60*20)
 
         else:
             scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')

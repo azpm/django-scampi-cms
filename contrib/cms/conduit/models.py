@@ -89,7 +89,7 @@ class DynamicPicker(PickerBase):
         if cached_ids:
             qs = model.objects.filter(id__in=cached_ids)
             return qs
-
+        logger.debug("cache miss on %s" % cache_key)
 
         #first we handle any static defers - performance optimisation
         if fs and hasattr(fs, 'static_defer'):

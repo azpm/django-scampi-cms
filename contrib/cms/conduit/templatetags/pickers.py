@@ -40,6 +40,7 @@ class picker_node(template.Node):
             cache_control = request.META.get('HTTP_CACHE_CONTROL', None)
             if cache_control and cache_control == "max-age=0":
                 cache_key = "conduit:dp:ids:%d" % picker.id
+                logger.debug("deleting picker cache for %s" % cache_key)
                 cache.delete(cache_key)
 
             c = {

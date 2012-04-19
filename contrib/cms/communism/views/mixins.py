@@ -50,16 +50,21 @@ class html_link_refs(collections.MutableSet):
 class SectionMixin(object):
     section = None
     realm = None
-    
+    refresh_caches = False
+
     def get(self, request, *args, **kwargs):
         logger.debug("SectionMixin.get called")
-        logger.debug(request.META.get('HTTP_CACHE_CONTROL', None))
+
         #get the realm
         site = Site.objects.get_current()
         try:
             self.realm = site.realm
         except Realm.DoesNotExist:
             raise Http404("No Realm Configured")
+
+        cache_control = request.META.get('HTTP_CACHE_CONTROL', None)
+        if cache_control and cache_control == "max-age=0":
+            self.refresh_caches = True
 
         #keyname specified in url
         if 'keyname' in kwargs:
@@ -172,10 +177,10 @@ class CSSMixin(object):
     def get_stylesheets(self):
         theme = self.get_theme()
         logger.debug("CSSMixin.get_stylesheets called")
-        
+
         #try to get the cached css for this commune
         cached_css_key = 'commune:css:%s' % self.commune.pk
-        if self.request.GET.get('refresh_cache', False):
+        if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_css_key)
         styles = cache.get(cached_css_key, None)
@@ -227,7 +232,7 @@ class JScriptMixin(object):
         logger.debug("JScriptMixin.get_javascripts called")
         #try to get the cached javascript for this commune
         cached_scripts_key = 'commune:scripts:%s' % self.commune.pk
-        if self.request.GET.get('refresh_cache', False):
+        if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_scripts_key)
         script_ids = cache.get(cached_scripts_key, None)

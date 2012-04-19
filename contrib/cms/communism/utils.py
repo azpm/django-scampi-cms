@@ -27,8 +27,6 @@ def swap_storage_engines(sender, instance, **kwargs):
         instance.file.name = instance.external
         instance.file.storage = URLStorage()
 
-    logger.debug("called to swap storage engines")
-
 def revert_storage_engines(sender, instance, **kwargs):
     if type(instance.file.storage) is URLStorage:
         instance.file.name = None

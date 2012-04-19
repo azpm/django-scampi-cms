@@ -84,20 +84,19 @@ class DynamicPicker(PickerBase):
         except (NameError, TypeError):
             return {}
 
+
         cache_key = "conduit:dp:ids:%d" % self.pk
         cached_ids = cache.get(cache_key, None)
         if cached_ids:
             qs = model.objects.filter(pk__in=cached_ids)
-            return qs
-
-        logger.debug("cache miss on %s" % cache_key)
+        else:
+            logger.debug("cache miss on %s" % cache_key)
+            qs = model.objects.all()
 
         #first we handle any static defers - performance optimisation
         if fs and hasattr(fs, 'static_defer'):
             defer = fs.static_defer()
-            qs = model.objects.defer(*defer)
-        else:
-            qs = model.objects.all() 
+            qs = qs.defer(*defer)
             
         #second we handle any static select_related fields - performance optimisation    
         if fs and hasattr(fs, 'static_select_related'):
@@ -108,7 +107,11 @@ class DynamicPicker(PickerBase):
         if fs and hasattr(fs, 'static_prefetch_related'):
             prefetch_related = fs.static_prefetch_related()
             qs = qs.prefetch_related(*prefetch_related)
-        
+
+        # if we got our initial list from the cache, we can return it without running the expensive filters
+        if cached_ids:
+            return qs
+
         #fourth we apply our inclusion filters
         if self.include_filters:
             for f in self.include_filters:

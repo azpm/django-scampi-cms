@@ -88,7 +88,7 @@ class DynamicPicker(PickerBase):
         cached_ids = cache.get(cache_key, None)
         if cached_ids:
             logger.debug(cached_ids)
-            qs = model.objects.filter(id__in=cached_ids)
+            qs = model.objects.filter(pk__in=cached_ids)
             return qs
         logger.debug("cache miss on %s" % cache_key)
 

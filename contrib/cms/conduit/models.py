@@ -1,7 +1,7 @@
 import logging
 
 from django.db import models
-
+from django.core.cache import cache
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
@@ -74,7 +74,7 @@ class DynamicPicker(PickerBase):
         if self.commune:
             return (self.commune.keyname, self.keyname)
         return (None, self.keyname)
-    
+
     def picked(self):
         """
         returns a query set of picked objects using inclusion and exclusion filters
@@ -83,6 +83,13 @@ class DynamicPicker(PickerBase):
             model, fs = manifest.get_for_picking(self.content)
         except (NameError, TypeError):
             return {}
+
+        cache_key = "conduit:dp:ids:%d" % self.pk
+        cached_ids = cache.get(cache_key, None)
+        if cached_ids:
+            qs = model.objects.filter(id__in=cached_ids)
+            return qs
+
 
         #first we handle any static defers - performance optimisation
         if fs and hasattr(fs, 'static_defer'):
@@ -124,6 +131,9 @@ class DynamicPicker(PickerBase):
         #limit the qs if necessary
         if self.max_count > 0:
             return qs[:self.max_count]
+
+        cache.set(cache_key, qs.values_list('id', flat=True), 60*10)
+
         return qs
         
     def get_absolute_url(self):

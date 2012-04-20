@@ -1,7 +1,6 @@
 import logging, re
 
 from django.contrib import admin
-from django.core.cache import cache
 from django.utils.html import escape
 from django.http import Http404, HttpResponse
 from django.contrib.contenttypes.models import ContentType
@@ -206,10 +205,6 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
             messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)
 
-        #reset cache for this picker
-        cache_key = "conduit:dp:ids:%d" % picker.id
-        cache.delete(cache_key)
-
         qs = model.objects.all()
         #first we handle any static defers - performance optimisation
         if hasattr(picking_filterset, 'static_defer'):
@@ -252,7 +247,6 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             limit = picker.max_count
 
         ids = list(qs.values_list('id', flat=True)[:limit])
-        cache.set(cache_key, ids, 60*10)
 
         #picked = model.objects.filter(id__in=ids)
         picked = model.objects.in_bulk(ids)

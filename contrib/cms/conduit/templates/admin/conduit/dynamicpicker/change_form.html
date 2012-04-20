@@ -5,35 +5,48 @@
 {% if object_id and original %}
 <script type="text/javascript">
     jQuery(document).ready(function() {
-        var path = jQuery.makeArray(window.location.pathname.split("/"));
-        
-        var picker_id = {{ object_id }};
-        var content_id = {{ original.content.id }};
+        var picker_id = "{{ object_id }}";
+        var content_id = "{{ original.content.id }}";
     
         var load_filters_url = "{% url admin:conduit-picking-filters-fields %}";
-        
+        var preview_url = "{% url admin:conduit-picking-preview-picked %}";
         var get_args = {'content_id': content_id, 'picker_id': picker_id};
               
         var picker_form = new Pickers();        
         
         //load the appropriate filter sets
         jQuery.getJSON(load_filters_url, get_args, function(data) { picker_form.process_available(data); });
-        
-        {% comment %}
-        //override the save method to bundle up the filters correctly
-        jQuery("#dynamicpicker_form").submit(function() {
-            return picker_form.bundle_filters();
-        });
-        {% endcomment %}
-        
-        jQuery(document).bind('filter_id_update', function (e, id) { 
+
+        jQuery(document).bind('filter_id_update', function (e, id, formrow) {
             var form_field = jQuery("#"+id);
             if (form_field.is('select') && form_field.attr('multiple') == 'multiple' && form_field.attr('class') == 'selectfilter') 
             {
                 SelectFilter.init(id, form_field.attr('name') , 0, "{{ STATIC_URL}}admin/");
+
+                //clean up labels
+                var proper_label = formrow.find("label").html();
+                var replace_me = new RegExp("("+id.replace('id_','')+")+");
+
+                formrow.find("h2").html(function(index, oldHtml){
+                    return oldHtml.replace(replace_me, proper_label);
+                });
+                formrow.find("h2 > img").attr("title", formrow.find("h2 > img").attr("title").replace(replace_me, proper_label));
             }
         });
-            
+
+        jQuery(document).on("click", "#refresh-picked", function(e){
+            picker_form.bundle_filters();
+            div = jQuery("div#picked-objects");
+            div.empty();
+
+            jQuery.getJSON(preview_url + "?" + jQuery("form#dynamicpicker_form").serialize(), get_args, function(data){
+                jQuery.each(data, function(index, value){
+
+                    var html = jQuery("<div><label>pk: "+value[0]+"</label><p>" + value[1] + "</p></div>");
+                    div.append(html);
+                });
+            });
+        });
     });
     
 </script>

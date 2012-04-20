@@ -97,7 +97,7 @@ class StoryCategory(models.Model):
 class Story(models.Model):
     article = models.ForeignKey(Article)
     categories = models.ManyToManyField(StoryCategory)
-    author = models.ForeignKey(User, limit_choices_to={'is_staff':True})
+    author = models.ForeignKey(User)
     creation_date = models.DateTimeField(verbose_name = "Creation Date", auto_now_add=True)    
     modified = models.DateTimeField(auto_now=True)
     peers = models.ManyToManyField('self', related_name='related_stories', null = True, blank = True)
@@ -156,7 +156,7 @@ class Publish(models.Model):
         ordering = ('sticky','order_me','-start')
     
     def __unicode__(self):
-        return "%s > %s" % (self.site, self.story.article.headline)
+        return "[%s] > %s" % (self.category.title, self.story.article.headline)
         
     def get_absolute_url(self):
         return "%d/%d/%d/%s/" % (self.start.year, self.start.month, self.start.day, self.slug)

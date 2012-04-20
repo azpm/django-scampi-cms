@@ -1,6 +1,8 @@
 import logging, re
 
 from django.contrib import admin
+from django.core.cache import cache
+from django.utils.html import escape
 from django.http import Http404, HttpResponse
 from django.contrib.contenttypes.models import ContentType
 from django.utils import simplejson
@@ -10,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import DynamicPicker, StaticPicker, PickerTemplate
 from .forms import DynamicPickerInitialForm, DynamicPickerForm
-from .picker import manifest
+from .picker import manifest, PickerError
 from .utils import build_filters, coerce_filters, uncoerce_pickled_value
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.admin')
@@ -61,8 +63,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             "admin/js/core.js",
             "admin/js/SelectBox.js",
             "admin/js/SelectFilter2.js",
-            'https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js',
-            'http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js',
+            'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js',
             'admin/js/conduit.pickers.js',
         )
 
@@ -101,20 +102,20 @@ class DynamicPickerAdmin(admin.ModelAdmin):
 
             if inclusion.is_valid():
                 inclusion_fs = []
-                
+
                 for form in inclusion:
                     setattr(picking_filterset, '_form', form)
                     try:
                         inclusion_fs.append(build_filters(picking_filterset))
                     except ValueError:
-                        continue                        
+                        continue
             else:
                 logger.debug("%s - inclusion was invalid: %s" % (obj.keyname, inclusion.errors))
                 messages.error(request, "There was an issue with the inclusion filters: %s" % inclusion.errors)
-                    
+
             if exclusion.is_valid():
                 exclusion_fs = []
-                
+
                 for form in exclusion:
                     setattr(picking_filterset, '_form', form)
                     try:
@@ -124,7 +125,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             else:
                 logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
                 messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)
-                    
+
             obj.include_filters = inclusion_fs or False
             obj.exclude_filters = exclusion_fs or False
             
@@ -148,10 +149,122 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
         my_urls = patterns('',
             url(r'^p/formfields/$', self.admin_site.admin_view(self.picking_filters_fields), name="conduit-picking-filters-fields"),
+            url(r'^p/preview-objects/$', self.admin_site.admin_view(self.preview_picked_objects), name="conduit-picking-preview-picked"),
         )
 
         return my_urls + urls
-        
+
+    def preview_picked_objects(self, request, *args, **kwargs):
+        content_id = request.REQUEST.get('content_id', None)
+        picker_id = request.REQUEST.get('picker_id', None)
+
+        try:
+            content_model = ContentType.objects.get(pk=content_id)
+        except ContentType.DoesNotExist:
+            raise Http404
+
+        try:
+            picker = DynamicPicker.objects.get(pk=picker_id)
+        except DynamicPicker.DoesNotExist:
+            raise Http404
+
+        model = content_model.model_class()
+        if not manifest.is_registered(model):
+            raise Http404
+
+        try:
+            picking_filterset = manifest.get_registration_info(model)()
+        except PickerError:
+            raise Http404("Picking Filterset not found")
+
+        factory = formset_factory(picking_filterset.form.__class__)
+        inclusion = factory(request.GET, prefix="incl")
+        exclusion = factory(request.GET, prefix="excl")
+
+        inclusion_fs = []
+        exclusion_fs = []
+
+        if inclusion.is_valid():
+            for form in inclusion:
+                setattr(picking_filterset, '_form', form)
+                try:
+                    inclusion_fs.append(build_filters(picking_filterset))
+                except ValueError:
+                    continue
+        else:
+            logger.debug("%s - inclusion was invalid: %s" % (obj.keyname, inclusion.errors))
+            messages.error(request, "There was an issue with the inclusion filters: %s" % inclusion.errors)
+
+        if exclusion.is_valid():
+            for form in exclusion:
+                setattr(picking_filterset, '_form', form)
+                try:
+                    exclusion_fs.append(build_filters(picking_filterset))
+                except ValueError:
+                    continue
+        else:
+            logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
+            messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)
+
+        #reset cache for this picker
+        cache_key = "conduit:dp:ids:%d" % picker.id
+        cache.delete(cache_key)
+
+        qs = model.objects.all()
+        #first we handle any static defers - performance optimisation
+        if hasattr(picking_filterset, 'static_defer'):
+            defer = picking_filterset.static_defer()
+            qs = qs.defer(*defer)
+
+        #second we handle any static select_related fields - performance optimisation
+        if hasattr(picking_filterset, 'static_select_related'):
+            select_related = picking_filterset.static_select_related()
+            qs = qs.select_related(*select_related)
+
+        #third we handle any static prefetch_related fields - performance optimisation
+        if hasattr(picking_filterset, 'static_prefetch_related'):
+            prefetch_related = picking_filterset.static_prefetch_related()
+            qs = qs.prefetch_related(*prefetch_related)
+
+        #fourth we apply our inclusion filters
+        if inclusion_fs:
+            for f in inclusion_fs:
+                if not f:
+                    continue
+                coerce_filters(f)
+                qs = qs.filter(**f)
+
+        #fifth we apply our exclusion filters
+        if exclusion_fs:
+            for f in exclusion_fs:
+                if not f:
+                    continue
+                coerce_filters(f)
+                qs = qs.exclude(**f)
+
+        #before we limit the qs we let the picking filterset apply any last minute operations
+        if hasattr(picking_filterset, 'static_chain') and callable(picking_filterset.static_chain):
+            qs = picking_filterset.static_chain(qs)
+
+        if not picker.max_count or picker.max_count > 10:
+            limit = 10
+        else:
+            limit = picker.max_count
+
+        ids = list(qs.values_list('id', flat=True)[:limit])
+        cache.set(cache_key, ids, 60*10)
+
+        #picked = model.objects.filter(id__in=ids)
+        picked = model.objects.in_bulk(ids)
+
+        for_json = []
+        for pk, obj in picked.items():
+            for_json.append((pk, escape(repr(obj))))
+
+        response = HttpResponse(simplejson.dumps(for_json),content_type="application/json")
+
+        return response
+
     def picking_filters_fields(self, request, *args, **kwargs):            
         content_id = request.REQUEST.get('content_id', None)       
         picker_id = request.REQUEST.get('picker_id', None)

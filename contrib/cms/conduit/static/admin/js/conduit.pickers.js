@@ -2,7 +2,6 @@
  Picking Form Builder
 */
 
-
 function Pickers() {
     this.incl = {
         prefix: "incl",
@@ -32,7 +31,7 @@ function Pickers() {
     this.raw_data = null;
 }
 
-Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx) 
+Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx, formrow)
 {
 	var idRegex = new RegExp(prefix + '-(\\d+|__prefix__)-'),
 		replacement = replace + '-' + ndx + '-';
@@ -50,6 +49,7 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
         if (ptr.attr('name'))
         {
             ptr.attr('name', ptr.attr('name').replace(idRegex, replacement));
+            //ptr.attr('name', label);
         }
         if (ptr.attr('id'))
         {
@@ -57,7 +57,7 @@ Pickers.prototype.update_element_index = function(elem, prefix, replace, ndx)
             ptr.attr('id', ptr.attr('id').replace(idRegex, replacement));
             if (curr_id  != ptr.attr('id'))
             {
-                jQuery.event.trigger('filter_id_update', [ptr.attr('id')]);
+                jQuery.event.trigger('filter_id_update', [ptr.attr('id'), formrow]);
             }
         }
         
@@ -97,7 +97,7 @@ Pickers.prototype.bundle_filters = function()
                 var picking_filter = self.available_pickers[picker_ptr];
                 
                 //order the item correctly
-                self.update_element_index(jQuery(div).find("label ~ input,select"), "form", type, k);
+                self.update_element_index(jQuery(div).find("label ~ input,select"), "form", type, k, div);
             });
             
             //increase form count for each group
@@ -134,7 +134,7 @@ Pickers.prototype.add_filter = function(type, group_suffix, initial)
     	var index = jQuery("#"+id_pointer+"_picking_element option:contains('"+initial[1]+"')").val()
     	var picking_filter = {
     		name: initial[1],
-    		html: initial[2],
+    		html: initial[2]
     	};
     }
 
@@ -205,7 +205,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     var group_suffix = '_group_'+num;
     var id_pointer = type.prefix+group_suffix;
     
-    var html = '\
+    var html = jQuery('\
         <fieldset class="module aligned" name="'+type.prefix+'_group" id="'+id_pointer+'_filters"> \
             <h2 id="'+id_pointer+'" style="background:'+type.bar_color+' !important;">'+type.label+' Picking Group</h2> \
             <div class="description"></div> \
@@ -216,7 +216,9 @@ Pickers.prototype.create_fieldset = function(type, num)
                     <a class="add-another" id="'+id_pointer+'_add_filter"></a> \
                 </div> \
             </div> \
-        </fieldset>';
+        </fieldset>');
+
+    html.hide();
 
     if (num == 0)
     {
@@ -246,8 +248,10 @@ Pickers.prototype.create_fieldset = function(type, num)
     //First we add the little green plus sign image, then we bind clicking it to ourself "add_filter"
     jQuery("#"+id_pointer+"_add_filter").append(img.clone());
     jQuery("#"+id_pointer+"_add_filter").bind("click", function() { self.add_filter(type.prefix, group_suffix, null); });
-   
+
+    html.slideDown("fast");
 }
+
 
 Pickers.prototype.delete_fieldset = function(elem)
 {
@@ -258,59 +262,72 @@ Pickers.prototype.delete_fieldset = function(elem)
 Pickers.prototype.process_available = function(data) {
     var self = this;
     var picker_ids = new Array();
-    
-    jQuery.each(data.filters, function(index, value) {
-        var picker = {
-            incl_count: 0,
-            excl_count: 0,
-            name: value[1],
-            id: value[0],
-            html: value[2]
-        };
-        
-        picker_ids.push(value[0]);
-        self.available_pickers.push(picker);
-    });
-    
-    if (window.console && console.log) {
-        console.log('existing inclusion filters', data.existing.incl);
-        console.log('existing exclusion filters', data.existing.excl);
-        console.log('availabile pickers', self.available_pickers);
-    }
-    
-    this.create_fieldsets();
-	
-    var num = 0
-    
-    jQuery.each(data.existing.incl, function(index, value) 
-    {
-    	if (index > 0)
-    	{
-    		self.create_fieldset(self.incl, num);
-    	}
-    	
-        jQuery.each(value, function(i, property)
-        {
-        	self.add_filter(self.incl.prefix, '_group_'+num, property);
+
+    var html = jQuery('\
+        <fieldset class="module aligned" id="picked-objects"> \
+            <h2>Preview Picker <a class="refresh-icon" id="refresh-picked" href="#refresh-picked">&#8635;</a></h2>\
+            <div class="form-row" id="picked-objects">\
+            </div>\
+        </fieldset>');
+    html.hide();
+    jQuery("fieldset").filter(":last").after(html);
+
+    html.slideDown("fast", function(){
+        jQuery.each(data.filters, function(index, value) {
+            var picker = {
+                incl_count: 0,
+                excl_count: 0,
+                name: value[1],
+                id: value[0],
+                html: value[2]
+            };
+
+            picker_ids.push(value[0]);
+            self.available_pickers.push(picker);
         });
-          
-        num+=1;
-    });
-    
-    num = 0
-    jQuery.each(data.existing.excl, function(index, value) 
-    {
-    	if (index > 0)
-    	{
-    		self.create_fieldset(self.excl, num);
-    	}
-    	
-    	jQuery.each(value, function(i, property)
+        /*
+         if (window.console && console.log) {
+         console.log('existing inclusion filters', data.existing.incl);
+         console.log('existing exclusion filters', data.existing.excl);
+         console.log('availabile pickers', self.available_pickers);
+         }
+         */
+        self.create_fieldsets();
+        var num = 0
+
+        jQuery.each(data.existing.incl, function(index, value)
         {
-        	self.add_filter(self.excl.prefix, '_group_'+num, property);
+            if (index > 0)
+            {
+                self.create_fieldset(self.incl, num);
+            }
+
+            jQuery.each(value, function(i, property)
+            {
+                self.add_filter(self.incl.prefix, '_group_'+num, property);
+            });
+
+            num+=1;
         });
 
-        num+=1;
+        num = 0
+        jQuery.each(data.existing.excl, function(index, value)
+        {
+            if (index > 0)
+            {
+                self.create_fieldset(self.excl, num);
+            }
+
+            jQuery.each(value, function(i, property)
+            {
+                self.add_filter(self.excl.prefix, '_group_'+num, property);
+            });
+
+            num+=1;
+        });
+
+        jQuery("a#refresh-picked").delay(800).click();
     });
-    
+
+
 }

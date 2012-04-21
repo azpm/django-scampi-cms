@@ -72,7 +72,7 @@ Pickers.prototype.bundle_filters = function()
     jQuery.each(temp_types, function(index, value)
     {
         var type = value.prefix;
-        var fieldsets = jQuery("fieldset[name="+type+"_group]");
+        var fieldsets = jQuery("fieldset."+type+"_group");
         
         jQuery.each(fieldsets, function(k, v)
         {
@@ -206,7 +206,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     var id_pointer = type.prefix+group_suffix;
     
     var html = jQuery('\
-        <fieldset class="module aligned" name="'+type.prefix+'_group" id="'+id_pointer+'_filters"> \
+        <fieldset class="module aligned '+type.prefix+'_group" id="'+id_pointer+'_filters"> \
             <h2 id="'+id_pointer+'" style="background:'+type.bar_color+' !important;">'+type.label+' Picking Group</h2> \
             <div class="description"></div> \
             <div class="form-row" id="'+id_pointer+'_filter_adder" name="filter_adder"> \
@@ -224,7 +224,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     {
         //create the base fieldsets
         jQuery("fieldset").filter(":last").after(html);
-        jQuery("fieldset[name='"+type.prefix+"_group'] > div.description").append('<a class="addlink" id="'+id_pointer+'_add_group">Add Group</a>');
+        jQuery("fieldset."+type.prefix+"_group > div.description").append('<a class="addlink" id="'+id_pointer+'_add_group">Add Group</a>');
         
         //bind click to adding a new group
         jQuery("#"+id_pointer+"_add_group").bind("click", function() { self.create_fieldset(type, num+=1); });
@@ -232,7 +232,7 @@ Pickers.prototype.create_fieldset = function(type, num)
     else
     {
         //create the base fieldsets
-        jQuery("fieldset[name='"+type.prefix+"_group']").filter(":last").after(html);
+        jQuery("fieldset."+type.prefix+"_group").filter(":last").after(html);
         jQuery("fieldset#"+id_pointer+"_filters > div.description").append("<a class='deletelink' id='"+id_pointer+"_delete_group'>Delete Group</a>");
         
         //bind click to adding a new group
@@ -328,6 +328,4 @@ Pickers.prototype.process_available = function(data) {
 
         jQuery("a#refresh-picked").delay(800).click();
     });
-
-
 }

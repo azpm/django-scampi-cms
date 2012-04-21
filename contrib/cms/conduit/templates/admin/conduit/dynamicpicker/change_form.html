@@ -36,8 +36,13 @@
 
         jQuery(document).on("click", "#refresh-picked", function(e){
             picker_form.bundle_filters();
-            div = jQuery("div#picked-objects");
-            div.empty();
+            var div = jQuery("div#picked-objects").empty();
+
+            jQuery("form#dynamicpicker_form select[multiple='multiple']:not([id$='_from'])").each(function(elem,val){
+                var target = jQuery(val).attr('id');
+
+                SelectBox.select_all(target);
+            });
 
             jQuery.getJSON(preview_url + "?" + jQuery("form#dynamicpicker_form").serialize(), get_args, function(data){
                 jQuery.each(data, function(index, value){

@@ -23,7 +23,7 @@ class PickerMixin(object):
         
         if 'picker' in kwargs:
             picker_key = kwargs.pop('picker')
-            self.picker = get_object_or_404(DynamicPicker, keyname = picker_key, active = True)
+            self.picker = get_object_or_404(DynamicPicker.objects.select_related('commune'), keyname = picker_key, active = True)
         else:
             raise Http404
             
@@ -50,7 +50,7 @@ class PickerMixin(object):
         self.base_categories = categories
 
         #add section to the graph by way of the picker
-        kwargs.update({'keyname': self.picker.commune.section.keyname})
+        kwargs.update({'keyname': self.picker.commune.keyname})
 
         return super(PickerMixin, self).get(request, *args, **kwargs)
         

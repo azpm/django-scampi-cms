@@ -121,7 +121,7 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, CMSPageNoView):
 
 class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
     def get_page_title(self):
-        return "%s - %s" % (self.picker.name, self.picker.commune.realm.name)
+        return "%s, Archive - %s" % (self.picker.name, self.picker.commune.name)
 
 
     def get_template_names(self):
@@ -137,7 +137,10 @@ class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
 
 class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
     make_object_list = True
-    
+
+    def get_page_title(self):
+        return "%s, Archive %d - %s" % (self.picker.name, self.get_year(), self.picker.commune.name)
+
     def get_template_names(self):
         tpl_list = (
             "%s/newsengine/archive/%s/%s/%s/year.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
@@ -149,7 +152,9 @@ class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
         return tpl_list
 
 class PickedStoryMonthArchive(NewsEngineArchivePage, MonthArchiveView):
-    
+    def get_page_title(self):
+        return "%s, Archive %d/%d - %s" % (self.picker.name, self.get_month(), self.get_year(), self.picker.commune.name)
+
     def get_template_names(self):
         tpl_list = (
             "%s/newsengine/archive/%s/%s/%s/month.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
@@ -161,7 +166,9 @@ class PickedStoryMonthArchive(NewsEngineArchivePage, MonthArchiveView):
         return tpl_list
 
 class PickedStoryDayArchive(NewsEngineArchivePage, DayArchiveView):
-    
+    def get_page_title(self):
+        return "%s, Archive %d/%d/%d - %s" % (self.picker.name, self.get_day(), self.get_month(), self.get_year(), self.picker.commune.name)
+
     def get_template_names(self):
         tpl_list = (
             "%s/newsengine/archive/%s/%s/%s/day.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
@@ -172,8 +179,10 @@ class PickedStoryDayArchive(NewsEngineArchivePage, DayArchiveView):
         
         return tpl_list
     
-class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):  
-    
+class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
+    def get_page_title(self):
+        return "%s, Archive %d/%d/%d - %s" % (self.picker.name, self.get_day(), self.get_month(), self.get_year(), self.picker.commune.name)
+
     def get_template_names(self):
         tpl_list = (
             "%s/newsengine/archive/%s/%s/%s/today.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
@@ -189,8 +198,10 @@ class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
         return tpl_list
     
 class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
+    def get_page_title(self):
+        return "%s" % self.object.story.article.headline
+
     def get_stylesheets(self):
-        
         publish = self.object
         story = publish.story
         article = story.article

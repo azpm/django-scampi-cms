@@ -145,7 +145,7 @@ class DynamicPicker(PickerBase):
         
     def get_absolute_url(self):
         if self.commune:
-            return "/%s/%s/" % (self.commune.keyname, self.keyname)
+            return "/p/%s/" % self.keyname
         
         return ""
         

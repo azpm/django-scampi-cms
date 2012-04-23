@@ -48,7 +48,10 @@ class PickerMixin(object):
             cache.set(cat_cache_key, categories, 60*60)
             
         self.base_categories = categories
-            
+
+        #add section to the graph by way of the picker
+        kwargs.update({'keyname': self.picker.commune.section.keyname})
+
         return super(PickerMixin, self).get(request, *args, **kwargs)
         
     def get_context_data(self, *args, **kwargs):

@@ -14,6 +14,7 @@ from libscampi.core.files.storage import OverwriteStorage
 
 #local imports
 from libscampi.contrib.cms.communism.managers import *
+from libscampi.contrib.cms.communism.validators import magic_keyname
 from libscampi.contrib.cms.communism.utils import revert_storage_engines, swap_storage_engines, theme_style_decorator, theme_script_decorator, theme_banner_decorator, section_path_up, cache_namedbox_template
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
@@ -200,7 +201,7 @@ class Section(models.Model):
     hierarchy information to any BaseHierarchyElements
     """
     realm = models.ForeignKey(Realm)
-    keyname = models.SlugField(_("URI/Template Identifier"), max_length = 20, db_index = True)
+    keyname = models.SlugField(_("URI/Template Identifier"), max_length = 20, db_index = True, validators=[magic_keyname])
     display_order = models.PositiveSmallIntegerField(_("Display Order"), db_index = True)
     active = models.BooleanField(default=True, db_index=True)
     generates_navigation = models.BooleanField(_("Generates Navigation"), default = True, db_index=True)

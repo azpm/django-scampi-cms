@@ -265,7 +265,7 @@ Pickers.prototype.process_available = function(data) {
 
     var html = jQuery('\
         <fieldset class="module aligned" id="picked-objects"> \
-            <h2>Preview Picker <a class="refresh-icon" web-symbol id="refresh-picked" href="#refresh-picked">v</a></h2>\
+            <h2>Preview Picker <a class="refresh-icon web-symbol" id="refresh-picked" href="#refresh-picked">v</a></h2>\
             <div class="form-row" id="picked-objects">\
             </div>\
         </fieldset>');

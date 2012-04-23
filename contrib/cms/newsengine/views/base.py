@@ -153,7 +153,7 @@ class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
 
 class PickedStoryMonthArchive(NewsEngineArchivePage, MonthArchiveView):
     def get_page_title(self):
-        return "%s, Archive %d/%d - %s" % (self.picker.name, self.get_month(), self.get_year(), self.picker.commune.name)
+        return "%s, Archive %s/%s - %s" % (self.picker.name, self.get_month(), self.get_year(), self.picker.commune.name)
 
     def get_template_names(self):
         tpl_list = (
@@ -167,7 +167,7 @@ class PickedStoryMonthArchive(NewsEngineArchivePage, MonthArchiveView):
 
 class PickedStoryDayArchive(NewsEngineArchivePage, DayArchiveView):
     def get_page_title(self):
-        return "%s, Archive %d/%d/%d - %s" % (self.picker.name, self.get_day(), self.get_month(), self.get_year(), self.picker.commune.name)
+        return "%s, Archive %s/%s/%s - %s" % (self.picker.name, self.get_day(), self.get_month(), self.get_year(), self.picker.commune.name)
 
     def get_template_names(self):
         tpl_list = (
@@ -181,7 +181,7 @@ class PickedStoryDayArchive(NewsEngineArchivePage, DayArchiveView):
     
 class PickerStoryTodayArchive(NewsEngineArchivePage, TodayArchiveView):
     def get_page_title(self):
-        return "%s, Archive %d/%d/%d - %s" % (self.picker.name, self.get_day(), self.get_month(), self.get_year(), self.picker.commune.name)
+        return "%s, Archive %s/%s/%s - %s" % (self.picker.name, self.get_day(), self.get_month(), self.get_year(), self.picker.commune.name)
 
     def get_template_names(self):
         tpl_list = (

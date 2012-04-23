@@ -22,8 +22,8 @@ class PickerMixin(object):
         """
         
         if 'picker' in kwargs:
-            picker_key = kwargs['picker']
-            self.picker = get_object_or_404(DynamicPicker, keyname = picker_key, commune = self.commune)
+            picker_key = kwargs.pop('picker')
+            self.picker = get_object_or_404(DynamicPicker, keyname = picker_key, active = True)
         else:
             raise Http404
             

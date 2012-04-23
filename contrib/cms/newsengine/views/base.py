@@ -13,7 +13,7 @@ from .mixins import PublishStoryMixin
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.views')
 
-class NewsEngineArchivePage(PublishStoryMixin, CMSPageNoView, PickerMixin):
+class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, CMSPageNoView):
     limits = None
     available_categories = None
     

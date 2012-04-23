@@ -53,6 +53,7 @@ class PickerBase(models.Model):
         ordering = ['precedence']
     
 class DynamicPicker(PickerBase):
+    active = models.BooleanField(default = True)
     keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"))
     template = models.ForeignKey(PickerTemplate)
     max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time. A 0 indicates unlimited."), default = 0)

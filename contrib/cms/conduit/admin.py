@@ -26,13 +26,13 @@ class PickerTemplateAdmin(admin.ModelAdmin):
     save_on_top = True
     
 class DynamicPickerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'keyname', 'commune', 'content', 'max_count','template')
+    list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count','template')
     list_editable = ('max_count','template')
     #list_filter = ('content',) will add later
     search_fields = ('commune__name',)
     
     fieldsets = (
-        ('Designation', {'fields': ('name', ('keyname', 'commune'))}),
+        ('Designation', {'fields': ('name', 'active', ('keyname', 'commune'))}),
         ('Display', {'fields': ('template',)}),
         ('Picking', {'fields': ('content', 'max_count')}), 
     )

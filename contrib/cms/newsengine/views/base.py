@@ -139,7 +139,7 @@ class PickedStoryYearArchive(NewsEngineArchivePage, YearArchiveView):
     make_object_list = True
 
     def get_page_title(self):
-        return "%s, Archive %d - %s" % (self.picker.name, self.get_year(), self.picker.commune.name)
+        return "%s, Archive %s - %s" % (self.picker.name, self.get_year(), self.picker.commune.name)
 
     def get_template_names(self):
         tpl_list = (

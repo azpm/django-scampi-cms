@@ -116,10 +116,13 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, CMSPageNoView):
         logger.debug("NewsEngineArchivePage.get_context_data ended")
         return context
 
+    def get_page_title(self):
+        return "more %s" % self.picker.name
 
 class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
     def get_page_title(self):
-        return "more %s" % self.picker.name
+        return "%s - %s" % (self.picker.name, self.picker.commune.realm.name)
+
 
     def get_template_names(self):
         tpl_list = (

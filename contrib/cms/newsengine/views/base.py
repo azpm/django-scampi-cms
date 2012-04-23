@@ -14,6 +14,12 @@ from .mixins import PublishStoryMixin
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.views')
 
 class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, CMSPageNoView):
+    """
+    Base page for newsengine archives
+
+    provides the picker-pruned initial queryset
+    """
+
     limits = None
     available_categories = None
     
@@ -35,38 +41,24 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, CMSPageNoView):
             
         #finally return the parent get method
         return super(NewsEngineArchivePage, self).get(request, *args, **kwargs)
-    
-    
-    """
-    Base page for newsengine archives
-    
-    provides the picker-pruned initial queryset
-    """
-    def get_queryset(self):        
-        qs = self.model.objects.distinct()
-        
-        """.select_related(
-            "story__categories",
-            "story__author__firstname",
-            "story__author__lastname",
-            "thumbnail__file",
-            "thumbnail__caption",
-            "story__article__video__inlines",
-        )"""
-        
+
+    def get_queryset(self):
         """
         this is a hardcoded "hack"
-        
+
         the newsengine publish stories are displayed, by way of the CMS through
         dynamic pickers. Without having time to write a robust "archive" feature
         for dynamic pickers, we conclude that because contrib.CMS is not editable
         the Picking Filterset for Publish (published stories) is immutable and
         'start', 'end', 'end__isnull' are known keys of things we DON'T want to
         filter by for the archives.
-        
+
         We do this because the archives themselves will exclude things that
         haven't been published yet, and will always show expired stories.
         """
+        qs = self.model.objects.distinct()
+        
+
         exclude_these = ('start', 'end', 'end__isnull')
         
         #loop over the inclusion filters and update the qs
@@ -126,7 +118,9 @@ class NewsEngineArchivePage(PublishStoryMixin, PickerMixin, CMSPageNoView):
 
 
 class PickedStoryIndex(NewsEngineArchivePage, ArchiveIndexView):
-    
+    def get_page_title(self):
+        return "more %s" % self.picker.name
+
     def get_template_names(self):
         tpl_list = (
             "%s/newsengine/archive/%s/%s/%s/index.html" % (self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),

@@ -38,7 +38,7 @@ class ArticleTranslationInline(admin.StackedInline):
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
     list_display = ['headline','sub_headline','languages','who_made_me','creation_date','modified']
-    search_fields = ['translations__headline']
+    search_fields = ['translations__headline','author__first_name','author__last_name','author__username']
     fieldsets = (
         ('Authorship', {'fields': ('author', 'contributors')}),
         ('Media', {

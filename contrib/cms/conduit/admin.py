@@ -28,7 +28,7 @@ class PickerTemplateAdmin(admin.ModelAdmin):
 class DynamicPickerAdmin(admin.ModelAdmin):
     list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count','template')
     list_editable = ('max_count','active','template')
-    #list_filter = ('content',) will add later
+    list_filter = ('content','commune')
     search_fields = ('commune__name',)
     
     fieldsets = (

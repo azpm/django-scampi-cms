@@ -21,7 +21,7 @@ class picker_node(template.Node):
         except template.VariableDoesNotExist:
             return u""
         
-        if type(picker) is DynamicPicker:            
+        if type(picker) is DynamicPicker and picker.active:
             request = context.get('request', None)
             
             if not request:

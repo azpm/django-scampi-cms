@@ -74,10 +74,13 @@ class NamedBoxTemplateAdmin(admin.ModelAdmin):
     save_on_top = True
 
 class BoxAdmin(admin.ModelAdmin):
-    list_display = ('name', 'keyname', 'display_name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
+    #list_display = ('name', 'keyname', 'display_name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
     list_display_links = ('name',)
-    list_editable = ('display_name', 'template', 'gridx', 'gridy', 'display_order')
+    #list_editable = ('display_name', 'template', 'gridx', 'gridy', 'display_order')
+    list_display = ('name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
+    list_editable = ('template', 'gridx', 'gridy', 'display_order')
     raw_id_fields = ['slice','content']
+    list_filter = ('slice__commune',)
     fieldsets = (
         ('General', {'fields': ('slice', ('name', 'keyname', 'active'))}),
         ('Display', {'fields': ('display_name', 'template')}),

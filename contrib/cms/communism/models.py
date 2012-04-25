@@ -332,7 +332,7 @@ class Slice(models.Model):
         unique_together = ('commune', 'display_order')
     
     def __unicode__(self):
-        return "%s > %s > #%d" % (self.commune.realm, self.commune.keyname, self.display_order)
+        return "%s - %s #%d" % (self.commune.realm.name, self.commune.keyname, self.display_order)
 
     def natural_key(self):
         return (self.commune.keyname, self.display_order)

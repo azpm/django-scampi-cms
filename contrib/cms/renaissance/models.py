@@ -166,7 +166,7 @@ class Media(models.Model):
     modified = models.DateTimeField(auto_now=True)
     
     mime_type = models.CharField(max_length=150, blank=True)
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
     
     class Meta:
         ordering = ['-creation_date']
@@ -313,7 +313,7 @@ class MediaPlaylist(models.Model):
     caption = models.TextField(blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)    
     modified = models.DateTimeField(auto_now=True)
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
     template = models.ForeignKey(MediaPlaylistTemplate)
     
     class Meta:

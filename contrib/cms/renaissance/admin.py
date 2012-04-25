@@ -5,7 +5,7 @@ from libscampi.contrib.cms.renaissance.models import *
 #individual media piece config
 class MediaAdmin(object):
     fieldsets = (
-        ('Designation', {'fields': ('title','slug','caption',)}),
+        ('Designation', {'fields': ('title','slug','caption','tags')}),
         ('Attribution', {'fields': ('author','credit', 'reproduction_allowed')}),
     )
     
@@ -34,7 +34,7 @@ class ExternalAdmin(admin.ModelAdmin): pass
 #generic playlist admin
 class PlaylistAdmin(object):    
     fieldsets = (
-        ('Designation', {'fields': ('title','slug','caption',)}),
+        ('Designation', {'fields': ('title','slug','caption','tags')}),
         ('Display', {'fields': ('template',)})
     )
     list_display = ['title', 'creation_date']

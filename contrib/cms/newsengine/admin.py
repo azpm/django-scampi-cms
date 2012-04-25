@@ -197,11 +197,10 @@ class ArticleAdmin(admin.ModelAdmin):
         
 class StoryAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
-    list_display = ['headline', 'author', 'creation_date','important']
-    list_filter = ['categories']
-    search_fields = ['article__translations__headline']
+    list_display = ['headline', 'author_name', 'creation_date']
+    search_fields = ['article__translations__headline','author__first_name','author__last_name','author__username']
     fieldsets = (
-        ('Meta Data', {'fields': ('author','categories','article',)}),
+        ('Meta Data', {'fields': ('author','categories','article','tags')}),
         ('Media Playlists', {'fields': (('image_playlist', 'video_playlist', 'audio_playlist'),('document_playlist', 'object_playlist'))}),
         ('Relationships', {'fields': ('peers','important')}),
     )
@@ -210,6 +209,9 @@ class StoryAdmin(admin.ModelAdmin):
     filter_horizontal = ['categories']
 
     save_on_top = True
+
+    def author_name(self, cls):
+        return cls.author.get_full_name()
 
     def headline(self, cls):
         try:
@@ -221,7 +223,7 @@ class StoryAdmin(admin.ModelAdmin):
                 logger.debug("Tried to get a story [%d] who's article [%d] had no available headlines" % (cls.id, cls.article_id))
                 return u""
         
-        return u"%s" % truncatewords(val.headline, '5')
+        return u"%s" % truncatewords(val.headline, '10')
         
     def queryset(self, request):
         qs = super(StoryAdmin, self).queryset(request)

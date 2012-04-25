@@ -45,6 +45,11 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     )
     
     save_on_top = True
+
+    def queryset(self, request):
+        qs = super(DynamicPickerAdmin, self).queryset(request)
+
+        return qs.prefetch_related('template','commune')
     
     def get_readonly_fields(self, request, obj=None):
         """

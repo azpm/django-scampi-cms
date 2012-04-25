@@ -53,6 +53,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
         if obj:
             return ('commune', 'keyname', 'content')
+        else:
+            return ('active',)
         
         return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
     

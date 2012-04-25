@@ -13,6 +13,7 @@ from .models import DynamicPicker, StaticPicker, PickerTemplate
 from .forms import DynamicPickerInitialForm, DynamicPickerForm
 from .picker import manifest, PickerError
 from .utils import build_filters, coerce_filters, uncoerce_pickled_value
+from .filtering import ContentTypeListFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.admin')
 
@@ -28,7 +29,7 @@ class PickerTemplateAdmin(admin.ModelAdmin):
 class DynamicPickerAdmin(admin.ModelAdmin):
     list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count','template')
     list_editable = ('max_count','active','template')
-    list_filter = ('content','commune')
+    list_filter = (ContentTypeListFilter,'commune')
     search_fields = ('commune__name',)
     
     fieldsets = (

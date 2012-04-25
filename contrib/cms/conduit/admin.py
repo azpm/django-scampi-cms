@@ -27,7 +27,7 @@ class PickerTemplateAdmin(admin.ModelAdmin):
     
 class DynamicPickerAdmin(admin.ModelAdmin):
     list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count','template')
-    list_editable = ('max_count','template')
+    list_editable = ('max_count','active','template')
     #list_filter = ('content',) will add later
     search_fields = ('commune__name',)
     
@@ -38,7 +38,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     )
     
     add_fieldsets = (
-        (_('Designation'), {'fields': ('name', 'keyname')}),
+        (_('Designation'), {'fields': ('name','active','keyname')}),
         (_('Display'), {'fields': ('template', )}),
         (_('Picking'), {'fields': ('content', 'max_count')}),
     )

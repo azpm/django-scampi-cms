@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.sites.models import Site
+from django.contrib.contenttypes.models import ContentType
 
 __all__ = ['localised_section_manager', 'localised_element_manager', 'ThemeManager', 'RealmManager', 'SectionManager', 'CommuneManager', 'SliceManager', 'NamedBoxManager', 'ApplicationManager']
 
@@ -27,7 +28,24 @@ class CommuneManager(models.Manager):
     def get_query_set(self):
         qs = super(CommuneManager, self).get_query_set()
 
-        return qs.distinct('id')
+        ctype = ContentType.objects.get_for_model(self.model)
+
+        return qs.extra(select={
+            'r_order': """
+                select display_order from communism_realm
+                inner join communism_section on
+                    (
+                        communism_realm.id = communism_section.realm_id
+                        and communism_section.element_type_id = %s
+                        and communism_section.element_id = communism_commune.id
+                    )
+            """,
+            's_order': """
+                select display_order from communism_section cs
+                where cs.element_type_id = %s
+                and cs.element_id = communism_commune.id
+            """
+        }, select_params=[ctype.id], order_by=['r_order','s_order'])
 
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)

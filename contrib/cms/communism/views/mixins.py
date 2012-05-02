@@ -172,6 +172,71 @@ class CommuneMixin(object):
         })
         logger.debug("CommuneMixin.get_context_data ended")
         return context
+
+class ApplicationMixin(object):
+    """
+    Implements themed stylesheets and javascripts for libscampi.contrib.cms.communism.models.Application
+    """
+    cached_css_key = None
+    cached_js_key = None
+
+    def get_stylesheets(self):
+        if self.cached_css_key == None:
+            return None
+
+        styles = cache.get(self.cached_css_key, None)
+
+        #cache empty, get the styles and refill the cache
+        if not styles:
+            logger.debug("missed css cache on %s" % self.cached_css_key)
+            styles = StyleSheet.objects.filter(active=True, base=True, theme=self.get_theme()).order_by('precedence')
+            cache.set(self.cached_css_key, styles, 60*20)
+
+        #build a simple collection of styles
+        css_collection = html_link_refs()
+        for style in styles:
+            css_collection.add(style)
+
+        #add the static css for this app
+        static_styles = self.get_static_styles()
+        if static_styles:
+            for style in static_styles:
+                css_collection.add(static_style(**style))
+
+        return css_collection
+
+    def get_javascripts(self):
+        if self.cached_js_key == None:
+            return None
+        scripts = cache.get(self.cached_js_key, None)
+
+        #cache empty, get the styles and refill the cache
+        if not scripts:
+            logger.debug("missed script cache on %s" % self.cached_js_key)
+            scripts = Javascript.objects.filter(active=True, base=True, theme=self.get_theme()).order_by('precedence')
+            cache.set(self.cached_js_key, styles, 60*20)
+
+        #build a simple collection of styles
+        js_collection = html_link_refs()
+        for script in scripts:
+            js_collection.add(script)
+
+        #add the static js for this app
+        static_scripts = self.get_static_scripts()
+        if static_scripts:
+            for script in static_scripts:
+                js_collection.add(static_script(**script))
+
+        return js_collection
+
+    def get_static_styles(self):
+        return None
+
+    def get_static_scripts(self):
+        return None
+
+    def get_theme(self):
+        raise NotImplementedError("view using NoCommuneMixin must provide get_theme method")
     
 class CSSMixin(object):
     def get_stylesheets(self):

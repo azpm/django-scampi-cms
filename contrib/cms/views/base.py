@@ -1,20 +1,26 @@
 from django.views.generic import View, TemplateView
-from django.core.exceptions import ImproperlyConfigured
 
-from libscampi.contrib.cms.communism.views.mixins import SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin
+from libscampi.contrib.cms.communism.views.mixins import SectionMixin, ApplicationMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin
 
 from .mixins import PageMixin
 
-class Page(SectionMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
-    pass
-    
-class PageNoView(SectionMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
+class Page(SectionMixin, ApplicationMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     """
-    Implements an unmanaged page that has no view, you must provide the proper response mixin
+    Implements an un-managed page with a  templateview that integrates with the CMS without having a commune, e.g.
+    if you are using a custom django application and want to integrate it with scampi cms
+    """
+    pass
+
+class PageNoView(SectionMixin, ApplicationMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
+    """
+    Implements an un-managed page that has no view, you must provide the proper response mixin
     """
     pass
 
 class CMSPage(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
+    """
+    Implements a canonical Commune based CMS Page
+    """
     pass
 
 class CMSPageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):

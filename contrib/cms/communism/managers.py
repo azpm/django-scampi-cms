@@ -30,7 +30,7 @@ class CommuneManager(models.Manager):
 
         ctype = ContentType.objects.get_for_model(self.model)
 
-        
+
         return qs.extra(select={
             'r_order': """
                 select cm.display_order from communism_realm cm

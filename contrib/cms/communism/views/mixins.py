@@ -185,6 +185,9 @@ class ApplicationMixin(object):
         if self.cached_css_key == None:
             return None
 
+        if self.refresh_caches:
+            #invalidate on refresh_cache
+            cache.delete(self.cached_css_key)
         styles = cache.get(self.cached_css_key, None)
 
         #cache empty, get the styles and refill the cache
@@ -210,13 +213,18 @@ class ApplicationMixin(object):
         if self.cached_js_key == None:
             return None
 
-        scripts = cache.get(self.cached_js_key, None)
+        if self.refresh_caches:
+            #invalidate on refresh_cache
+            cache.delete(self.cached_js_key)
+        script_ids = cache.get(self.cached_js_key, None)
 
         #cache empty, get the styles and refill the cache
-        if not scripts:
+        if not script_ids:
             logger.debug("missed script cache on %s" % self.cached_js_key)
             scripts = Javascript.objects.filter(active=True, base=True, theme=self.get_theme()).order_by('precedence')
-            cache.set(self.cached_js_key, scripts, 60*20)
+            cache.set(self.cached_js_key, list(scripts.values_list('id', flat=True)), 60*20)
+        else:
+            scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')
 
         #build a simple collection of styles
         js_collection = html_link_refs()

@@ -58,7 +58,7 @@ class NamedBoxManager(models.Manager):
         
 class ApplicationManager(models.Manager):
     def get_query_set(self):
-        qs = super(CommuneManager, self).get_query_set()
+        qs = super(ApplicationManager, self).get_query_set()
 
         ctype = ContentType.objects.get_for_model(self.model)
 

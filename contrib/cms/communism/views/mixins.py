@@ -208,13 +208,14 @@ class ApplicationMixin(object):
     def get_javascripts(self):
         if self.cached_js_key == None:
             return None
+
         scripts = cache.get(self.cached_js_key, None)
 
         #cache empty, get the styles and refill the cache
         if not scripts:
             logger.debug("missed script cache on %s" % self.cached_js_key)
             scripts = Javascript.objects.filter(active=True, base=True, theme=self.get_theme()).order_by('precedence')
-            cache.set(self.cached_js_key, styles, 60*20)
+            cache.set(self.cached_js_key, scripts, 60*20)
 
         #build a simple collection of styles
         js_collection = html_link_refs()

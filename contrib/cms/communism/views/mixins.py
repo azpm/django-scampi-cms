@@ -10,6 +10,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 
 from libscampi.contrib.cms.communism.models import *
+from libscampi.contrib.cms.views.func import static_script, static_style
 
 import collections, copy
 

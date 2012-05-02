@@ -32,16 +32,16 @@ class CommuneManager(models.Manager):
 
         return qs.extra(select={
             'r_order': """
-                select display_order from communism_realm
-                inner join communism_section on
+                select cm.display_order from communism_realm cm
+                inner join communism_section  on
                     (
-                        communism_realm.id = communism_section.realm_id
+                        cm.id = communism_section.realm_id
                         and communism_section.element_type_id = %s
                         and communism_section.element_id = communism_commune.id
                     )
             """,
             's_order': """
-                select display_order from communism_section cs
+                select cs.display_order from communism_section cs
                 where cs.element_type_id = %s
                 and cs.element_id = communism_commune.id
             """

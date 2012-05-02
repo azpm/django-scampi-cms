@@ -27,7 +27,7 @@ class CommuneManager(models.Manager):
     def get_query_set(self):
         qs = super(CommuneManager, self).get_query_set()
 
-        return qs.distinct()
+        return qs.distinct('id')
 
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)

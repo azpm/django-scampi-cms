@@ -99,9 +99,10 @@ class BoxAdmin(admin.ModelAdmin):
     
 class BaseHierarchyElementAdmin(admin.ModelAdmin):
     list_display = ('name','realm','traverse_up','my_order','keyname')
-    #list_filter = ('section__realm',)
+    list_filter = ('section__realm',)
     search_fields = ['name','section__realm__name',]
     save_on_top = True
+    list_select_related = True
 
     #ordering = ('section__realm','section__display_order')
 

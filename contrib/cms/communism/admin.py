@@ -103,7 +103,7 @@ class BaseHierarchyElementAdmin(admin.ModelAdmin):
     search_fields = ['name','section__realm__name',]
     save_on_top = True
 
-    ordering = ('section__realm','section__display_order')
+    #ordering = ('section__realm','section__display_order')
 
     def traverse_up(self, cls):
         return section_path_up([cls.container], " > ")

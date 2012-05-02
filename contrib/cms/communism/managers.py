@@ -34,11 +34,9 @@ class CommuneManager(models.Manager):
             'r_order': """
                 select cm.display_order from communism_realm cm
                 inner join communism_section  on
-                    (
-                        cm.id = communism_section.realm_id
-                        and communism_section.element_type_id = %s
-                        and communism_section.element_id = communism_commune.id
-                    )
+                    (cm.id = communism_section.realm_id)
+                where communism_section.element_type_id = %s
+                and communism_section.element_id = communism_commune.id
             """,
             's_order': """
                 select cs.display_order from communism_section cs

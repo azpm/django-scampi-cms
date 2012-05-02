@@ -257,7 +257,6 @@ class BaseHierarchyElement(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['section__realm__display_order', 'section__display_order']
 
     def __unicode__(self):
         return "%s" % self.name
@@ -311,6 +310,7 @@ class Commune(BaseHierarchyElement):
     class Meta:
         verbose_name = "CMS Page"
         verbose_name_plural = "CMS Pages"
+        ordering = ['section__realm__display_order', 'section__display_order']
 
 class Slice(models.Model):
     """Slices correspond directly with template idioms:

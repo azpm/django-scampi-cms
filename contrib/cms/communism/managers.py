@@ -20,10 +20,15 @@ class RealmManager(models.Manager):
         return self.get(keyname = keyname)
         
 class SectionManager(models.Manager):
-    def get_by_natural_key(self, realm, keyanme):
+    def get_by_natural_key(self, realm, keyname):
         return self.get(realm__keyname = realm, keyname = section)
         
 class CommuneManager(models.Manager):
+    def get_query_set(self):
+        qs = super(CommuneManager, self).get_query_set()
+
+        return qs.prefetch_related('section').select_related('theme')
+
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)
         
@@ -33,7 +38,7 @@ class SliceManager(models.Manager):
         
 class NamedBoxManager(models.Manager):
     def get_by_natural_key(self, commune, slice_order, gridy, gridx, display_order, keyname):
-        return self.get(slice__commune__keyname = commune, slice__display_order = slice_order, gridx = gridx, gridy = gridy, keyname = keyname)
+        return self.get(slice__commune__keyname = commune, slice__display_order = slice_order, gridx = gridx, gridy = gridy, display_order = display_order, pkeyname = keyname)
         
 class ApplicationManager(models.Manager):
     def get_by_natural_key(self, realm, section):

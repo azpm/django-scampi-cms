@@ -29,21 +29,7 @@ class CommuneManager(models.Manager):
         qs = super(CommuneManager, self).get_query_set()
 
         ctype = ContentType.objects.get_for_model(self.model)
-
-        return qs.extra(select={
-            'r_order': """
-                select cm.display_order from communism_realm cm
-                inner join communism_section  on
-                    (cm.id = communism_section.realm_id)
-                where communism_section.element_type_id = %s
-                and communism_section.element_id = communism_commune.id
-            """,
-            's_order': """
-                select cs.display_order from communism_section cs
-                where cs.element_type_id = %s
-                and cs.element_id = communism_commune.id
-            """
-        }, select_params=[ctype.id,ctype.id], order_by=['r_order','s_order'])
+        return qs.extra(where=["communism_section.element_type_id = %s"], params=[ctype.id])
 
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)

@@ -102,7 +102,7 @@ class BaseHierarchyElementAdmin(admin.ModelAdmin):
     list_filter = ('section__realm',)
     search_fields = ['name','section__realm__name',]
     save_on_top = True
-    list_select_related = True
+    list_select_related = False
 
     ordering = ('section__realm','section__display_order')
 

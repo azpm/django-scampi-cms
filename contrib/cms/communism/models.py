@@ -310,7 +310,7 @@ class Commune(BaseHierarchyElement):
     class Meta:
         verbose_name = "CMS Page"
         verbose_name_plural = "CMS Pages"
-        ordering = ['section__realm__display_order', 'section__display_order']
+        ordering = ['section__realm__id', 'section__display_order']
 
 class Slice(models.Model):
     """Slices correspond directly with template idioms:

@@ -45,7 +45,7 @@ class CommuneManager(models.Manager):
                 where cs.element_type_id = %d
                 and cs.element_id = communism_commune.id
             """
-        }, select_params=[ctype.id], order_by=['r_order','s_order'])
+        }, select_params=[ctype.id,ctype.id], order_by=['r_order','s_order'])
 
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)

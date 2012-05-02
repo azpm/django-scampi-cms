@@ -36,13 +36,13 @@ class CommuneManager(models.Manager):
                 inner join communism_section on
                     (
                         communism_realm.id = communism_section.realm_id
-                        and communism_section.element_type_id = %s
+                        and communism_section.element_type_id = %d
                         and communism_section.element_id = communism_commune.id
                     )
             """,
             's_order': """
                 select display_order from communism_section cs
-                where cs.element_type_id = %s
+                where cs.element_type_id = %d
                 and cs.element_id = communism_commune.id
             """
         }, select_params=[ctype.id], order_by=['r_order','s_order'])

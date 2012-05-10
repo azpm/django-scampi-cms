@@ -41,5 +41,4 @@ def strip_stopwords(sentence):
     for word in words:
         if word.lower() not in stopwords:
             sentence.append(word)
-    return u' '.join(sentence)
-
+    return sentence

@@ -80,7 +80,7 @@ class SearchableQuerySet(QuerySet):
         # modifiers, since words with these are an explicit part of
         # the search query. If doing so ends up with an empty term
         # list, then keep the stop words.
-        terms_no_stopwords = strip_stopwords(terms)
+        terms_no_stopwords = strip_stopwords(" ".join(terms))
         get_positive_terms = lambda terms: [t.lower().strip(punctuation)
                                             for t in terms if t[0] != "-"]
         positive_terms = get_positive_terms(terms_no_stopwords)

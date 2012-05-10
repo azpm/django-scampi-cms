@@ -144,7 +144,7 @@ class SearchableQuerySet(QuerySet):
                 count = 0
                 for (field, weight) in self._search_fields.items():
                     for term in self._search_terms:
-                        field_value = getattr(result, field)
+                        field_value = getattr(result, field, None)
                         if field_value:
                             count += field_value.lower().count(term) * weight
                 results[i].result_count = count

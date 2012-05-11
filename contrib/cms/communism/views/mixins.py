@@ -182,7 +182,7 @@ class ApplicationMixin(object):
     cached_js_key = None
 
     def get_stylesheets(self):
-        if self.cached_css_key == None:
+        if self.cached_css_key == None or self.get_theme() == None:
             return None
 
         if self.refresh_caches:
@@ -210,7 +210,7 @@ class ApplicationMixin(object):
         return css_collection
 
     def get_javascripts(self):
-        if self.cached_js_key == None:
+        if self.cached_js_key == None or self.get_theme() == None:
             return None
 
         if self.refresh_caches:

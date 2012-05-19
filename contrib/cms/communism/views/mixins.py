@@ -100,8 +100,9 @@ class SectionMixin(object):
             
             if not self.section:
                 raise Http404("Section Not Found")
-                
-            
+
+        if hasattr(request, 'toolbar') and request.user.is_staff:
+            request.toolbar.show_toolbar = True
                    
         #finally return the parent get method
         return super(SectionMixin, self).get(request, *args, **kwargs)
@@ -126,7 +127,10 @@ class SectionMixin(object):
             if self.section.generates_navigation:
                 #this section has a keyword argument, we should use it
                 return redirect(self.section.element.get_absolute_url())
-                   
+
+        if hasattr(request, 'toolbar') and request.user.is_staff:
+            request.toolbar.show_toolbar = True
+
         #finally return the parent get method
         return super(SectionMixin, self).post(request, *args, **kwargs)
 
@@ -147,7 +151,9 @@ class CommuneMixin(object):
     def get(self, request, *args, **kwargs):
         logger.debug("CommuneMixin.get called") 
         self.commune = self.section.element
-        
+        if hasattr(request, 'toolbar'):
+            request.toolbar.scampi_managed = True
+
         #finally return the parent get method
         return super(CommuneMixin, self).get(request, *args, **kwargs)
 

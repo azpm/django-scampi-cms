@@ -54,38 +54,43 @@ Pickers.prototype.update_element_index = function (elem, prefix, replace, ndx, f
 Pickers.prototype.bundle_filters = function () {
     "use strict";
     var self = this;
-    var temp_types = [self.incl, self.excl];
 
-    jQuery.each(temp_types, function (index, value) {
-        var type = value.prefix;
+    jQuery.each([self.incl, self.excl], function (index, filter_type) {
+        var type = filter_type.prefix;
         var fieldsets = jQuery("fieldset." + type + "_group");
+        //order the form count correctly
+        var total_forms = jQuery("#id_" + type + "-TOTAL_FORMS");
+        filter_type.total_forms = 0; //always set the base counter to zero
 
         jQuery.each(fieldsets, function (k, v) {
             //reset counters in the available filters, this is done for each group
-            jQuery.each(self.available_pickers, function (picker_index, picker_value) {
+            /* jQuery.each(self.available_pickers, function (picker_index, picker_value) {
                 picker_value.incl_count = 0;
                 picker_value.excl_count = 0;
-            });
-
-            //order the form count correctly
-            var total_forms = jQuery("#id_" + type + "-TOTAL_FORMS");
+            }); */
             var count = k + 1;
-            //var fieldset = jQuery("#"+v.id);
+
             var fieldset = jQuery(v);
             var form_rows = jQuery(fieldset).find("div.form-row:not([name=filter_adder])");
 
-            jQuery.each(form_rows, function (k2, form_row) {
+            jQuery.each(form_rows, function (num, form_row) {
                 var div = jQuery(form_row); //if you're trying to follow along this is a jquery friendly object of a form row
-                var picker_ptr = div.attr("data-filter-ptr");
-                var picking_filter = self.available_pickers[picker_ptr];
+                //var picker_ptr = div.attr("data-filter-ptr");
+                //var picking_filter = self.available_pickers[picker_ptr];
 
                 //order the item correctly
                 self.update_element_index(jQuery(div).find("label ~ input,select"), "form", type, k, div);
             });
 
             //increase form count for each group
-            total_forms.val(count);
+            if (form_rows.length > 0)
+            { //only if we had a group
+                filter_type.total_forms += 1;
+                //total_forms.val(count);
+            }
         });
+
+        total_forms.val(filter_type.total_forms);
     });
 
     return true;
@@ -123,15 +128,10 @@ Pickers.prototype.add_filter = function (type, group_suffix, initial) {
     jQuery("#" + id_pointer + "_picking_element option[value='" + index + "']").remove();
     //add the filter box
     jQuery("#" + id_pointer + "_filters > div.form-row").filter(":last").after('<div class="form-row" data-filter-ptr="' + index + '"><div><label>' + picking_filter.name + '</label>' + picking_filter.html + '&nbsp;<a class="inline-deletelink">Delete</a></div></div>');
-
-    //im leaving this here because I liked the selector and don't want to forget it
-    //self.update_element_index(jQuery("#"+type+"_picker_filters > div.form-row").filter(":last").find("label ~ input,select"), "form", type, (type == "incl") ? picking_filter.incl_count : picking_filter.excl_count);
-
+    //add "remove filter" action to little grey x button
     jQuery("#" + id_pointer + "_filters > div.form-row").filter(":last").find("a").bind("click", function () {
         self.remove_filter(this, id_pointer, index);
     });
-
-    this.bundle_filters();
 };
 
 Pickers.prototype.remove_filter = function (elem, id_pointer, picker_id) {
@@ -150,6 +150,7 @@ Pickers.prototype.remove_filter = function (elem, id_pointer, picker_id) {
 
     //remove the form row no matter what
     jQuery(elem).parent().parent().remove();
+    //this.bundle_filters();
 };
 
 Pickers.prototype.create_fieldsets = function () {
@@ -232,8 +233,8 @@ Pickers.prototype.process_available = function (data) {
     html.slideDown("fast", function () {
         jQuery.each(data.filters, function (index, value) {
             var picker = {
-                incl_count:0,
-                excl_count:0,
+                //incl_count:0,
+                //excl_count:0,
                 name:value[1],
                 id:value[0],
                 html:value[2]

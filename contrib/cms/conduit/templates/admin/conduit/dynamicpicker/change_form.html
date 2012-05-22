@@ -16,6 +16,7 @@
         
         //load the appropriate filter sets
         jQuery.getJSON(load_filters_url, get_args, function(data) { picker_form.process_available(data); });
+        jQuery("form#dynamicpicker_form").bind("submit", function(e) { picker_form.bundle_filters(); });
 
         jQuery(document).bind('filter_id_update', function (e, id, formrow) {
             var form_field = jQuery("#"+id);

@@ -127,6 +127,7 @@ class DynamicPicker(PickerBase):
                 qs = qs.filter(**f)
             except ValueError, e:
                 logger.error("failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                return model.objects.None()
 
         #fifth we apply our exclusion filters
         try:
@@ -143,6 +144,7 @@ class DynamicPicker(PickerBase):
                 qs = qs.filter(**f)
             except ValueError, e:
                 logger.error("failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                return model.objects.None()
     
         #before we limit the qs we let the picking filterset apply any last minute operations
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):
@@ -150,6 +152,7 @@ class DynamicPicker(PickerBase):
             
         #limit the qs if necessary
         if self.max_count > 0:
+            logger.debug("setting cache on %s" % cache_key)
             for_cache = qs.values_list('id', flat=True)[:self.max_count]
             cache.set(cache_key, list(for_cache), 60*10)
             return qs[:self.max_count]

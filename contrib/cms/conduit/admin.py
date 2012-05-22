@@ -107,9 +107,10 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             inclusion = factory(request.POST, prefix="incl")
             exclusion = factory(request.POST, prefix="excl")
 
-            if inclusion.is_valid():
-                inclusion_fs = []
+            inclusion_fs = []
+            exclusion_fs = []
 
+            if inclusion.is_valid():
                 for form in inclusion:
                     setattr(picking_filterset, '_form', form)
                     try:
@@ -121,10 +122,6 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 messages.error(request, "There was an issue with the inclusion filters: %s" % inclusion.errors)
 
             if exclusion.is_valid():
-                logger.debug("valid exlusion filters: %s" % exclusion.cleaned_data)
-
-                exclusion_fs = []
-
                 for form in exclusion:
                     setattr(picking_filterset, '_form', form)
                     try:
@@ -134,6 +131,9 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             else:
                 logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
                 messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)
+
+            logger.debug("[%s] final inclusion: %s" % (obj.name, inclusion_fs))
+            logger.debug("[%s] final exclusion: %s" % (obj.name, exclusion_fs))
 
             obj.include_filters = inclusion_fs or False
             obj.exclude_filters = exclusion_fs or False

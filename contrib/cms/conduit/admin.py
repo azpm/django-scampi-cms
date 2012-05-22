@@ -121,6 +121,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 messages.error(request, "There was an issue with the inclusion filters: %s" % inclusion.errors)
 
             if exclusion.is_valid():
+                logger.debug("valid exlusion filters: %s" % exclusion.cleaned_data)
+
                 exclusion_fs = []
 
                 for form in exclusion:

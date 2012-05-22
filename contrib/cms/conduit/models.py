@@ -152,8 +152,8 @@ class DynamicPicker(PickerBase):
             
         #limit the qs if necessary
         if self.max_count > 0:
-            logger.debug("setting cache on %s" % cache_key)
             for_cache = qs.values_list('id', flat=True)[:self.max_count]
+            logger.debug("setting cache on %s: %s" % (cache_key, for_cache))
             cache.set(cache_key, list(for_cache), 60*10)
             return qs[:self.max_count]
 

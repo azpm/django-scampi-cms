@@ -17,7 +17,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 
-from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue, PublishInlineMediaOverride
+from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue
 from .forms import StoryForm, ArticleTranslationForm
 from .filtering import PublishTypeListFilter, ArticleAuthorListFilter
 
@@ -311,7 +311,6 @@ class PublishQueueAdmin(PublishStoryAdmin):
         return qs.filter(seen = False, published = False)
 
 admin.site.register(Article, ArticleAdmin)
-admin.site.register(PublishInlineMediaOverride)
 admin.site.register(StoryCategory)
 admin.site.register(Story, StoryAdmin)
 admin.site.register(PublishCategory, PublishCategoryAdmin)

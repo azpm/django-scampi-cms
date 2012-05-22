@@ -1,5 +1,4 @@
-from django.conf.urls.defaults import *
-from django.views.decorators.cache import cache_page
+from django.conf.urls import *
 
 from libscampi.contrib.cms.communism.views import view_commune, primary_section
 from libscampi.contrib.cms.newsengine.urls import urlpatterns as newsengine_archive_urls

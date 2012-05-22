@@ -16,14 +16,13 @@ from django.contrib.comments.moderation import moderator
 
 #libscampi contributed packages
 from libscampi.contrib.multilingual.models import Language, MultilingualModel
-from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External, ImagePlaylist, VideoPlaylist, AudioPlaylist, DocumentPlaylist, ObjectPlaylist, ImageTypeOverride, VideoTypeOverride, AudioTypeOverride, DocumentTypeOverride, ObjectTypeOverride
+from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External, ImagePlaylist, VideoPlaylist, AudioPlaylist, DocumentPlaylist, ObjectPlaylist
 from libscampi.contrib.cms.conduit import picker
 from libscampi.contrib.cms.conduit.widgets import PickerFilterSelectMultiple
 from libscampi.contrib.cms.newsengine.managers import PublishedManager, CategoryGenera
 from libscampi.contrib.cms.newsengine.commenting import StoryModerator
 
-__all__ = ['ArticleTranslation','Article','StoryCategory','Story',
-    'PublishCategory','Publish','PublishInlineMediaOverride','PublishPicking']
+__all__ = ['ArticleTranslation','Article','StoryCategory','Story','PublishCategory','Publish','PublishPicking']
     
 class ArticleTranslation(models.Model):
     language = models.ForeignKey(Language)
@@ -171,18 +170,6 @@ class PublishQueue(Publish):
         proxy = True
         verbose_name = "Publish Queue"
         verbose_name_plural = "Publish Queue"
-
-class PublishInlineMediaOverride(models.Model):
-    publish = models.OneToOneField(Publish)
-    image_inlines = models.ManyToManyField(ImageTypeOverride)
-    video_inlines = models.ManyToManyField(VideoTypeOverride)
-    audio_inlines = models.ManyToManyField(AudioTypeOverride)
-    document_inlines = models.ManyToManyField(DocumentTypeOverride)
-    object_inlines = models.ManyToManyField(ObjectTypeOverride)
-    
-    class Meta:
-        verbose_name = "Publish Inline Media Override"
-        verbose_name_plural = "Publish Inline Media Overrides"
 
 class PublishPicking(django_filters.FilterSet):
     start = django_filters.filters.DateRangeFilter(lookup_type=('lt','gt','lte','gte'))

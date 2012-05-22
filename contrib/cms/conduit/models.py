@@ -126,7 +126,7 @@ class DynamicPicker(PickerBase):
             try:
                 qs = qs.filter(**f)
             except ValueError, e:
-                logger.error("failure to apply include filters on on [%d] %s" % (self.pk, self.name))
+                logger.error("failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
 
         #fifth we apply our exclusion filters
         try:
@@ -142,7 +142,7 @@ class DynamicPicker(PickerBase):
             try:
                 qs = qs.filter(**f)
             except ValueError, e:
-                logger.error("failure to apply exclude filters on on [%d] %s" % (self.pk, self.name))
+                logger.error("failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
     
         #before we limit the qs we let the picking filterset apply any last minute operations
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):

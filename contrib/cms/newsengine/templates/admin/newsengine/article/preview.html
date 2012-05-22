@@ -3,19 +3,16 @@
 {% load newsengine_admin %}
 
 {% block content %}
-        <h1>Article Preview</h1>
         {% for translation in translations %}
-        <h2>{{ translation.language }}</h2>
+        <h1>Article Preview ({{ translation.language }})</h1>
         <h3>{{ translation.headline }}</h3>
         <h4>{{ translation.sub_headline }}</h4>
-        <div style="width:617px; padding:10px; border:1px solid;">
-        <p class="synposis">
-            {% if translation.synopsis %}
-            {{ translation.synopsis|markdown }}
+        <div style="width:617px; padding:10px; border:1px solid; margin-bottom:10px;">
+        {% if translation.synopsis %}
+            <p class="synposis">{{ translation.synopsis|markdown }}</p>
             {% else %}
-            <em>NO SYNOPSIS</em>
-            {% endif %}
-        </p>
+            <p style="text-align:center; color:#aaa;">NO SYNOPSIS</p>
+        {% endif %}
         </div>
         <div style="width:617px; padding:10px; border:1px solid;">
         <p class="body">

@@ -25,7 +25,6 @@ mimetypes.types_map.update(appsettings.EXTRA_MIME_TYPES)
 __all__ = [
     'MediaInlineTemplate', 'MediaPlaylistTemplate',
     'ImageType', 'VideoType', 'AudioType', 'DocumentType', 'ObjectType',
-    'ImageTypeOverride', 'VideoTypeOverride', 'AudioTypeOverride', 'DocumentTypeOverride', 'ObjectTypeOverride',
     'Image', 'Video', 'Audio', 'Document', 'Object', 'External',
     'RankedImage', 'RankedVideo', 'RankedAudio', 'RankedDocument', 'RankedObject',
     'ImagePlaylist', 'VideoPlaylist', 'AudioPlaylist', 'DocumentPlaylist', 'ObjectPlaylist'
@@ -110,49 +109,6 @@ class ObjectType(MediaType):
     class Meta:
         verbose_name = 'HTML Object Type'
         verbose_name_plural = 'HTML Object Types'
-        
-class MediaTypeOverride(models.Model):
-    template = models.ForeignKey(MediaInlineTemplate)
-    class Meta:
-        abstract = True
-    def __unicode__(self):
-        return "overrides: %s" % (self.type.title)
-        
-class ImageTypeOverride(MediaTypeOverride):
-    type = models.ForeignKey(ImageType)
-    width = models.PositiveIntegerField()
-    height = models.PositiveIntegerField()  
-    class Meta:
-        verbose_name = 'Image Type Override'
-        verbose_name_plural = 'Image Type Overrides'
-    
-class VideoTypeOverride(MediaTypeOverride):
-    type = models.ForeignKey(VideoType)
-    width = models.PositiveIntegerField()
-    height = models.PositiveIntegerField()
-    class Meta:
-        verbose_name = 'Video Type Override'
-        verbose_name_plural = 'Video Types Overrides'
-    
-class AudioTypeOverride(MediaTypeOverride):
-    type = models.ForeignKey(AudioType)
-    class Meta:
-        verbose_name = 'Audio Type Override'
-        verbose_name_plural = 'Audio Types Overrides'
-
-class DocumentTypeOverride(MediaTypeOverride):
-    type = models.ForeignKey(DocumentType)
-    class Meta:
-        verbose_name = 'Document Type Override'
-        verbose_name_plural = 'Document Types Overrides'
-    
-class ObjectTypeOverride(MediaTypeOverride):
-    type = models.ForeignKey(ObjectType)
-    width = models.PositiveIntegerField()
-    height = models.PositiveIntegerField()
-    class Meta:
-        verbose_name = 'HTML Object Type Override'
-        verbose_name_plural = 'HTML Object Types Overrides'
         
 class Media(models.Model):
     title = models.CharField(max_length=255)

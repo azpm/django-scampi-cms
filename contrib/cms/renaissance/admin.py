@@ -74,19 +74,7 @@ class DimensionalMediaTypeAdmin(MediaTypeAdmin, admin.ModelAdmin):
     
 class InlineTemplateAdmin(admin.ModelAdmin):
     list_display = ('title',)
-    
-class MediaTypeOverrideAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Designation', {'fields': ('type',)}),
-        ('Display', {'fields': ('template',)})
-    )
-    list_display = ('type', 'template')
-    save_on_top = True
-    
-class DimensionalMediaTypeOverrideAdmin(MediaTypeOverrideAdmin, admin.ModelAdmin):
-    fieldsets = MediaTypeOverrideAdmin.fieldsets + ( ('Attributes', {'fields': ('width', 'height')}), )
-    list_display =  MediaTypeOverrideAdmin.list_display + ('width', 'height')
-    
+
 admin.site.register(Image, FileBasedMediaAdmin)
 admin.site.register(Video, VideoMediaAdmin)
 admin.site.register(Audio, FileBasedMediaAdmin)
@@ -105,12 +93,6 @@ admin.site.register(VideoType, DimensionalMediaTypeAdmin)
 admin.site.register(ObjectType, DimensionalMediaTypeAdmin)
 admin.site.register(AudioType, MediaTypeAdmin)
 admin.site.register(DocumentType, MediaTypeAdmin)
-
-admin.site.register(ImageTypeOverride, DimensionalMediaTypeOverrideAdmin)
-admin.site.register(VideoTypeOverride, DimensionalMediaTypeOverrideAdmin)
-admin.site.register(ObjectTypeOverride, DimensionalMediaTypeOverrideAdmin)
-admin.site.register(AudioTypeOverride, MediaTypeOverrideAdmin)
-admin.site.register(DocumentTypeOverride, MediaTypeOverrideAdmin)
 
 admin.site.register(MediaInlineTemplate, InlineTemplateAdmin)
 admin.site.register(MediaPlaylistTemplate)

@@ -2,6 +2,7 @@ import logging
 
 from django.db import models
 from django.core.cache import cache
+from django.core.exceptions import FieldError
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
@@ -120,14 +121,15 @@ class DynamicPicker(PickerBase):
                     if not f:
                         continue
                     coerce_filters(f)
+                    qs = qs.filter(**f)
+            except ValueError, e:
+                logger.error("Value Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                return model.objects.None()
+            except FieldError, e:
+                logger.error("Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                return model.objects.None()
             except:
                 logger.error("failure to coerce include filters on [%d] %s" % (self.pk, self.name))
-            else:
-                try:
-                    qs = qs.filter(**f)
-                except ValueError, e:
-                    logger.error("failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                    return model.objects.None()
 
         #fifth we apply our exclusion filters
         if self.exclude_filters:
@@ -137,14 +139,14 @@ class DynamicPicker(PickerBase):
                         continue
                     coerce_filters(f)
                     qs = qs.exclude(**f)
+            except ValueError, e:
+                logger.error("Value Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                return model.objects.None()
+            except FieldError, e:
+                logger.error("Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                return model.objects.None()
             except:
                 logger.error("failure to coerce exclude filters on [%d] %s" % (self.pk, self.name))
-            else:
-                try:
-                    qs = qs.filter(**f)
-                except ValueError, e:
-                    logger.error("failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                    return model.objects.None()
     
         #before we limit the qs we let the picking filterset apply any last minute operations
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):

@@ -132,6 +132,8 @@ Pickers.prototype.add_filter = function (type, group_suffix, initial) {
     jQuery("#" + id_pointer + "_filters > div.form-row").filter(":last").find("a").bind("click", function () {
         self.remove_filter(this, id_pointer, index);
     });
+
+    self.bundle_filters();
 };
 
 Pickers.prototype.remove_filter = function (elem, id_pointer, picker_id) {
@@ -150,7 +152,7 @@ Pickers.prototype.remove_filter = function (elem, id_pointer, picker_id) {
 
     //remove the form row no matter what
     jQuery(elem).parent().parent().remove();
-    //this.bundle_filters();
+    self.bundle_filters();
 };
 
 Pickers.prototype.create_fieldsets = function () {
@@ -243,13 +245,7 @@ Pickers.prototype.process_available = function (data) {
             picker_ids.push(value[0]);
             self.available_pickers.push(picker);
         });
-        /*
-         if (window.console && console.log) {
-         console.log('existing inclusion filters', data.existing.incl);
-         console.log('existing exclusion filters', data.existing.excl);
-         console.log('availabile pickers', self.available_pickers);
-         }
-         */
+
         self.create_fieldsets();
         var num = 0;
 

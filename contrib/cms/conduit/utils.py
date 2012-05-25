@@ -61,38 +61,30 @@ def build_filters(filterset):
             
             
             if type(filter) is django_filters.filters.ModelMultipleChoiceFilter:
-                """
-                Handle model multiple choice fields -- because django explicitly says
-                pickled querysets DO NOT work across django versions we need to pickle
-                a FOO__id__in: [LIST OF IDS] for the pickler
-                """
+                # Handle model multiple choice fields -- because django explicitly says
+                # pickled querysets DO NOT work across django versions we need to pickle
+                # a FOO__id__in: [LIST OF IDS] for the pickler
                 value = value or ()
                 if not len(value) == len(list(picking_form.fields[name].choices)):
                     fs = {"%s__id__in" % filter.name: [t.pk for t in value]}
             elif type(filter) is django_filters.filters.ModelChoiceFilter:
-                """
-                handle single model choice fields, again because querysets are not likely
-                to work across django versions we cannot pickle the QS we need to pickle
-                proper qs lookup
-                """
+                # handle single model choice fields, again because querysets are not likely
+                # to work across django versions we cannot pickle the QS we need to pickle
+                # proper qs lookup
                 if value is None:
                     continue
                 fs = {"%s__id__%s" % (filter.name, lookup): value.pk}
             elif type(filter) is django_filters.filters.DateRangeFilter:
-                """
-                Handle daterange objects: django_filters says "today" is literally today, 
-                at initial execute.  We must pickle a coercable concept so that date ranges
-                are always proper at all execute times
-                """
+                # Handle daterange objects: django_filters says "today" is literally today,
+                # at initial execute.  We must pickle a coercable concept so that date ranges
+                # are always proper at all execute times
                 try:
                     value = int(value)
                 except (ValueError, TypeError):
                     continue
                 fs = DATE_RANGE_PICKLE_MAPPING[value](filter.name, lookup)
             elif value is not None:
-                """
-                this is a non-relational, non-datetime lookup
-                """
+                # this is a non-relational, non-datetime lookup
                 fs = {"%s__%s" % (filter.name, lookup): value}
                 
             if fs:

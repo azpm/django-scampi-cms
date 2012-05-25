@@ -1,11 +1,13 @@
 import logging
 
 from django.core.cache import cache
-from django.template.defaultfilters import slugify
+from django.contrib.sites.models import Site
 from libscampi.core.files.storage import OverwriteStorage
 from libscampi.contrib.cms.communism.storage import URLStorage
 
 logger = logging.getLogger('libscampi.contrib.cms.communism.utils')
+
+__all__ = ['theme_style_decorator', 'theme_script_decorator', 'theme_banner_decorator', 'swap_storage_engines', 'revert_storage_engines', 'refresh_local_site', 'section_path_up', 'cache_namedbox_template']
 
 # theme helpers
 
@@ -31,6 +33,9 @@ def revert_storage_engines(sender, instance, **kwargs):
     if type(instance.file.storage) is URLStorage:
         instance.file.name = None
         instance.file.storage = OverwriteStorage()
+
+def refresh_local_site(sender, instance, **kwargs):
+    Site.objects.clear_cache()
 
 # commune helper -- returns string of path up for child section
 def section_path_up(cls, glue):

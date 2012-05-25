@@ -8,11 +8,11 @@ from libscampi.contrib.cms.communism.models import *
 from libscampi.contrib.cms.communism.utils import section_path_up
 
 class RealmAdmin(admin.ModelAdmin):
-    list_display = ('site', 'name', 'keyname', 'display_order', 'active', 'secure', 'searchable', 'search_collection')
+    list_display = ('site', 'name', 'keyname', 'display_order', 'active', 'generates_navigation', 'secure', 'searchable', 'search_collection')
     list_editable = ('display_order', 'active', 'secure', 'searchable', 'search_collection')
     fieldsets = (
         ('Domain & Configuration', {'fields': ('site', 'name', 'keyname','description')}),
-        ('Meta', {'fields': ('display_order','active','secure','direct_link')}),
+        ('Meta', {'fields': ('display_order','active','generates_navigation', 'secure','direct_link')}),
         ('Google Related', {'fields': (('searchable','search_collection'), 'googleid')})
     )
     save_on_top = True

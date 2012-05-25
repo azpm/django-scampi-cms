@@ -15,7 +15,7 @@ from libscampi.core.files.storage import OverwriteStorage
 #local imports
 from libscampi.contrib.cms.communism.managers import *
 from libscampi.contrib.cms.communism.validators import magic_keyname
-from libscampi.contrib.cms.communism.utils import revert_storage_engines, swap_storage_engines, theme_style_decorator, theme_script_decorator, theme_banner_decorator, section_path_up, cache_namedbox_template
+from libscampi.contrib.cms.communism.utils import *
 
 __all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
 
@@ -118,6 +118,7 @@ class Realm(models.Model):
     description = models.TextField(null = True, blank = True)
     display_order = models.PositiveSmallIntegerField(_("Display Order"), unique = True)
     active = models.BooleanField(default=True, db_index=True)
+    generates_navigation = models.BooleanField(_("Generates Navigation"), default = True, db_index=True)
     secure = models.BooleanField(default=False, db_index=True)
     googleid = models.CharField(max_length=50, null=True, blank=True, help_text=_("Google Analytics ID"))
     searchable = models.BooleanField(default=True, db_index=True, help_text = _("Flag for search form generation"))
@@ -142,7 +143,6 @@ class Realm(models.Model):
         "Returns the first active section for this realm, or None"
         try:
             t = Section.objects.filter(active = True, extends = None, realm__id = self.id).order_by('display_order')[0]
-            #t = self.section_set.filter(active = True, extends = None).order_by('display_order')[0]
         except IndexError:
             raise ObjectDoesNotExist("no communism.section available")
         
@@ -436,11 +436,15 @@ class Application(BaseHierarchyElement):
         verbose_name = "CMS Offload"
         verbose_name_plural = "CMS Offloads"
         
-#handle mapping pickers to communes        
+# handle mapping pickers to communes
 models.signals.post_save.connect(map_picker_to_commune, sender=NamedBox)
 models.signals.post_delete.connect(unmap_orphan_picker, sender=NamedBox)
-#update namedbox picker template cache
+# update namedbox picker template cache
 models.signals.post_save.connect(cache_namedbox_template, sender=NamedBoxTemplate)
 # allow for externally hosted javascripts (like google code)
 models.signals.post_init.connect(swap_storage_engines, sender=Javascript)
 models.signals.pre_save.connect(revert_storage_engines, sender=Javascript)
+# refresh site cache on commune/section creation/update
+models.signals.post_save.connect(refresh_local_site, sender=Commune)
+models.signals.post_save.connect(refresh_local_site, sender=Application)
+models.signals.post_save.connect(refresh_local_site, sender=Section)

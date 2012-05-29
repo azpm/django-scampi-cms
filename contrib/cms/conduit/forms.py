@@ -20,7 +20,21 @@ class DynamicPickerForm(forms.ModelForm):
         
     def clean(self):
         cleaned_data = self.cleaned_data
-        
+
+        active = cleaned_data.get('active')
+        commune = cleaned_data.get('commune')
+
+        if active and not commune:
+            # We know these are not in self._errors now (see discussion
+            # below).
+            msg = u"You cannot activate a dynamic picker without associating a primary commune"
+            self._errors["active"] = self.error_class([msg])
+            self._errors["commune"] = self.error_class([msg])
+
+            # These fields are no longer valid. Remove them from the
+            # cleaned data.
+            del cleaned_data["active"]
+
         if len(self._errors) > 0:
             logger.debug("DynamicPicker Form Errors: %s" % self._errors)
             

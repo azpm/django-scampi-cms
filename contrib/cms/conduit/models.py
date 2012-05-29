@@ -54,7 +54,7 @@ class PickerBase(models.Model):
         ordering = ['precedence']
     
 class DynamicPicker(PickerBase):
-    active = models.BooleanField(default = True)
+    active = models.BooleanField(default = False)
     keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"))
     template = models.ForeignKey(PickerTemplate)
     max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time. A 0 indicates unlimited."), default = 0)
@@ -68,6 +68,9 @@ class DynamicPicker(PickerBase):
         unique_together = ('commune', 'keyname')
         verbose_name = "Dynamic Content Picker"
         verbose_name_plural = "Dynamic Content Pickers"
+        permissions = (
+            ('change_dynamicpicker_commune', 'User can change commune association of DynamicPicker' )
+        )
         
     def __unicode__(self):
         return self.name

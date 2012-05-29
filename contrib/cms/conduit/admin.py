@@ -29,8 +29,8 @@ class PickerTemplateAdmin(admin.ModelAdmin):
     
 class DynamicPickerAdmin(admin.ModelAdmin):
     list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count','template')
-    list_editable = ('max_count','active','template')
-    list_filter = (ContentTypeListFilter,'commune')
+    list_editable = ('max_count', 'template')
+    list_filter = (ContentTypeListFilter, 'commune', 'active')
     search_fields = ('commune__name',)
     
     fieldsets = (
@@ -50,8 +50,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         db = kwargs.get('using')
 
-        if db_field.name == "commune" and request.user.is_superuser:
-            kwargs["widget"] = ForeignKeyRawIdWidget(db_field.rel, using=db)
+        if db_field.name == "commune" and request.user.has_perm('conduit.change_dynamicpicker_commune'):
+            kwargs["widget"] = ForeignKeyRawIdWidget(db_field.rel, admin_site=self.admin_site, using=db)
         return super(DynamicPickerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
@@ -61,22 +61,20 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     
     def get_readonly_fields(self, request, obj=None):
         """
-        commune is always readonly
+        commune can only be edited by super users
         content can only be set once
         """
 
-        if not request.user.is_superuser:
-            if obj:
+        if obj:
+            if request.user.has_perm('conduit.change_dynamicpicker_commune'):
+                return ('keyname', 'content')
+            else:
                 return ('commune', 'keyname', 'content')
-            else:
-                return ('active',)
         else:
-            if obj:
-                return ('content',)
-            else:
-                return ('active',)
+            return ('active',)
+
         
-        # return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
+        #return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
     
     #provide the JS for the picking filter magic
     class Media:

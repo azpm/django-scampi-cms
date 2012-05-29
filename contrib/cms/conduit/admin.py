@@ -1,6 +1,7 @@
 import logging, re
 
 from django.contrib import admin
+from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.utils.html import escape
 from django.http import Http404, HttpResponse
 from django.contrib.contenttypes.models import ContentType
@@ -45,6 +46,11 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     )
     
     save_on_top = True
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "commune" and request.user.is_superuser:
+            kwargs["widget"] = ForeignKeyRawIdWidget()
+        return super(DynamicPickerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):
         qs = super(DynamicPickerAdmin, self).queryset(request)

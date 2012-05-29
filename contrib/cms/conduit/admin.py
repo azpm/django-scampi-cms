@@ -48,8 +48,10 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     save_on_top = True
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        db = kwargs.get('using')
+
         if db_field.name == "commune" and request.user.is_superuser:
-            kwargs["widget"] = ForeignKeyRawIdWidget()
+            kwargs["widget"] = ForeignKeyRawIdWidget(db_field.rel, using=db)
         return super(DynamicPickerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def queryset(self, request):

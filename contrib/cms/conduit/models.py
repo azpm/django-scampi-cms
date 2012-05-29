@@ -47,7 +47,7 @@ class PickerTemplate(models.Model):
 
 class PickerBase(models.Model):
     name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
-    commune = models.ForeignKey(Commune, null = True, blank = True, related_name = "%(class)s_related")
+    commune = models.ForeignKey(Commune, verbose_name= _('Primary Commune'), null = True, blank = True, related_name = "%(class)s_related")
     
     class Meta:
         abstract = True
@@ -61,7 +61,7 @@ class DynamicPicker(PickerBase):
     content = models.ForeignKey(ContentType, verbose_name = _("Content Source"))
     include_filters = PickledObjectField(editable = False, compress = True)
     exclude_filters = PickledObjectField(editable = False, compress = True)
-    
+
     objects = DynamicPickerManager()
     
     class Meta:

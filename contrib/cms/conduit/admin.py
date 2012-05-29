@@ -56,13 +56,19 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         commune is always readonly
         content can only be set once
         """
-        
-        if obj:
-            return ('commune', 'keyname', 'content')
+
+        if not request.user.is_superuser:
+            if obj:
+                return ('commune', 'keyname', 'content')
+            else:
+                return ('active',)
         else:
-            return ('active',)
+            if obj:
+                return ('content',)
+            else:
+                return ('active',)
         
-        return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
+        # return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
     
     #provide the JS for the picking filter magic
     class Media:

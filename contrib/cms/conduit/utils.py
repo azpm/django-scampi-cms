@@ -119,8 +119,15 @@ def uncoerce_pickled_value(value):
 #map a picker (static or dynamic) to a commune
 def map_picker_to_commune(sender, instance, **kwargs):
     commune = instance.slice.commune
-    
-    #give no fucks, set the commune even if it hasn't changed
+
+    # path for dynamic picker
+    if instance.content:
+        dynamic_picker = instance.content # grab the dynamic picker
+
+        if not dynamic_picker.commune:
+            dynamic_picker.commune = commune
+
+    # give no fucks, set the commune even if it hasn't changed
     if instance.content:
         instance.content.commune = commune
         instance.content.save()        

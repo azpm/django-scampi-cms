@@ -270,12 +270,12 @@ class DynamicPickerAdmin(admin.ModelAdmin):
 
         ids = list(qs.values_list('id', flat=True)[:limit])
 
-        #picked = model.objects.filter(id__in=ids)
-        picked = model.objects.in_bulk(ids)
+        picked = model.objects.filter(id__in=ids)
+        #picked = model.objects.order_by('pk').in_bulk(ids)
 
         for_json = []
-        for pk, obj in picked.items():
-            for_json.append((pk, escape(repr(obj))))
+        for item in picked:
+            for_json.append((item.pk, escape(repr(item))))
 
         response = HttpResponse(simplejson.dumps(for_json),content_type="application/json")
 

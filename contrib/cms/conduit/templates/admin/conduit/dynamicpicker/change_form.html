@@ -19,6 +19,7 @@
         jQuery("form#dynamicpicker_form").bind("submit", function(e) { picker_form.bundle_filters(); });
 
         jQuery(document).bind('filter_id_update', function (e, id, formrow) {
+            "use strict";
             var form_field = jQuery("#"+id);
             if (form_field.is('select') && form_field.attr('multiple') == 'multiple' && form_field.attr('class') == 'selectfilter') 
             {

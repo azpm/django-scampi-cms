@@ -99,17 +99,17 @@ class DynamicPicker(PickerBase):
             qs = model.objects.all()
 
         #first we handle any static defers - performance optimisation
-        if fs and hasattr(fs, 'static_defer'):
+        if fs and hasattr(fs, 'static_defer') and callable(fs.static_defer):
             defer = fs.static_defer()
             qs = qs.defer(*defer)
             
         #second we handle any static select_related fields - performance optimisation    
-        if fs and hasattr(fs, 'static_select_related'):
+        if fs and hasattr(fs, 'static_select_related') and callable(fs.static_select_related):
             select_related = fs.static_select_related()
             qs = qs.select_related(*select_related)
         
         #third we handle any static prefetch_related fields - performance optimisation    
-        if fs and hasattr(fs, 'static_prefetch_related'):
+        if fs and hasattr(fs, 'static_prefetch_related') and callable(fs.static_prefetch_related):
             prefetch_related = fs.static_prefetch_related()
             qs = qs.prefetch_related(*prefetch_related)
 

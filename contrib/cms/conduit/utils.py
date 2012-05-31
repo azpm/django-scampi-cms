@@ -127,10 +127,8 @@ def map_picker_to_commune(sender, instance, **kwargs):
         if not dynamic_picker.commune:
             dynamic_picker.commune = commune
 
-    # give no fucks, set the commune even if it hasn't changed
-    if instance.content:
-        instance.content.commune = commune
-        instance.content.save()        
+        dynamic_picker.active = True
+        dynamic_picker.save()
         
     try:
         picker = instance.staticpicker

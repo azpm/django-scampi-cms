@@ -36,10 +36,11 @@
         });
 
         jQuery(document).on("click", "#refresh-picked", function(e){
+            "use strict";
             picker_form.bundle_filters();
             var div = jQuery("div#picked-objects").empty();
 
-            jQuery("form#dynamicpicker_form select[multiple='multiple']:not([id$='_from'])").each(function(elem,val){
+            jQuery("form#dynamicpicker_form select[multiple='multiple'][class='selectfilter']:not([id$='_from'])").each(function(elem,val){
                 var target = jQuery(val).attr('id');
 
                 SelectBox.select_all(target);

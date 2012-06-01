@@ -265,10 +265,10 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
         if self.request.GET.get('refresh_cache', False):
             #invalidate on refresh_cache
             cache.delete(cached_scripts_key)
-        scripts = cache.get(cached_scripts_key, None)
+        script_ids = cache.get(cached_scripts_key, None)
         
         #cache empty, get the scripts and refill the cache
-        if not scripts:
+        if not script_ids:
             logger.debug("missed css cache on %s" % cached_scripts_key)
             
             playlist_filters = Q(base = True)
@@ -297,7 +297,9 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
                 Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id'))
             ).order_by('precedence')
-            cache.set(cached_scripts_key, scripts, 60*20)
+            cache.set(cached_scripts_key, list(scripts.values_list('id', flat = True)), 60*20)
+        else:
+            scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')
                        
         #build a simple collection of styles
         script_collection = html_link_refs()

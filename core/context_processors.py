@@ -7,7 +7,8 @@
 #
 
 from django.conf import settings
-import re
+from django.contrib.sites.models import Site
+from libscampi.contrib.cms.communism.models import Realm
 
 def local_media(request):
     return {'LOCAL_MEDIA_URL': settings.LOCAL_MEDIA_URL}
@@ -18,3 +19,8 @@ def shared_media(request):
 def current_section(request):
     current_section = request.path.split('/',2)
     return {'CURRENT_SECTION_KEYNAME': current_section[1]}
+
+def fallback_realm(request):
+    site = Site.objects.get_current()
+
+    return {'cms_realm': site.realm}

@@ -49,7 +49,10 @@ class HtmlLinkRef(models.Model):
     active = models.BooleanField(_("Active"), default=True, db_index=True)
     base = models.BooleanField(_("Always Loaded"), default=False)
     theme = models.ForeignKey(Theme)
-    
+
+    objects = models.Manager()
+    base_active = BaseActiveLinkRefs()
+
     class Meta:
         abstract = True
         ordering = ['precedence']

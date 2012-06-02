@@ -1,0 +1,3 @@
+{% for stylesheet in styles %}{% if stylesheet.for_ie %}
+<!--[if IE {{ stylesheet.for_ie }}]><link rel="stylesheet" type="text/css" href="{{ stylesheet.file.url }}" media="{{ stylesheet.media }}"/><![endif]-->{% else %}
+<link rel="stylesheet" href="{{ stylesheet.file.url }}" type="text/css" media="{{ stylesheet.media }}" />{% endif %}{% endfor %}

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
 
-__all__ = ['localised_section_manager', 'localised_element_manager', 'ThemeManager', 'RealmManager', 'SectionManager', 'CommuneManager', 'SliceManager', 'NamedBoxManager', 'ApplicationManager']
+__all__ = ['localised_section_manager', 'localised_element_manager', 'ThemeManager', 'BaseActiveLinkRefs','RealmManager', 'SectionManager', 'CommuneManager', 'SliceManager', 'NamedBoxManager', 'ApplicationManager']
 
 class localised_section_manager(models.Manager):
     def get_query_set(self):
@@ -15,6 +15,13 @@ class localised_element_manager(models.Manager):
 class ThemeManager(models.Manager):
     def get_by_natural_key(self, keyname):
         return self.get(keyname = keyname)
+
+class BaseActiveLinkRefs(models.Manager):
+    def get_query_set(self):
+        return super(BaseActiveLinkRefs, self).get_query_set().filter(base=True, active=True)
+
+    def for_theme(self, theme):
+        return self.get_query_set().filter(theme=theme).order_by('precedence')
         
 class RealmManager(models.Manager):
     def get_by_natural_key(self, keyname):

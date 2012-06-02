@@ -2,6 +2,7 @@ from django.template import Library
 from classytags.core import Tag, Options
 from classytags.arguments import Argument, Flag
 from classytags.helpers import InclusionTag, AsTag
+from django.contrib.sites.models import Site
 
 from libscampi.contrib.cms.communism.models import Theme, Javascript, StyleSheet, Realm, NamedBox
 
@@ -99,8 +100,24 @@ class ThemePage(Tag):
 
         return u''
 
+class LocalRealm(Tag):
+    name = "get_current_realm"
+
+    def render_tag(self, context, **kwargs):
+        cms_realm = context.get('cms_realm',None)
+
+        if cms_realm is not None:
+            return ''
+
+        site = Site.objects.get_current()
+
+        try:
+            context['cms_realm'] = site.realm
+        finally:
+            return ''
 
 
+register.tag(LocalRealm)
 register.tag(ThemePage)
 register.tag(ThemeScripts)
 register.tag(ThemeStyles)

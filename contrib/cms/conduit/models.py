@@ -65,7 +65,7 @@ class DynamicPicker(PickerBase):
     objects = DynamicPickerManager()
     
     class Meta:
-        unique_together = ('commune', 'keyname')
+        unique_together = ('keyname',)
         verbose_name = "Dynamic Content Picker"
         verbose_name_plural = "Dynamic Content Pickers"
         permissions = (

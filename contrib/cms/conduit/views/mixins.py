@@ -5,6 +5,7 @@ from django.db.models import Q, Max
 from django.http import Http404, HttpResponseServerError
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 
 from libscampi.contrib.cms.newsengine.models import StoryCategory
 from libscampi.contrib.cms.communism.models import Javascript, StyleSheet, Theme
@@ -29,7 +30,11 @@ class PickerMixin(object):
             
         if self.picker.content != ContentType.objects.get_by_natural_key('newsengine','Publish'):
             raise Http404("Picker Archives only work for Published Stories")
-            
+
+        if self.picker.commune.realm.site_id != Site.objects.get_current().pk:
+            redirect_url = "%sp/%s" % (self.picker.commune.realm.get_base_url(), self.picker.keyname)
+            return redirect(redirect_url)
+
         #every PublishPicking picker has base story categories that define it
         cat_cache_key = "picker:base:categories:%d" % self.picker.id
         categories = cache.get(cat_cache_key, set())

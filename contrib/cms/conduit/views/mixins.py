@@ -33,6 +33,15 @@ class PickerMixin(object):
 
         if self.picker.commune.realm.site_id != Site.objects.get_current().pk:
             redirect_url = "%sp/%s" % (self.picker.commune.realm.get_base_url(), self.picker.keyname)
+            if 'year' in kwargs:
+                redirect_url = "%s/%s" % (redirect_url, kwargs.pop('year'))
+                if 'month' in kwargs:
+                    redirect_url = "%s/%s" % (redirect_url, kwargs.pop('month'))
+                    if 'day' in kwargs:
+                        redirect_url = "%s/%s" % (redirect_url, kwargs.pop('day'))
+                        if 'slug' in kwargs:
+                            redirect_url = "%s/%s/" % (redirect_url, kwargs.pop('slug'))
+
             return redirect(redirect_url)
 
         #every PublishPicking picker has base story categories that define it

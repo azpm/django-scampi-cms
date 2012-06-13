@@ -38,6 +38,8 @@ class RenderArticle(Tag):
 
         return tpl.render(context)
 
+register.tag(RenderArticle)
+
 class cloud_node(template.Node):
     def __init__(self, categories, context_var, **kwargs):
         self.categories = template.Variable(categories)

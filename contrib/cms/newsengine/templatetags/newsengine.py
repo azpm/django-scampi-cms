@@ -32,11 +32,12 @@ class RenderArticle(Tag):
         if not article:
             return ''
 
-        first_pass = render_to_string("newsengine/article.html", {'article': article}, context)
 
-        tpl = template.Template(first_pass)
 
-        return tpl.render(context)
+        tpl = template.Template(' '.join(["{% load renaissance_private %}", article]))
+        first_pass = tpl.render(context)
+
+        return render_to_string("newsengine/article.html", {'article': first_pass}, context)
 
 register.tag(RenderArticle)
 

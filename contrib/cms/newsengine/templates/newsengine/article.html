@@ -1,0 +1,7 @@
+{% load renaissance %}
+{% load markup %}
+
+{% filter markdown %}
+    {{ article }}{% for image in article.image_inlines.all %}
+    [{{ image.slug }}]: {{ image.file.url }}{% endfor %}
+{% endfilter %}

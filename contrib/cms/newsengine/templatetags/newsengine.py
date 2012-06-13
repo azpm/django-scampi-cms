@@ -1,54 +1,43 @@
 from datetime import datetime
 
 from django import template
-from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
 from django.core.cache import cache
 from django.conf import settings
+from classytags.core import Tag, Options
+from classytags.arguments import Argument, Flag
+from classytags.helpers import InclusionTag, AsTag
+
 from django.contrib.markup.templatetags.markup import markdown
 from django.utils.encoding import smart_unicode
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.comments.templatetags.comments import BaseCommentNode
 
-from libscampi.contrib.cms.conduit.models import *
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
 from libscampi.contrib.cms.newsengine.signals import SolidSender, preprocess_article, postprocess_article
 
 
 register = template.Library()
 
-class article_node(template.Node):
-    def __init__(self, article):
-        self.article = template.Variable(article)
-    
-    def render(self, context):
-        try:
-            article = self.article.resolve(context)
-        except template.VariableDoesNotExist:
-            return u""
-        
-        language_code = context['request'].LANGUAGE_CODE
-        refresh_cache = context['request'].GET.get('refresh_cache', False)
-        
-        key = 'article:compiled:%s:%s' % (language_code, article.pk)
-        html = cache.get(key, None)
-        if refresh_cache or not html or article.modified > html['ts']:        
-            preprocess_article.send(sender=SolidSender, article=article, context=context, language=language_code)
-            postprocess_article.send(sender=SolidSender, article=article, context=context, language=language_code)
-            
-            html = {'ts': datetime.now(),'html': markdown(getattr(article, "compiled_body_%s" % language_code, article.body))}
-            cache.set(key, html, 60*60)
-                
-        return html['html']       
-    
-@register.tag('render_article')
-def render_article(parser, token):
-    try:
-        tag, article = token.split_contents()
-    except ValueError:
-        raise template.TemplateSyntaxError("'%s' requires an argument: an article" % token.contents.split()[0])
-        
-    return article_node(article)
-    
+class RenderArticle(Tag):
+    name = "render_article"
+
+    options = Options(
+        Argument('article', required=True, resolve=True),
+    )
+
+    def render_tag(self, context, **kwargs):
+        article = kwargs.pop('article', None)
+
+        if not article:
+            return ''
+
+        first_pass = render_to_string("newsengine/article.html", {'article': article}, context)
+
+        tpl = template.Template(first_pass)
+
+        return tpl.render(context)
+
 class cloud_node(template.Node):
     def __init__(self, categories, context_var, **kwargs):
         self.categories = template.Variable(categories)

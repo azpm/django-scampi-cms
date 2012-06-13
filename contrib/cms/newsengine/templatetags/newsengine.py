@@ -35,9 +35,10 @@ class RenderArticle(Tag):
 
 
         tpl = template.Template(' '.join(["{% load renaissance_private %}", article.body]))
-        first_pass = tpl.render(context)
+        private_context = template.Context({'request': context['request'],'article': article})
+        first_pass = tpl.render(private_context)
 
-        return render_to_string("newsengine/article.html", {'article': first_pass}, context)
+        return render_to_string("newsengine/article.html", {'first_pass': first_pass, 'article': article}, context)
 
 register.tag(RenderArticle)
 

@@ -50,7 +50,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         db = kwargs.get('using')
 
-        if db_field.name == "commune" and request.user.has_perm('conduit.change_dynamicpicker_commune'):
+        if db_field.name == "commune" and request.user.has_perm('conduit.change_picker_commune'):
             kwargs["widget"] = ForeignKeyRawIdWidget(db_field.rel, admin_site=self.admin_site, using=db)
         return super(DynamicPickerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -66,7 +66,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         """
 
         if obj:
-            if request.user.has_perm('conduit.change_dynamicpicker_commune'):
+            if request.user.has_perm('conduit.change_picker_commune'):
                 return ('keyname', 'content')
             else:
                 return ('commune', 'keyname', 'content')

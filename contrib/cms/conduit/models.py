@@ -69,7 +69,7 @@ class DynamicPicker(PickerBase):
         verbose_name = "Dynamic Content Picker"
         verbose_name_plural = "Dynamic Content Pickers"
         permissions = (
-            ('change_dynamicpicker_commune', 'User can change commune association of DynamicPicker' )
+            ('change_picker_commune', 'User can change commune association of DynamicPicker')
         )
         
     def __unicode__(self):

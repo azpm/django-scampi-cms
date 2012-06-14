@@ -39,7 +39,7 @@ class InlinedMedia(Tag):
                 except (IndexError, AttributeError, ValueError):
                     continue
 
-        mapped = TYPE_MAP[type]
+        mapped = TYPE_MAP[media_type]
         if type(article) is Article:
             m_getter = getattr(article, "%s_inlines" % media_type, None)
             if media_type != 'external':

@@ -8,7 +8,7 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def render_article_translation(context, article, translation):
 
-    article_template = "%s %s" % ("{% load renaissance_private %}", translation['body'])
+    article_template = "%s %s" % ("{% load renaissance %}", translation['body'])
     c = template.Context({'article': article})
 
     try:

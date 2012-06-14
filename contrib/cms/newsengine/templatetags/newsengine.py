@@ -2,11 +2,9 @@ from datetime import datetime
 
 from django import template
 from django.template.loader import render_to_string
-from django.core.cache import cache
 from django.conf import settings
 from classytags.core import Tag, Options
-from classytags.arguments import Argument, Flag
-from classytags.helpers import InclusionTag, AsTag
+from classytags.arguments import Argument
 
 from django.contrib.markup.templatetags.markup import markdown
 from django.utils.encoding import smart_unicode
@@ -15,8 +13,6 @@ from django.utils.translation import ugettext_lazy as _, get_language_from_reque
 from django.contrib.comments.templatetags.comments import BaseCommentNode
 
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
-from libscampi.contrib.cms.newsengine.signals import SolidSender, preprocess_article, postprocess_article
-
 
 register = template.Library()
 
@@ -44,11 +40,17 @@ class RenderArticle(Tag):
             body = article.body
 
         # first pass, scampi 2.0+ style media
-        tpl = template.Template(" ".join(["{% load renaissance_private %}", body]), name="internal_article_tpl")
+        tpl = template.Template(" ".join(["{% load renaissance %}", body]), name="internal_article_tpl")
         c = template.Context({'article': article})
         first_pass = tpl.render(c)
+
         # second pass, scampi 1.0 style media
-        second_pass = render_to_string("newsengine/article.html", {'compiled_body': mark_safe(first_pass), 'article': article})
+        inlined_images = article.image_inlines.all()
+        if inlined_images.count() > 0:
+            md_friendly = "\n".join(["[%s]: %s" % (t.slug, t.file.url) for t in inlined_images])
+            second_pass = "\n".join([mark_safe(first_pass), md_friendly])
+        else:
+            second_pass = mark_safe(first_pass)
 
         final = markdown(second_pass)
         return final

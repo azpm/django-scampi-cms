@@ -139,7 +139,7 @@ class inline_media_node(template.Node):
         
         return tpl.render(c)
     
-@register.tag('inline')
+#@register.tag('inline')
 def render_inline_media(parser, token):
     try:
         tag, type, slug, attrs = token.split_contents()

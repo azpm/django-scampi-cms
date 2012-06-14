@@ -10,7 +10,8 @@ from classytags.helpers import InclusionTag, AsTag
 
 from django.contrib.markup.templatetags.markup import markdown
 from django.utils.encoding import smart_unicode
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _, get_language_from_request
 from django.contrib.comments.templatetags.comments import BaseCommentNode
 
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
@@ -32,13 +33,25 @@ class RenderArticle(Tag):
         if not article:
             return ''
 
+        try:
+            lang = get_language_from_request(context['request'])
+        except KeyError:
+            lang = "en"
 
+        # try to get the article in the correct language, default to RANDOM language if not available
+        body = getattr(article, "body_%s" % lang, None)
+        if not body:
+            body = article.body
 
-        tpl = template.Template(' '.join(["{% load renaissance_private %}", article.body]))
-        private_context = template.Context({'request': context['request'],'article': article})
-        first_pass = tpl.render(private_context)
+        # first pass, scampi 2.0+ style media
+        tpl = template.Template(" ".join(["{% load renaissance_private %}", body]), name="internal_article_tpl")
+        c = template.Context({'article': article})
+        first_pass = tpl.render(c)
+        # second pass, scampi 1.0 style media
+        second_pass = render_to_string("newsengine/article.html", {'compiled_body': mark_safe(first_pass), 'article': article})
 
-        return render_to_string("newsengine/article.html", {'first_pass': first_pass, 'article': article}, context)
+        final = markdown(second_pass)
+        return final
 
 register.tag(RenderArticle)
 

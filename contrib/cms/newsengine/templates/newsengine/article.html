@@ -1,6 +1,2 @@
-{% load markup %}
-
-{% filter markdown %}
-    {{ first_pass }}{% for image in article.image_inlines.all %}
-    [{{ image.slug }}]: {{ image.file.url }}{% endfor %}
-{% endfilter %}
+{{ compiled_body }}{% for image in article.image_inlines.all %}
+[{{ image.slug }}]: {{ image.file.url }}{% endfor %}

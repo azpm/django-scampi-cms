@@ -16,13 +16,13 @@ class InlinedMedia(Tag):
     name = "inline"
 
     options = Options(
-        Argument('type', required=True, resolve=False),
+        Argument('media_type', required=True, resolve=False),
         Argument('slug', required=True, resolve=False),
         Argument('attrs', required=False, resolve=False),
     )
 
-    def render_tag(self, context, type, slug, **kwargs):
-        if type not in TYPE_MAP.keys():
+    def render_tag(self, context, media_type, slug, **kwargs):
+        if media_type not in TYPE_MAP.keys():
             # if the type isn't recognized, just return an empty string
             return u""
 
@@ -41,8 +41,8 @@ class InlinedMedia(Tag):
 
         mapped = TYPE_MAP[type]
         if type(article) is Article:
-            m_getter = getattr(article, "%s_inlines" % type, None)
-            if type != 'external':
+            m_getter = getattr(article, "%s_inlines" % media_type, None)
+            if media_type != 'external':
                 try:
                     media = m_getter.select_related('type__inline_template__content').get(slug=slug)
                 except (mapped.DoesNotExit, AttributeError):
@@ -55,7 +55,7 @@ class InlinedMedia(Tag):
                     # if there's no media, or something went wrong, just return an empty string
                     return u""
         else:
-            if type != 'external':
+            if media_type != 'external':
                 try:
                     media = mapped.objects.select_related('type__inline_template__content').get(slug=slug)
                 except (mapped.DoesNotExit, AttributeError):
@@ -68,10 +68,10 @@ class InlinedMedia(Tag):
                     # if there's no media, or something went wrong, just return an empty string
                     return u""
 
-        if type == "external":
+        if media_type == "external":
             return mark_safe(media.data)
 
-        tpl = template.Template(media.type.inline_template.content, name="%s inline tpl" % type)
+        tpl = template.Template(media.type.inline_template.content, name="%s inline tpl" % media_type)
         c = template.Context({'media': media, 'inliner': context_inliner})
 
         return tpl.render(c)

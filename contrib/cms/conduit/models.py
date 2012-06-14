@@ -52,7 +52,12 @@ class PickerBase(models.Model):
     class Meta:
         abstract = True
         ordering = ['precedence']
-    
+        permissions = (
+            ('change_picker_commune', 'User can change commune association of DynamicPicker')
+            )
+
+
+
 class DynamicPicker(PickerBase):
     active = models.BooleanField(default = False)
     keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"))
@@ -68,9 +73,6 @@ class DynamicPicker(PickerBase):
         unique_together = ('keyname',)
         verbose_name = "Dynamic Content Picker"
         verbose_name_plural = "Dynamic Content Pickers"
-        permissions = (
-            ('change_picker_commune', 'User can change commune association of DynamicPicker')
-        )
         
     def __unicode__(self):
         return self.name

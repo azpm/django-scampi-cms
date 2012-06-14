@@ -32,7 +32,7 @@ class InlinedMedia(Tag):
         context_inliner = {}
         if attributes is not None:
             attrs = attributes.split(",")
-            for attribute in attr:
+            for attribute in attrs:
                 inline = attribute.split("=")
                 try:
                     context_inliner.update({inline[0]: inline[1]})

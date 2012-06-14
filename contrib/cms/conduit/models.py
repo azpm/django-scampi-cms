@@ -9,7 +9,6 @@ from django.utils.translation import ugettext_lazy as _
 #scampi stuff
 from libscampi.core.fields import PickledObjectField 
 from libscampi.contrib.cms.communism.models import Commune
-from libscampi.utils.functional import cached_property
 from libscampi.contrib.cms.newsengine.utils import cache_publishpicker_base_cats
 
 #local imports
@@ -79,8 +78,8 @@ class DynamicPicker(PickerBase):
         
     def natural_key(self):
         if self.commune:
-            return (self.commune.keyname, self.keyname)
-        return (None, self.keyname)
+            return self.commune.keyname, self.keyname
+        return None, self.keyname
 
     def picked(self):
         """
@@ -133,8 +132,8 @@ class DynamicPicker(PickerBase):
             except FieldError, e:
                 logger.error("Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
-            except:
-                logger.error("failure to coerce include filters on [%d] %s" % (self.pk, self.name))
+            except Exception, e:
+                logger.error("failure to coerce include filters on [%d] %s. %s" % (self.pk, self.name, e))
 
         #fifth we apply our exclusion filters
         if self.exclude_filters:
@@ -150,8 +149,8 @@ class DynamicPicker(PickerBase):
             except FieldError, e:
                 logger.error("Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
-            except:
-                logger.error("failure to coerce exclude filters on [%d] %s" % (self.pk, self.name))
+            except Exception, e:
+                logger.error("failure to coerce exclude filters on [%d] %s. %s" % (self.pk, self.name, e))
     
         #before we limit the qs we let the picking filterset apply any last minute operations
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):
@@ -191,7 +190,7 @@ class StaticPicker(PickerBase):
         return self.name
         
     def natural_key(self):
-        return (self.commune.keyname, self.commune.display_order, self.namedbox.gridy, self.namedbox.gridx, self.namedbox.display_order, self.namedbox.keyname)
+        return self.commune.keyname, self.commune.section.display_order, self.namedbox.gridy, self.namedbox.gridx, self.namedbox.display_order, self.namedbox.keyname
         
 models.signals.post_save.connect(cache_publishpicker_base_cats, sender=DynamicPicker)
 models.signals.post_save.connect(cache_picker_template, sender=PickerTemplate)

@@ -22,7 +22,7 @@ class namedbox_node(template.Node):
         
         #grab the template from the database and then cache it
         if not cached_tpl:
-            logger.debug("cache miss on %s trying to get cached template" % cached_tpl_key)
+            logger.debug("cache miss on %s%s trying to get cached template" % (cache.key_prefix, cached_tpl_key))
             cached_tpl = namedbox.template.content
             cache.set(cached_tpl_key, cached_tpl)
         

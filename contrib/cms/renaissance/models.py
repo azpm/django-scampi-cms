@@ -13,11 +13,7 @@ from taggit.managers import TaggableManager
 
 #Local Imports
 from libscampi.contrib.cms.renaissance import settings as appsettings
-from libscampi.contrib.cms.renaissance.utils import legacy_inline_images, inlined_media
 from libscampi.contrib.cms.renaissance.validation import ValidImgExtension, ValidVidExtension, ValidDocExtension, ValidAudExtension, ValidObjExtension
-
-#Article plugins
-from libscampi.contrib.cms.newsengine.signals import SolidSender, preprocess_article, postprocess_article
 
 # Patch mimetypes w/ any extra types
 mimetypes.types_map.update(appsettings.EXTRA_MIME_TYPES)
@@ -308,7 +304,3 @@ class ObjectPlaylist(MediaPlaylist):
     class Meta:
         verbose_name = 'HTML Object Playlist'
         verbose_name_plural = 'HTML Object Playlists'
-        
-#article plugins
-preprocess_article.connect(inlined_media, sender=SolidSender)
-postprocess_article.connect(legacy_inline_images, sender=SolidSender)

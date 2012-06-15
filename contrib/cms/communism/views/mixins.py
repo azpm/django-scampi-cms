@@ -313,7 +313,6 @@ class JScriptMixin(object):
         #try to get the cached javascript for this commune
         cached_scripts_key = 'commune:scripts:%s' % self.commune.pk
         if self.refresh_caches:
-            logger.debug("deleting cached javascript ids")
             #invalidate on refresh_cache
             cache.delete(cached_scripts_key)
         script_ids = cache.get(cached_scripts_key, None)

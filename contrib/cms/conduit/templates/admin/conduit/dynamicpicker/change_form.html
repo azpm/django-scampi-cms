@@ -41,7 +41,7 @@
             picker_form.bundle_filters();
             var div = jQuery("div#picked-objects").empty();
 
-            jQuery("form#dynamicpicker_form select[multiple='multiple'][class='selectfilter']:not([id$='_from'])").each(function(elem,val){
+            jQuery("form#dynamicpicker_form select[multiple='multiple'][class='filtered']:not([id$='_from'])").each(function(elem,val){
                 var target = jQuery(val).attr('id');
 
                 SelectBox.select_all(target);

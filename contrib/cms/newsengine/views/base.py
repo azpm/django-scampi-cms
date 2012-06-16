@@ -319,3 +319,57 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
         )
         
         return tpl_list
+
+class RelatedStoryDetailView(PickedStoryDetailArchive):
+    """
+    Overrides get_object to allow related object that exists outside of current picker context
+    """
+
+    def get_object(self, queryset=None):
+        """
+        Get the object this request displays.
+        """
+        year = self.get_year()
+        month = self.get_month()
+        day = self.get_day()
+        date = _date_from_string(year, self.get_year_format(),
+            month, self.get_month_format(),
+            day, self.get_day_format())
+
+        qs = self.model.objects.distinct()
+
+        if not self.get_allow_future() and date > datetime.date.today():
+            raise Http404(_(u"Future %(verbose_name_plural)s not available because %(class_name)s.allow_future is False.") % {
+                'verbose_name_plural': qs.model._meta.verbose_name_plural,
+                'class_name': self.__class__.__name__,
+                })
+
+        # Filter down a queryset from self.queryset using the date from the
+        # URL. This'll get passed as the queryset to DetailView.get_object,
+        # which'll handle the 404
+        date_field = self.get_date_field()
+        field = qs.model._meta.get_field(date_field)
+        lookup = _date_lookup_for_field(field, date)
+        qs = qs.filter(**lookup)
+
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        if slug is not None:
+            slug_field = self.get_slug_field()
+            qs = qs.filter(**{slug_field: slug})
+        else:
+            raise AttributeError(u"RelatedStoryDetailView must be called with "
+                                 u"either an object pk or a slug.")
+
+        # actually grab the published story
+        try:
+            obj = qs.get()
+        except ObjectDoesNotExist:
+            raise Http404(_(u"No %(verbose_name)s found matching the query") %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        except self.model.MultipleObjectsReturned:
+            try:
+                obj = qs[0]
+            except IndexError:
+                raise Http404(_(u"No %(verbose_name)s found matching the query") %
+                              {'verbose_name': queryset.model._meta.verbose_name})
+        return obj

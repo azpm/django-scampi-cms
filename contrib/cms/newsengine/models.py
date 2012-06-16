@@ -4,17 +4,15 @@ from datetime import datetime
 from taggit.managers import TaggableManager
 
 from django.db import models
-from django.db.models import Count, Max, Avg, Min
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes import generic
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.comments.moderation import moderator
 
 #libscampi contributed packages
+from libscampi.core.managers import SearchableManager
 from libscampi.contrib.multilingual.models import Language, MultilingualModel
 from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External, ImagePlaylist, VideoPlaylist, AudioPlaylist, DocumentPlaylist, ObjectPlaylist
 from libscampi.contrib.cms.conduit import picker
@@ -144,19 +142,23 @@ class Publish(models.Model):
     sticky = models.BooleanField(default=False, db_index = True)
     order_me = models.PositiveSmallIntegerField(default=0, db_index = True)
     seen = models.BooleanField(default=False, db_index = True)
-
+    # comment handling
     comments = generic.GenericRelation(Comment, object_id_field='object_pk') # reverse generic relation
+    # various managers
     objects = models.Manager()
     active = PublishedManager()
-    
+
     class Meta:
         verbose_name = "Published Story"
         verbose_name_plural = "Published Stories"
         ordering = ('sticky','order_me','-start')
     
     def __unicode__(self):
-        return "[%s] > %s" % (self.category.title, self.story.article.headline)
-        
+        if self.category.title:
+            return "[%s] > %s" % (self.category.title, self.story.article.headline)
+        else:
+            return "%s" % self.story.article.headline
+
     def get_absolute_url(self):
         return "%d/%d/%d/%s/" % (self.start.year, self.start.month, self.start.day, self.slug)
 

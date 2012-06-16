@@ -45,26 +45,26 @@ class InlinedMedia(Tag):
             if media_type != 'external':
                 try:
                     media = m_getter.select_related('type__inline_template__content').get(slug=slug)
-                except (mapped.DoesNotExit, AttributeError):
+                except (mapped.DoesNotExist, AttributeError):
                     # if there's no media, or something went wrong, just return an empty string
                     return u""
             else:
                 try:
                     media = m_getter.get(slug=slug)
-                except (mapped.DoesNotExit, AttributeError):
+                except (mapped.DoesNotExist, AttributeError):
                     # if there's no media, or something went wrong, just return an empty string
                     return u""
         else:
             if media_type != 'external':
                 try:
                     media = mapped.objects.select_related('type__inline_template__content').get(slug=slug)
-                except (mapped.DoesNotExit, AttributeError):
+                except (mapped.DoesNotExist, AttributeError):
                     # if there's no media, or something went wrong, just return an empty string
                     return u""
             else:
                 try:
                     media = mapped.objects.get(slug=slug)
-                except (mapped.DoesNotExit, AttributeError):
+                except (mapped.DoesNotExist, AttributeError):
                     # if there's no media, or something went wrong, just return an empty string
                     return u""
 

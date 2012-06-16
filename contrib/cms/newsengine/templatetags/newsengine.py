@@ -1,10 +1,9 @@
 from datetime import datetime
 
 from django import template
-from django.template.loader import render_to_string
 from django.conf import settings
 from classytags.core import Tag, Options
-from classytags.arguments import Argument
+from classytags.arguments import Argument, IntegerArgument
 
 from django.contrib.markup.templatetags.markup import markdown
 from django.utils.encoding import smart_unicode
@@ -12,6 +11,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, get_language_from_request
 from django.contrib.comments.templatetags.comments import BaseCommentNode
 
+from libscampi.contrib.cms.newsengine.models import Publish
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
 
 register = template.Library()
@@ -56,6 +56,33 @@ class RenderArticle(Tag):
         return final
 
 register.tag(RenderArticle)
+
+class RelatedPublishes(Tag):
+    name = "related_stories"
+
+    options = Options(
+        Argument('publish', required=True, resolve=True),
+        'as',
+        Argument('varname', required=True, resolve=False),
+        IntegerArgument('limit', default=3, required=False, resolve=False),
+    )
+
+    def render_tag(self, context, **kwargs):
+        publish = kwargs.pop('publish', None)
+        varname = kwargs.pop('varname')
+        limit = kwargs.pop('limit')
+
+        if not publish:
+            return u""
+
+        related = Publish.active.find_related(publish.story)[:limit]
+
+        context[varname] = related
+
+        return u""
+
+
+register.tag(RelatedPublishes)
 
 class cloud_node(template.Node):
     def __init__(self, categories, context_var, **kwargs):

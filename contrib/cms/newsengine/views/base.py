@@ -211,7 +211,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 
         #try to get the cached css for this published story
         cached_css_key = 'picker:%d:publish:css:%s' % (self.picker.id, publish.id)
-        if self.request.GET.get('refresh_cache', False):
+        if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_css_key)
         styles = cache.get(cached_css_key, None)
@@ -264,7 +264,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
         
         #try to get the cached javascript for this published story
         cached_scripts_key = 'picker:%d:publish:js:%s' % (self.picker.id, publish.id)
-        if self.request.GET.get('refresh_cache', False):
+        if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_scripts_key)
         script_ids = cache.get(cached_scripts_key, None)

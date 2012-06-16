@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from django.db import models
 from django.db.models import Avg, Max, Min, Count, Q, Variance, StdDev
-from libscampi.contrib.cms.newsengine.models import Story
+from django.contrib.contenttypes.models import ContentType
 
 class PublishedManager(models.Manager):
     def get_query_set(self):
@@ -13,7 +13,9 @@ class PublishedManager(models.Manager):
         right_now = datetime.now()
         long_ago = right_now - timedelta(days=30)
 
-        qs = Story.objects.distinct().filter(
+        story_model = ContentType.objects.get_for_model(story).model_class()
+
+        qs = story_model.objects.distinct().filter(
             Q(peers__in=[story]) | Q(categories__keyname__in=cats),
         ).exclude(pk=story.pk)
         qs = qs.annotate(rel_count=Count('categories')).order_by('-rel_count')

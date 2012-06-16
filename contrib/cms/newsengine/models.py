@@ -12,7 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.comments.moderation import moderator
 
 #libscampi contributed packages
-from libscampi.core.managers import SearchableManager
 from libscampi.contrib.multilingual.models import Language, MultilingualModel
 from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External, ImagePlaylist, VideoPlaylist, AudioPlaylist, DocumentPlaylist, ObjectPlaylist
 from libscampi.contrib.cms.conduit import picker

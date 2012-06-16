@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from django import template
@@ -16,6 +17,8 @@ from libscampi.contrib.cms.newsengine.models import Publish, Article
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
 
 register = template.Library()
+
+logger = logging.getLogger('libscampi.contrib.cms.newsengine.templatetags')
 
 class RenderArticle(Tag):
     name = "render_article"
@@ -80,12 +83,13 @@ class RelatedPublishes(Tag):
         related = cache.get(cache_key, None)
 
         if not related:
+            logger.debug("missed related story cache on %s" % cache_key)
             related = Publish.active.find_related(publish.story)[:limit]
 
             for item in related:
                 item['article'] = Article.objects.get(pk=item['story__article'])
 
-            cache.set(cache_key, related, 60*20)
+            cache.set(cache_key, list(related), 60*20)
 
         context[varname] = related
 

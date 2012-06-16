@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django import template
 from django.conf import settings
+from django.core.cache import cache
 from classytags.core import Tag, Options
 from classytags.arguments import Argument, IntegerArgument
 
@@ -75,10 +76,16 @@ class RelatedPublishes(Tag):
         if not publish:
             return u""
 
-        related = Publish.active.find_related(publish.story)[:limit]
+        cache_key = "stories:related:to:%d" % publish.story.id
+        related = cache.get(cache_key, None)
 
-        for item in related:
-            item['article'] = Article.objects.get(pk=item['story__article'])
+        if not related:
+            related = Publish.active.find_related(publish.story)[:limit]
+
+            for item in related:
+                item['article'] = Article.objects.get(pk=item['story__article'])
+
+            cache.set(cache_key, related, 60*20)
 
         context[varname] = related
 

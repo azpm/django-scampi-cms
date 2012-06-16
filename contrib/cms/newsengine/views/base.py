@@ -246,7 +246,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 Q(mediainlinetemplate__audiotype__audio__id__in=article.audio_inlines.values_list('id')) |
                 Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
                 Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id'))
-            ).order_by('precedence')
+            ).order_by('precedence').distinct()
             cache.set(cached_css_key, styles, 60*10)
            
         #build a simple collection of styles
@@ -298,7 +298,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
                 Q(mediainlinetemplate__audiotype__audio__id__in=article.audio_inlines.values_list('id')) |
                 Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
                 Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id'))
-            ).order_by('precedence')
+            ).order_by('precedence').distinct()
             cache.set(cached_scripts_key, list(scripts.values_list('id', flat = True)), 60*20)
         else:
             scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')

@@ -365,7 +365,7 @@ class RelatedStoryDetailView(PickedStoryDetailArchive):
         # actually grab the published story
         try:
             obj = qs.get()
-        except self.model.ObjectDoesNotExist:
+        except self.model.DoesNotExist:
             raise Http404(_(u"No %(verbose_name)s found matching the query") %
                           {'verbose_name': queryset.model._meta.verbose_name})
         except self.model.MultipleObjectsReturned:

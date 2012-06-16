@@ -13,7 +13,7 @@ class PublishedManager(models.Manager):
         long_ago = right_now - timedelta(days=30)
 
         qs = self.get_query_set().filter(Q(story__peers__in=[story]) | Q(story__categories__keyname__in=cats), start__lte=right_now, start__gte=long_ago).exclude(story__id=story.pk)
-        qs = qs.annotate(rel_count=Variance('story__categories'))
+        qs = qs.annotate(rel_count=StdDev('story__categories'))
 
         return qs.order_by('-rel_count')
 

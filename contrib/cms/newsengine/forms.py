@@ -39,7 +39,11 @@ class PublishForm(forms.ModelForm):
         story = cleaned_data['story']
         category = cleaned_data['category']
 
-        if Publish.objects.filter(story=story, category=category).exists():
-            raise forms.ValidationError("Story is already published under %s" % category.title)
+        check = Publish.objects.filter(story=story, category=category)
+        if self.instance:
+            check = check.exclude(pk=self.instance.pk)
+
+        if check.exists():
+            raise forms.ValidationError("Story is already published as: %s" % category.title)
 
         return cleaned_data

@@ -18,7 +18,7 @@ class PublishedManager(models.Manager):
         ).exclude(story__id=story.pk)
         qs = qs.annotate(rel_count=Count('story__categories'))
 
-        return qs.order_by('-rel_count')
+        return qs.order_by('-rel_count').distinct()
 
 
 class CategoryGenera(models.Manager):

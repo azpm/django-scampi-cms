@@ -9,10 +9,10 @@ class PublishedManager(models.Manager):
     def find_related(self, story):
         cats = story.categories.values_list('keyname', flat=True)
 
-        qs = self.get_query_set().filter(Q(story__peers__in=[story]) | Q(story__categories__keyname__in=cats), start__lte=datetime.now())
+        qs = self.get_query_set().filter(Q(story__peers__in=[story]) | Q(story__categories__keyname__in=cats), start__lte=datetime.now()).exclude(story__id=story.pk)
         qs = qs.annotate(rel_count=Variance('story__categories'))
 
-        return qs.order_by('-start', 'rel_count')
+        return qs.order_by('-start', '-rel_count')
 
 
 class CategoryGenera(models.Manager):

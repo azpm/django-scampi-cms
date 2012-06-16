@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from django.db import models
-from django.db.models import Avg, Max, Min, Count, Q, Variance, StdDev
+from django.db.models import Count, Q, F
 from django.contrib.contenttypes.models import ContentType
 
 class PublishedManager(models.Manager):
@@ -13,14 +13,13 @@ class PublishedManager(models.Manager):
         right_now = datetime.now()
         long_ago = right_now - timedelta(days=30)
 
-        story_model = ContentType.objects.get_for_model(story).model_class()
+        qs = self.get_query_set().filter(
+            Q(story__peers__in=[story]) | Q(story__categories__keyname__in=cats),
+            start__lte=right_now, start__gte=long_ago
+        ).exclude(story__id = story.pk)
+        qs = qs.annotate(rel_count=Count('story__categories'))
 
-        qs = story_model.objects.distinct().filter(
-            Q(peers__in=[story]) | Q(categories__keyname__in=cats),
-        ).exclude(pk=story.pk)
-        qs = qs.annotate(rel_count=Count('categories')).order_by('-rel_count')
-
-        return self.get_query_set().filter(story__in=qs, start__lte=right_now, start__gte=long_ago)
+        return qs.order_by('-rel_count').values('rel_count','story','story__article','start','slug').distinct()
 
 
 class CategoryGenera(models.Manager):

@@ -11,7 +11,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, get_language_from_request
 from django.contrib.comments.templatetags.comments import BaseCommentNode
 
-from libscampi.contrib.cms.newsengine.models import Publish
+from libscampi.contrib.cms.newsengine.models import Publish, Article
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
 
 register = template.Library()
@@ -76,6 +76,9 @@ class RelatedPublishes(Tag):
             return u""
 
         related = Publish.active.find_related(publish.story)[:limit]
+
+        for item in related:
+            item['article'] = Article.objects.get(pk=item['story__article'])
 
         context[varname] = related
 

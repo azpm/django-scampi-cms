@@ -16,7 +16,7 @@ class PublishedManager(models.Manager):
             Q(story__peers__in=[story]) | Q(story__categories__keyname__in=cats),
             start__lte=right_now, start__gte=long_ago
         ).exclude(story__id=story.pk)
-        qs = qs.annotate(rel_count=Count('story__categories'))
+        qs = qs.annotate(rel_count=Count('story__categories'), story_occurs=Count('story')).exclude(story_occurs__gt=1)
 
         return qs.order_by('-rel_count')
 

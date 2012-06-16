@@ -10,7 +10,7 @@ from django.db.models import Count
 from django.http import Http404, HttpResponse
 from django.forms.formsets import all_valid
 from django.utils import simplejson
-from django.template.response import SimpleTemplateResponse, TemplateResponse
+from django.template.response import TemplateResponse
 from django.template.defaultfilters import slugify, truncatewords
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 
 from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue
-from .forms import StoryForm, ArticleTranslationForm
+from .forms import StoryForm, ArticleTranslationForm, PublishForm
 from .filtering import PublishTypeListFilter, ArticleAuthorListFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
@@ -268,6 +268,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     save_as = True
     
     ordering = ('-start','sticky','order_me')
+    form = PublishForm
 
     def headline(self, cls):
         try:
@@ -295,8 +296,7 @@ class PublishStoryAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not obj.seen:
             obj.seen = True
-            obj.slug = "%d%d-%s" % (obj.start.hour, obj.start.minute, slugify(obj.story.article.headline))
-        
+
         obj.approved_by = request.user
         try:
             obj.save()

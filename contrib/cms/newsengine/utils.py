@@ -2,10 +2,9 @@ import math
 import logging
 
 from django.core.cache import cache
-from django.db.models import Q, Max
 from django.contrib.contenttypes.models import ContentType
 
-from libscampi.contrib.cms.newsengine.models import StoryCategory
+from libscampi.contrib.cms.newsengine.models import StoryCategory, Publish
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.utils')
 

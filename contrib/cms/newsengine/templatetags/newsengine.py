@@ -95,7 +95,6 @@ class RelatedPublishes(Tag):
 
         return u""
 
-
 register.tag(RelatedPublishes)
 
 class cloud_node(template.Node):

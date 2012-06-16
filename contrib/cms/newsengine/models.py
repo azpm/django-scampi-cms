@@ -10,6 +10,9 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.comments.moderation import moderator
+from django.template.defaultfilters import slugify
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 #libscampi contributed packages
 from libscampi.contrib.multilingual.models import Language, MultilingualModel
@@ -233,7 +236,14 @@ class PublishPicking(django_filters.FilterSet):
             'story__document_playlist',
             'story__object_playlist',
         )
-        
+
+@receiver(post_save, sender=Publish)
+def slug_for_publish(sender, instance, created, raw, **kwargs):
+    if instance.slug == '' or not instance.slug and None != instance.story:
+        # this publish needs a slug
+        instance.slug = "%d-%s" % (instance.pk, slugify(instance.story.article.headline))
+        instance.save()
+
 #moderate publish comments
 moderator.register(Story, StoryModerator)
 

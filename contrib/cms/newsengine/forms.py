@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+
 from libscampi.core.fields import UserModelChoiceField
 from .models import ArticleTranslation, Story, Publish
 
@@ -29,7 +30,16 @@ class StoryForm(forms.ModelForm):
         model = Story
         
 class PublishForm(forms.ModelForm):
-    approved_by = UserModelChoiceField(User.objects.all().order_by('first_name', 'last_name', 'username'))
-    
     class Meta:
-        model = Publish 
+        model = Publish
+
+    def clean(self):
+        cleaned_data = super(PublishForm, self).clean()
+
+        story = cleaned_data['story']
+        category = cleaned_data['category']
+
+        if Publish.objects.filter(story=story, category=category).exists():
+            raise forms.ValidationError("Story is already published under %s" % category.title)
+
+        return cleaned_data

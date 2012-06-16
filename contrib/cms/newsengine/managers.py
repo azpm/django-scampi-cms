@@ -12,7 +12,7 @@ class PublishedManager(models.Manager):
         qs = self.get_query_set().filter(Q(story__peers__in=[story]) | Q(story__categories__keyname__in=cats), start__lte=datetime.now())
         qs = qs.annotate(rel_count=Variance('story__categories'))
 
-        return qs.order_by('rel_count')
+        return qs.order_by('-start', 'rel_count')
 
 
 class CategoryGenera(models.Manager):

@@ -8,6 +8,8 @@ from libscampi.contrib.cms.communism.views.mixins import html_link_refs
 from libscampi.contrib.cms.views.base import CMSPageNoView
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 from libscampi.contrib.cms.newsengine.models import StoryCategory
+from libscampi.utils.dating import date_from_string, date_lookup_for_field
+
 
 from .mixins import PublishStoryMixin
 
@@ -332,7 +334,7 @@ class RelatedStoryDetailView(PickedStoryDetailArchive):
         year = self.get_year()
         month = self.get_month()
         day = self.get_day()
-        date = _date_from_string(year, self.get_year_format(),
+        date = date_from_string(year, self.get_year_format(),
             month, self.get_month_format(),
             day, self.get_day_format())
 
@@ -349,7 +351,7 @@ class RelatedStoryDetailView(PickedStoryDetailArchive):
         # which'll handle the 404
         date_field = self.get_date_field()
         field = qs.model._meta.get_field(date_field)
-        lookup = _date_lookup_for_field(field, date)
+        lookup = date_lookup_for_field(field, date)
         qs = qs.filter(**lookup)
 
         slug = self.kwargs.get(self.slug_url_kwarg, None)
@@ -363,7 +365,7 @@ class RelatedStoryDetailView(PickedStoryDetailArchive):
         # actually grab the published story
         try:
             obj = qs.get()
-        except ObjectDoesNotExist:
+        except self.model.ObjectDoesNotExist:
             raise Http404(_(u"No %(verbose_name)s found matching the query") %
                           {'verbose_name': queryset.model._meta.verbose_name})
         except self.model.MultipleObjectsReturned:

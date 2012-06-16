@@ -20,7 +20,7 @@ class PublishedManager(models.Manager):
         ).exclude(pk=story.pk)
         qs = qs.annotate(rel_count=Count('categories')).order_by('-rel_count')
 
-        return self.get_query_set().filter(story__in=[qs], start__lte=right_now, start__gte=long_ago)
+        return self.get_query_set().filter(story__in=qs, start__lte=right_now, start__gte=long_ago)
 
 
 class CategoryGenera(models.Manager):

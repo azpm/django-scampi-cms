@@ -249,6 +249,7 @@ Pickers.prototype.process_available = function (data) {
         self.create_fieldsets();
         var num = 0;
 
+        //noinspection JSUnresolvedVariable
         jQuery.each(data.existing.incl, function (index, value) {
             if (index > 0) {
                 self.create_fieldset(self.incl, num);
@@ -262,6 +263,7 @@ Pickers.prototype.process_available = function (data) {
         });
 
         num = 0;
+        //noinspection JSUnresolvedVariable
         jQuery.each(data.existing.excl, function (index, value) {
             if (index > 0) {
                 self.create_fieldset(self.excl, num);

@@ -26,7 +26,7 @@ class PageMixin(object):
         
     def get_page_title(self):
         if self.title is None:
-            raise ImproperlyConfigured(
+            raise ValueError(
                 "Page requires either a defintion of "
                 "'title' or an implementation of 'get_page_title()'")
         else:

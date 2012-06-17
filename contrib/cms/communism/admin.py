@@ -8,10 +8,10 @@ from libscampi.contrib.cms.communism.models import *
 from libscampi.contrib.cms.communism.utils import section_path_up
 
 class RealmAdmin(admin.ModelAdmin):
-    list_display = ('site', 'name', 'keyname', 'display_order', 'active', 'generates_navigation', 'secure', 'searchable', 'search_collection')
+    list_display = ('site', 'name', 'keyname', 'theme', 'display_order', 'active', 'generates_navigation', 'secure', 'searchable', 'search_collection')
     list_editable = ('display_order', 'active', 'secure', 'searchable', 'search_collection')
     fieldsets = (
-        ('Domain & Configuration', {'fields': ('site', 'name', 'keyname','description')}),
+        ('Domain & Configuration', {'fields': ('site', 'name', 'keyname','description', 'theme')}),
         ('Meta', {'fields': ('display_order','active','generates_navigation', 'secure','direct_link')}),
         ('Google Related', {'fields': (('searchable','search_collection'), 'googleid')})
     )
@@ -54,11 +54,11 @@ class SliceAdmin(admin.ModelAdmin):
         return qs.select_related('commune__section__realm','commune')
 
     def my_location(self, cls):
-        return "%s -> %s" % (cls.commune.realm, cls.commune.name)
+        return "{0:>s} -> {1:>s}".format(cls.commune.realm, cls.commune.name)
     my_location.short_description = "Realm / Commune"
 
     def traverse_up(self, cls):
-        return "%s -> %s" % (cls.commune.realm, section_path_up([cls.commune.container], " > "))
+        return "{0:>s} -> {1:>s}".format(cls.commune.realm, section_path_up([cls.commune.container], " > "))
     traverse_up.short_description = "Section Hierarchy"
 
 class SliceInline(admin.TabularInline):

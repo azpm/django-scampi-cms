@@ -2,9 +2,10 @@ import math
 import logging
 
 from django.core.cache import cache
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
-from libscampi.contrib.cms.newsengine.models import StoryCategory, Publish
+from libscampi.contrib.cms.newsengine.models import StoryCategory
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.utils')
 
@@ -61,7 +62,7 @@ def cache_publishpicker_base_cats(sender, instance, **kwargs):
     
     if instance.content == ContentType.objects.get_by_natural_key('newsengine','Publish') and not created:
         #every PublishPicking picker has base story categories that define it
-        cat_cache_key = "picker:base:categories:%d" % instance.pk
+        cat_cache_key = "picker:base:categories:{0:d}".format(instance.pk)
         keep_these = ('story__categories__id__in','story__categories__id__exact')
         categories = set()
         

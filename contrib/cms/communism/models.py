@@ -17,7 +17,7 @@ from libscampi.contrib.cms.communism.managers import *
 from libscampi.contrib.cms.communism.validators import magic_keyname
 from libscampi.contrib.cms.communism.utils import *
 
-__all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
+__all__ = ['Theme','StyleSheet','Javascript','Realm','RealmNotification','Section','MagicSection','Commune','Slice','NamedBoxTemplate','NamedBox','Application']
 
 class Theme(models.Model):
     """Defines a theme that communes utilize to provide stylesheet(s), javascript(s)
@@ -38,7 +38,7 @@ class Theme(models.Model):
         return self.keyname
         
     def _get_url(self):
-        return "%s%s/" % (settings.MEDIA_URL, self.keyname)
+        return "{0:>s}{1:>s}/".format(settings.MEDIA_URL, self.keyname)
     base_url = property(_get_url)
         
 class HtmlLinkRef(models.Model):
@@ -58,12 +58,12 @@ class HtmlLinkRef(models.Model):
         ordering = ['precedence']
         
     def __unicode__(self):
-        return "[%s] %s" % (self.theme.keyname, self.name)
+        return "[{0:>s}] {1:>s}".format(self.theme.keyname, self.name)
 
 class Javascript(HtmlLinkRef):
     """Provides the ability to utilize either an uploaded javascript file
     or an "external" file that is hosted somewhere else.  For example, if you wanted to use
-    jQuery you migh elect to use the Google Hosted version.
+    jQuery you might elect to use the Google Hosted version.
     
     Precedence represents an attempt to order the loading of scripts only.
     """
@@ -104,14 +104,14 @@ class Realm(models.Model):
     :model:`sites.Site` <-> :model:`communism.Realm`  
     the two are the same, we use Realm to add metadata to a django site
 
-    :model:`communism.Realm` -> :model:`communism.Section` <- BaseHierarchyElemenet
+    :model:`communism.Realm` -> :model:`communism.Section` <- BaseHierarchyElement
     sections are transparent to end users, and exist as a generic go between for
     anything that needs to be organised inside a realm.
 
     BaseHierarchyElement <> :model:`communism.Commune`, :models:`communism.Application`
     This application provides to two types of BaseHierarchyElements: :model:`communism.Commune`,
     and :models:`communism.Application`.  It is (should be!) possible to provide new types of
-    BaseHierarchyElemenets so that if neither an :models:`communism.Application` or :model:`communism.Commune` fit what
+    BaseHierarchyElements so that if neither an :models:`communism.Application` or :model:`communism.Commune` fit what
     is necessary, you can make your own.
     """
 
@@ -127,7 +127,7 @@ class Realm(models.Model):
     searchable = models.BooleanField(default=True, db_index=True, help_text = _("Flag for search form generation"))
     search_collection = models.CharField(max_length=200, null = True, blank = True, help_text = ("Keyname for search collections"))
     direct_link = models.BooleanField(default=False, verbose_name = _("Provides a direct link to some external site outside of your Scampi install"))
-    
+    theme = models.ForeignKey(Theme, help_text=_("Provides Fall Back theme for sections/applications"))
     objects = RealmManager()
     
     class Meta:
@@ -136,14 +136,14 @@ class Realm(models.Model):
         ordering = ['display_order']
     
     def __unicode__(self):
-        return "%s" % self.site.domain
+        return "{0:>s}".format(self.site.domain)
         
     def natural_key(self):
-        return (self.keyname)
+        return self.keyname
 
     @cached_property
     def primary_section(self):
-        "Returns the first active section for this realm, or None"
+        """Returns the first active section for this realm, or None"""
         try:
             t = Section.objects.filter(active = True, extends = None, realm__id = self.id).order_by('display_order')[0]
         except IndexError:
@@ -157,37 +157,37 @@ class Realm(models.Model):
 
     @cached_property
     def has_navigable_sections(self):
-        "Returns True if realm has active sections, False otherwise"
+        """Returns True if realm has active sections, False otherwise"""
         t = self.section_set.filter(active = True, extends = None, generates_navigation = True).exists()
         return t
 
     @cached_property
     def get_absolute_url(self):
-        "Returns fully qualified link to realm, including http/https"
+        # Returns fully qualified link to realm, including http/https
         ps = self.primary_section
         if ps and ps.generates_navigation == True: 
             if self.secure:
-                return "https://%s%s" % (self.site.domain, ps.get_absolute_url())
+                return "https://{0:>s}{1:>s}".format(self.site.domain, ps.get_absolute_url())
             else:
-                return "http://%s%s" % (self.site.domain, ps.get_absolute_url())
+                return "http://{0:>s}{1:>s}".format(self.site.domain, ps.get_absolute_url())
         elif ps and ps.generates_navigation == False:
             if self.secure:
-                return "https://%s/" % (self.site.domain,)
+                return "https://{0:>s}/".format(self.site.domain, )
             else:
-                return "http://%s/" % (self.site.domain,)
+                return "http://{0:>s}/".format(self.site.domain, )
         elif self.direct_link:
             if self.secure:
-                return "https://%s/" % (self.site.domain,)
+                return "https://{0:>s}/".format(self.site.domain, )
             else:
-                return "http://%s/" % (self.site.domain,)
+                return "http://{0:>s}/".format(self.site.domain, )
         else:
             return "#"
 
     def get_base_url(self):
         if self.secure:
-            return "https://%s/" % (self.site.domain,)
+            return "https://{0:>s}/".format(self.site.domain, )
         else:
-            return "http://%s/" % (self.site.domain,)
+            return "http://{0:>s}/".format(self.site.domain, )
 
 class RealmNotification(models.Model):
     """Provides a simple notification system to globally publish alerts to a realm.
@@ -203,7 +203,7 @@ class RealmNotification(models.Model):
         verbose_name_plural = "Service Announcements"
     
     def __unicode__(self):
-        return "<%s> %s" % (self.realm, self.name) 
+        return "<{0:>s}> {1:>s}".format(self.realm, self.name)
 
 class Section(models.Model):
     """Sections are transparent, and are a 'generic' middleman to provide
@@ -234,27 +234,44 @@ class Section(models.Model):
         ordering = ('realm__display_order', 'display_order')
         
     def __unicode__(self):
-        return "%s [%s]" % (self.element, self.element_type.name)
+        return "{0:>s} [{1:>s}]".format(self.element, self.element_type.name)
         
     def natural_key(self):
-        return (realm.keyname, self.keyname)
+        return self.realm.keyname, self.keyname
         
     def breadcrumb_helper(self):
         """Returns fully dotted path to section, including path up for everything extended."""
-        return "%s" % section_path_up([self], ".")
+        return "{0:>s}".format(section_path_up([self], "."))
     breadcrumb_helper = property(breadcrumb_helper)
     
     def get_absolute_url(self):
         """Returns the fully dotted URL path to section."""
-        return "/%s/" % section_path_up([self], ".")
+        return "/{0:>s}/".format(section_path_up([self], "."))
         
     def get_real_absolute_url(self):
         realm = self.realm
         
         if realm.secure:
-            return "https://%s/%s/" % (realm.site.domain, section_path_up([self], "."))
+            return "https://{0:>s}/{1:>s}/".format(realm.site.domain, section_path_up([self], "."))
         else:
-            return "http://%s/%s/" % (realm.site.domain, section_path_up([self], "."))
+            return "http://{0:>s}/{1:>s}/".format(realm.site.domain, section_path_up([self], "."))
+
+class MagicSection(Section):
+    class Meta:
+        proxy = True
+
+    def breadcrumb_helper(self):
+        return u""
+
+    def get_absolute_url(self):
+        return u""
+
+    def get_real_absolute_url(self):
+        return u""
+
+    def save(self, force_insert=False, force_update=False, using=None):
+        raise NotImplementedError("You cannot save the magic section!")
+
 
 #abstract base class for anything to extend to get hierarchy
 class BaseHierarchyElement(models.Model):
@@ -271,7 +288,7 @@ class BaseHierarchyElement(models.Model):
         return "%s" % self.name
         
     def natural_key(self):
-        return (self.realm.keyname, self.keyname)
+        return self.realm.keyname, self.keyname
 
     @cached_property
     def container(self):
@@ -290,7 +307,7 @@ class BaseHierarchyElement(models.Model):
     keyname = property(keyname)
 
     def get_absolute_url(self):
-        return "/%s/" % section_path_up([self.container], ".")
+        return "/{0:>s}/".format(section_path_up([self.container], "."))
         
 
 class Commune(BaseHierarchyElement):
@@ -341,10 +358,10 @@ class Slice(models.Model):
         unique_together = ('commune', 'display_order')
     
     def __unicode__(self):
-        return "%s - %s #%d" % (self.commune.realm.name, self.commune.keyname, self.display_order)
+        return "{0:>s} - {1:>s} #{2:d}".format(self.commune.realm.name, self.commune.keyname, self.display_order)
 
     def natural_key(self):
-        return (self.commune.keyname, self.display_order)
+        return self.commune.keyname, self.display_order
     
 class NamedBoxTemplate(models.Model):
     """Provides the ability to style a named box generically.
@@ -413,10 +430,10 @@ class NamedBox(models.Model):
         ordering = ['slice', 'gridy', 'gridx', 'display_order']
     
     def __unicode__(self):
-        return "%s Column #%d, %d" % (self.name, self.gridx, self.display_order)
+        return "{0:>s} Column #{1:d}, {2:d}".format(self.name, self.gridx, self.display_order)
         
     def natural_key(self):
-        return (self.slice.commune.keyname, self.slice.commune.display_order, self.gridy, self.gridx, self.display_order, self.keyname)
+        return self.slice.commune.keyname, self.slice.display_order, self.gridy, self.gridx, self.display_order, self.keyname
     
     def _picker(self):
         if self.content:
@@ -440,7 +457,11 @@ class Application(BaseHierarchyElement):
     default_view = models.CharField(_("Django View Function"), max_length = 50)
     
     objects = ApplicationManager()
-    
+
+    @cached_property
+    def theme(self):
+        return self.realm.theme
+
     class Meta:
         verbose_name = "CMS Offload"
         verbose_name_plural = "CMS Offloads"

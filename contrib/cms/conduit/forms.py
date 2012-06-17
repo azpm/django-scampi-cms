@@ -1,7 +1,7 @@
 import logging
 
 from django import forms
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import  ugettext_lazy as _
 
 #libazpm stuff
 from libscampi.contrib.cms.conduit.picker import manifest
@@ -36,6 +36,6 @@ class DynamicPickerForm(forms.ModelForm):
             del cleaned_data["active"]
 
         if len(self._errors) > 0:
-            logger.debug("DynamicPicker Form Errors: %s" % self._errors)
+            logger.debug("DynamicPicker Form Errors: {0:>s}".format(self._errors))
             
         return cleaned_data

@@ -1,6 +1,5 @@
 import os
 
-from django.core import validators
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 
@@ -18,7 +17,7 @@ class ExtValidator(object):
         
         try:
             ext = os.path.splitext(fname)[1]
-        except:
+        except Exception:
             pass
         finally:
             self.extension = ext
@@ -29,7 +28,7 @@ class ExtValidator(object):
         params = {'exts': ", ".join(valid_extensions[self.valid_key])}
     
         if self.extension not in valid_extensions[self.valid_key]:
-            raise  ValidationError(self.message % params, self.code)
+            raise  ValidationError(self.message % params)
 
 class ValidImgExtension(ExtValidator):
     code = "img_ext"

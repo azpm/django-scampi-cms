@@ -12,7 +12,7 @@
             $("form#article_form").attr({"action": preview_url, "target": "_blank"});
             $("form#article_form").submit();
         });
-        $("input[type='submit'][name!='_preview']").click(function(e){
+        $("input[type='submit'][name!='_preview']").click(function(){
             $("form#article_form").attr({"action": original_action, "target": "_self"});
         });
     };

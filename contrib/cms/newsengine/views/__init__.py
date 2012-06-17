@@ -4,11 +4,13 @@ from .base import PickedStoryIndex, \
     PickedStoryDayArchive, \
     PickerStoryTodayArchive, \
     PickedStoryDetailArchive, \
-    RelatedStoryDetailView
+    RelatedStoryDetailView, \
+    StoryDetail
 
+story_detail = StoryDetail.as_view()
 related_story_detail = RelatedStoryDetailView.as_view()
-story_detail = PickedStoryDetailArchive.as_view()
-story_archive_day = PickedStoryDayArchive.as_view()
-story_archive_month = PickedStoryMonthArchive.as_view()
-story_archive_year = PickedStoryYearArchive.as_view()
-story_archive = PickedStoryIndex.as_view()
+picked_story_detail = PickedStoryDetailArchive.as_view()
+picked_story_archive_day = PickedStoryDayArchive.as_view()
+picked_story_archive_month = PickedStoryMonthArchive.as_view()
+picked_story_archive_year = PickedStoryYearArchive.as_view()
+picked_story_archive = PickedStoryIndex.as_view()

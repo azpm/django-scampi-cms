@@ -2,7 +2,6 @@ import re
 from datetime import datetime
 
 from django import template
-from django.utils.translation import ugettext_lazy as _
 
 from libscampi.contrib.cms.communism.models import *
 
@@ -33,9 +32,10 @@ def get_notifications(parser, token):
         raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
     try:
         varname = m.groups()[0]
-    except:
+    except IndexError:
         varname = "notifications"
-        
+
+
     return notifications_node(varname)
 
 register.tag('get_notifications', get_notifications)

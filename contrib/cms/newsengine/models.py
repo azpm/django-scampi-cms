@@ -30,7 +30,7 @@ class ArticleTranslation(models.Model):
     
     headline = models.CharField(_('Article Headline'), max_length = 255,
             help_text = _("Article Title. No markup allowed."))
-    sub_headline = models.CharField(_('Article Tagline'), max_length = 255, 
+    sub_headline = models.CharField(_('Article Tag line'), max_length = 255,
             help_text = _("Will be truncated to 30 words when viewed as a spotlight.  No markup allowed."))
     synopsis = models.TextField(blank = True,
             help_text = _("Article Synopsis, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
@@ -101,7 +101,8 @@ class Story(models.Model):
     modified = models.DateTimeField(auto_now=True)
     peers = models.ManyToManyField('self', related_name='related_stories', null = True, blank = True)
     important = models.BooleanField(default = False)
-    
+    slug = models.SlugField(max_length = 250, null = True, unique = True, editable = False)
+
     tags = TaggableManager(blank=True)
     
     image_playlist = models.ForeignKey(ImagePlaylist, null = True, blank = True)
@@ -128,7 +129,7 @@ class PublishCategory(models.Model):
         verbose_name_plural = "Publishing Words"
         
     def __unicode__(self):
-        return u"%s" % (self.title)
+        return u"%s" % self.title
     
 class Publish(models.Model):
     story = models.ForeignKey(Story)
@@ -138,8 +139,7 @@ class Publish(models.Model):
     start = models.DateTimeField(null = True, db_index = True)
     end = models.DateTimeField(null = True, blank = True, db_index = True)
     category = models.ForeignKey(PublishCategory, null = True, verbose_name="Kind")
-    published = models.BooleanField(default = False, db_index = True)       
-    
+    published = models.BooleanField(default = False, db_index = True)
     slug = models.SlugField(max_length = 255, null = True, unique_for_date = start)
     sticky = models.BooleanField(default=False, db_index = True)
     order_me = models.PositiveSmallIntegerField(default=0, db_index = True)
@@ -241,8 +241,18 @@ class PublishPicking(django_filters.FilterSet):
 def slug_for_publish(sender, instance, created, raw, **kwargs):
     if instance.slug == '' or not instance.slug and None != instance.story:
         # this publish needs a slug
-        instance.slug = "%d-%s" % (instance.pk, slugify(instance.story.article.headline))
+        slugged_headline = slugify(instance.story.article.headline)
+        slug = "%d-%s" % (instance.pk, slugged_headline)
+        instance.slug = slug[:255]
         instance.save()
+
+@receiver(post_save, sender=Story)
+def slug_for_story(sender, instance, created, raw, **kwargs):
+    if instance.slug == '' or not instance.slug and None != instance.article:
+        # this story needs a slug
+        slugged_headline = slugify(instance.article.headline)
+        slug = "%d-%s" % (instance.pk, slugged_headline)
+        instance.slug = slug[:255]
 
 #moderate publish comments
 moderator.register(Story, StoryModerator)

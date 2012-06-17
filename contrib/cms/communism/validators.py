@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
 
 def magic_keyname(val):
-    if val == "p" or val == "c" or val == "r":
-        raise ValidationError("the letters r, p & c are magic keynames")
+    if len(val) == 1 or val == "__un_managed":
+        raise ValidationError("single letters & '__un_managed' magic keynames")

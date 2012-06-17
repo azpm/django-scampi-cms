@@ -2,7 +2,7 @@ import re
 
 from django.core.cache import cache
 from django import template
-from django.utils.translation import ugettext_lazy as _
+from django.template.loader import get_template
 
 from libscampi.contrib.cms.communism.models import *
 
@@ -41,7 +41,7 @@ class SiteMapNode(template.Node):
         }
         
         new_context = template.RequestContext(request, c, context.current_app)
-        tpl = template.loader.get_template("%s/navigation/sitemap.html" % page['theme'].keyname)
+        tpl = get_template("%s/navigation/sitemap.html" % page['theme'].keyname)
         
         return tpl.render(new_context)
         
@@ -54,9 +54,7 @@ def render_sitemap(parser, token):
     
     use: {% render_sitemap %}
     """
-    try:
-        tag_name = token.contents.split()
-    except ValueError:
+    if len(token.contents.split()) > 1:
         raise template.TemplateSyntaxError, "render_sitemap does not take arguments"
         
     return SiteMapNode()
@@ -89,14 +87,14 @@ def get_realms(parser, token):
     try:
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
+        raise template.TemplateSyntaxError, "{0!r:s} tag requires arguments".format(token.contents.split()[0])
     
     m = re.search(r'as (\w+)', arg)
     if not m:
-        raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
+        raise template.TemplateSyntaxError, "{0!r:s} tag had invalid arguments".format(tag_name)
     try:
         varname = m.groups()[0]
-    except:
+    except IndexError:
         varname = "realms"
         
     return RealmsNode(varname)
@@ -138,15 +136,15 @@ def get_sections(parser, token):
     try:
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
+        raise template.TemplateSyntaxError, "{0!r:s} tag requires arguments".format(token.contents.split()[0])
     
     m = re.search(r'(\w+) as (\w+)', arg)
     if not m:
-        raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
+        raise template.TemplateSyntaxError, "{0!r:s} tag had invalid arguments".format(tag_name)
     try:
         varname = m.groups()[1]
         pointer = m.groups()[0]
     except:
-        raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
+        raise template.TemplateSyntaxError, "{0!r:s} tag had invalid arguments".format(tag_name)
         
     return SectionsNode(pointer, varname)

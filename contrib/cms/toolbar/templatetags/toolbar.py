@@ -1,8 +1,5 @@
 from django import template
-from classytags.arguments import Argument, MultiValueArgument
-from classytags.core import Options, Tag
 from classytags.helpers import InclusionTag
-from classytags.parser import Parser
 
 
 register = template.Library()

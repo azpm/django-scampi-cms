@@ -15,6 +15,7 @@ from libscampi.contrib.cms.newsengine.utils import cache_publishpicker_base_cats
 from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template
 from libscampi.contrib.cms.conduit.picker import manifest
 from libscampi.contrib.cms.conduit.managers import DynamicPickerManager, StaticPickerManager
+from libscampi.contrib.cms.conduit.validators import magic_keyname
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.models')
 
@@ -53,13 +54,11 @@ class PickerBase(models.Model):
         ordering = ['precedence']
         permissions = (
             ('change_picker_commune', 'User can change commune association of DynamicPicker')
-            )
-
-
+        )
 
 class DynamicPicker(PickerBase):
     active = models.BooleanField(default = False)
-    keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"))
+    keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"), validators=[magic_keyname])
     template = models.ForeignKey(PickerTemplate)
     max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time. A 0 indicates unlimited."), default = 0)
     content = models.ForeignKey(ContentType, verbose_name = _("Content Source"))
@@ -91,12 +90,12 @@ class DynamicPicker(PickerBase):
             return {}
 
 
-        cache_key = "conduit:dp:ids:%d" % self.pk
+        cache_key = "conduit:dp:ids:{0:d}".format(self.pk)
         cached_ids = cache.get(cache_key, None)
         if cached_ids:
             qs = model.objects.filter(pk__in=cached_ids)
         else:
-            logger.debug("cache miss on %s" % cache_key)
+            logger.debug("cache miss on {0:>s}".format(cache_key))
             qs = model.objects.all()
 
         #first we handle any static defers - performance optimisation
@@ -159,7 +158,7 @@ class DynamicPicker(PickerBase):
         #limit the qs if necessary
         if self.max_count > 0:
             for_cache = qs.values_list('id', flat=True)[:self.max_count]
-            logger.debug("setting cache on %s - %s" % (cache_key, for_cache))
+            logger.debug("setting dynamic picker cache on {0:>s} - {1:>s}".format(cache_key, for_cache))
             cache.set(cache_key, list(for_cache), 60*10)
             return qs[:self.max_count]
 
@@ -170,7 +169,7 @@ class DynamicPicker(PickerBase):
         
     def get_absolute_url(self):
         if self.commune:
-            return "/p/%s/" % self.keyname
+            return "/p/{0:>s}/".format(self.keyname)
         
         return ""
         

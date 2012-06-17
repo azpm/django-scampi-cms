@@ -1,6 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.loading import cache as app_cache
-from django.db import models
 
 
 class PickerError(Exception):
@@ -26,31 +25,30 @@ class PickerManager(object):
     def register(self, model_class, picking_class):
         """ Registers a model to be pickable """
         if self.is_registered(model_class):
-            raise PickerError,  "%r has already been registered" % model_class
-        #if model_class._meta.proxy:
-        #    raise PickerError, "%r cannot be pickable, proxy models aren't allowed (I'm lazy)" % model_class
+            raise PickerError, "{0!r:s} has already been registered".format(model_class)
                 
         self._registry[model_class] = picking_class
-        return
         
     def get_registration_info(self, model_class):
         try:
             fields = self._registry[model_class]
         except KeyError:
-            raise PickerError, "%r has not be registered as a pickable model" % model_class
+            raise PickerError, "{0!r:s} has not be registered as a pickable model".format(model_class)
         else:
             return fields
             
     def unregister(self, model_class):
+        """ Removes a model class from the picking registry """
         try:
             fields = self._registry.pop(model_class)
         except KeyError:
-            raise PickerError, "%r cannot be unregistered before it has been registered" % model_class
+            raise PickerError, "{0!r:s} cannot be unregistered before it has been registered".format(model_class)
             
     def available(self):
         return self._registry.keys()
     
     def contenttypes_for_available(self):
+        """ Returns list of valid ContentTypes for picking """
         models = self._registry.keys()
         
         ids = []
@@ -58,32 +56,32 @@ class PickerManager(object):
             ids.append(ContentType.objects.get_by_natural_key(model._meta.app_label, model._meta.module_name).id)
         
         return ContentType.objects.filter(id__in=ids)
-        
-    #this is a magic method that returns a Class instance of the model
+
     def get_for_picking(self, ct):
+        """ Returns class instance of a given model ContentType"""
         if type(ct) is not ContentType:
-            raise TypeError, "cannot call get_for_picking without a valid ContentType, called with %s" % type(ct)
+            raise TypeError, "cannot call get_for_picking without a valid ContentType, called with {0:>s}".format
     
         model = app_cache.get_model(ct.app_label, ct.model)
         
         if not model:
             try:
                 app_cache.write_lock.acquire()
-                module = app_cache.load_app('libscampi.contrib.%s' % ct.app_label)
+                module = app_cache.load_app('libscampi.contrib.{0:>s}'.format(ct.app_label))
                 app_cache.write_lock.release()
                 model = app_cache.get_model(ct.app_label, ct.model)
             except ImportError:
-                raise NameError, "cannot get (%s, %s) from any path" % (ct.app_label, ct.model)        
+                raise NameError, "cannot get ({0:>s}, {1:>s}) from any path".format(ct.app_label, ct.model)
         
         if not self.is_registered(model):
-            raise NameError, "(%s, %s) is not registerd for picking" % (ct.app_label, ct.model)
+            raise NameError, "({0:>s}, {1:>s}) is not registered for picking".format(ct.app_label, ct.model)
 
         try:
             fs = self.get_registration_info(model)()
         except PickerError:
-            raise NameError, "(%s, %s) has no filterset" % (ct.app_label, ct.model)
+            raise NameError, "({0:>s}, {1:>s}) has no filter set".format(ct.app_label, ct.model)
             
-        return (model, fs)
+        return model, fs
     
         
 manifest = PickerManager()

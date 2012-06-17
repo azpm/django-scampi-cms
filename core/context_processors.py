@@ -8,7 +8,6 @@
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from libscampi.contrib.cms.communism.models import Realm
 
 def local_media(request):
     return {'LOCAL_MEDIA_URL': settings.LOCAL_MEDIA_URL}

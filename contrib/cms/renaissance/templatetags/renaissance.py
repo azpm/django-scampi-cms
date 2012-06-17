@@ -1,6 +1,4 @@
 from django import template
-from django.template.loader import render_to_string
-from django.core.cache import cache
 from django.utils.safestring import mark_safe
 from classytags.core import Tag, Options
 from classytags.arguments import Argument
@@ -21,7 +19,9 @@ class InlinedMedia(Tag):
         Argument('attrs', required=False, resolve=False),
     )
 
-    def render_tag(self, context, media_type, slug, **kwargs):
+    def render_tag(self, context, **kwargs):
+        media_type, slug = kwargs.pop('media_type'), kwargs.pop('slug')
+
         if media_type not in TYPE_MAP.keys():
             # if the type isn't recognized, just return an empty string
             return u""
@@ -41,7 +41,7 @@ class InlinedMedia(Tag):
 
         mapped = TYPE_MAP[media_type]
         if type(article) is Article:
-            m_getter = getattr(article, "%s_inlines" % media_type, None)
+            m_getter = getattr(article, "{0:>s}_inlines".format(media_type), None)
             if media_type != 'external':
                 try:
                     media = m_getter.select_related('type__inline_template__content').get(slug=slug)
@@ -71,7 +71,7 @@ class InlinedMedia(Tag):
         if media_type == "external":
             return mark_safe(media.data)
 
-        tpl = template.Template(media.type.inline_template.content, name="%s inline tpl" % media_type)
+        tpl = template.Template(media.type.inline_template.content, name="{0:>s} inline tpl".format(media_type))
         c = template.Context({'media': media, 'inliner': context_inliner})
 
         return tpl.render(c)

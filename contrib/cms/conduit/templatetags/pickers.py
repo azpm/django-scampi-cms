@@ -2,8 +2,6 @@ import logging
 
 from django import template
 from django.core.cache import cache
-from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.markup.templatetags.markup import markdown
 
 from libscampi.contrib.cms.conduit.models import *
@@ -27,19 +25,19 @@ class picker_node(template.Node):
             if not request:
                 return ''
             
-            cached_tpl_key = "conduit:dp:tpl:%d" % picker.template_id
+            cached_tpl_key = "conduit:dp:tpl:{0:d}".format(picker.template_id)
             cached_tpl = cache.get(cached_tpl_key, None)
             
             if not cached_tpl:
-                logger.debug("cache miss on %s trying to get cached template" % cached_tpl_key)
+                logger.debug("cache miss on {0:>s} trying to get cached template".format(cached_tpl_key))
                 cached_tpl = picker.template.content
                 cache.set(cached_tpl_key, cached_tpl)
             
-            tpl = template.Template(cached_tpl, name="conduit.PickerTemplate [%s]" % picker.template_id)
+            tpl = template.Template(cached_tpl, name="conduit.PickerTemplate [{0:>s}]".format(picker.template_id))
 
             cache_control = request.META.get('HTTP_CACHE_CONTROL', None)
             if cache_control and cache_control == "max-age=0":
-                cache_key = "conduit:dp:ids:%d" % picker.id
+                cache_key = "conduit:dp:ids:{0:d}".format(picker.id)
                 logger.debug("deleting picker cache for %s" % cache_key)
                 cache.delete(cache_key)
 
@@ -94,6 +92,6 @@ def render_picker(parser, token):
     try:
         tag, picker = token.split_contents()
     except ValueError:
-        raise template.TemplateSyntaxError("'%s' requires an argument: a picker" % token.contents.split()[0])
+        raise template.TemplateSyntaxError("'{0:>s}' requires an argument: a picker".format(token.contents.split()[0]))
         
     return picker_node(picker)

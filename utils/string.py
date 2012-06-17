@@ -35,7 +35,7 @@ where
 '''.split()
 
 def strip_stopwords(sentence):
-    "Removes stopwords - also normalizes whitespace"
+    """Removes stopwords - also normalizes whitespace"""
     words = sentence.split()
     sentence = []
     for word in words:

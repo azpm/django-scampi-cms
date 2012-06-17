@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 from django import template
 from django.conf import settings
@@ -135,16 +134,18 @@ def category_cloud(parser, token):
           distribution algorithm to use when generating the tag cloud.
 
     """
+    LOGARITHMIC, LINEAR = 1, 2
+
     bits = token.contents.split()
     len_bits = len(bits)
     if len_bits != 4 and len_bits not in range(6, 9):
-        raise TemplateSyntaxError(_('%s tag requires either three or between five and seven arguments') % bits[0])
+        raise template.TemplateSyntaxError(_('%s tag requires either three or between five and seven arguments') % bits[0])
     if bits[2] != 'as':
-        raise TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
+        raise template.TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
     kwargs = {}
     if len_bits > 5:
         if bits[4] != 'with':
-            raise TemplateSyntaxError(_("if given, fourth argument to %s tag must be 'with'") % bits[0])
+            raise template.TemplateSyntaxError(_("if given, fourth argument to %s tag must be 'with'") % bits[0])
         for i in range(5, len_bits):
             try:
                 name, value = bits[i].split('=')
@@ -152,7 +153,7 @@ def category_cloud(parser, token):
                     try:
                         kwargs[str(name)] = int(value)
                     except ValueError:
-                        raise TemplateSyntaxError(_("%(tag)s tag's '%(option)s' option was not a valid integer: '%(value)s'") % {
+                        raise template.TemplateSyntaxError(_("%(tag)s tag's '%(option)s' option was not a valid integer: '%(value)s'") % {
                             'tag': bits[0],
                             'option': name,
                             'value': value,
@@ -161,18 +162,18 @@ def category_cloud(parser, token):
                     if value in ['linear', 'log']:
                         kwargs[str(name)] = {'linear': LINEAR, 'log': LOGARITHMIC}[value]
                     else:
-                        raise TemplateSyntaxError(_("%(tag)s tag's '%(option)s' option was not a valid choice: '%(value)s'") % {
+                        raise template.TemplateSyntaxError(_("%(tag)s tag's '%(option)s' option was not a valid choice: '%(value)s'") % {
                             'tag': bits[0],
                             'option': name,
                             'value': value,
                         })
                 else:
-                    raise TemplateSyntaxError(_("%(tag)s tag was given an invalid option: '%(option)s'") % {
+                    raise template.TemplateSyntaxError(_("%(tag)s tag was given an invalid option: '%(option)s'") % {
                         'tag': bits[0],
                         'option': name,
                     })
             except ValueError:
-                raise TemplateSyntaxError(_("%(tag)s tag was given a badly formatted option: '%(option)s'") % {
+                raise template.TemplateSyntaxError(_("%(tag)s tag was given a badly formatted option: '%(option)s'") % {
                     'tag': bits[0],
                     'option': bits[i],
                 })
@@ -183,6 +184,7 @@ def build_pagelist(pages, currentpage, get_args = None):
     if currentpage > pages[-1]:
         return u""
 
+    list = []
     if currentpage < 8:
         if currentpage-4 > pages[0]:
             list = pages[currentpage-4:currentpage+4:1]
@@ -197,9 +199,9 @@ def build_pagelist(pages, currentpage, get_args = None):
             list = pages[currentpage-4:currentpage+max:1]
     
     if get_args:
-        li = """<li %(class)s><a href="?page=%(page)d&%(get_args)s">%(page)d</a></li>"""
+        li = """<li {class:>s}><a href="?page={page:d}&{get_args:>s}">{page:d}</a></li>"""
     else:
-        li = """<li %(class)s><a href="?page=%(page)d">%(page)d</a></li>"""
+        li = """<li {class:>s}><a href="?page={page:d}">{page:d}</a></li>"""
     html = []
     
     for page in list:
@@ -209,9 +211,9 @@ def build_pagelist(pages, currentpage, get_args = None):
             css = ""
         
         if get_args:
-            html.append(li % {'class': css, 'page': page, 'get_args': get_args})
+            html.append(li.format(**{'class': css, 'page': page, 'get_args': get_args}))
         else:
-            html.append(li % {'class': css, 'page': page})
+            html.append(li.format(**{'class': css, 'page': page}))
             
     return "".join(html)
     
@@ -219,31 +221,29 @@ def build_pagelist(pages, currentpage, get_args = None):
 def chain_archival_categories(context, needle, haystack):
     
     if haystack:
-        category_pathing = "%s+%s" % ("+".join([t.keyname for t in haystack]), needle['keyname'])
+        category_pathing = "{0:>s}+{1:>s}".format("+".join([t.keyname for t in haystack]), needle['keyname'])
     else:
-        category_pathing = "%s" % needle['keyname']
+        category_pathing = "{0:>s}".format(needle['keyname'])
         
-    url = "?c=%s" % category_pathing
+    url = "?c={0:>s}".format(category_pathing)
     
     return url
     
 @register.simple_tag(takes_context=True)
 def dechain_archival_categories(context, needle, haystack):
-    category_pathing = "%s" % "+".join([t.keyname for t in haystack if t.id != needle.id])
+    category_pathing = "{0:>s}".format("+".join([t.keyname for t in haystack if t.id != needle.id]))
     
     if category_pathing == '':
         url = "./"
     else:
-        url = "?c=%s" % category_pathing
+        url = "?c={0:>s}".format(category_pathing)
     
     return url
-    
-"""
-Some helpers for our ridiculously large website configuration & commenting
-"""
+
+# Some helpers for our ridiculously large website configuration & commenting
 
 class xsite_BaseCommentNode(BaseCommentNode):
-    """fetch comments without resepct to a site"""
+    """fetch comments without respect to a site"""
     def get_query_set(self, context):
         ctype, object_pk = self.get_target_ctype_pk(context)
         if not object_pk:

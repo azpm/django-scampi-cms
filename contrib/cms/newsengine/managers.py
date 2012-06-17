@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from django.db import models
-from django.db.models import Count, Q, F
-from django.contrib.contenttypes.models import ContentType
+from django.db.models import Count, Q
 
 class PublishedManager(models.Manager):
     def get_query_set(self):
@@ -19,7 +18,7 @@ class PublishedManager(models.Manager):
         ).exclude(story__id = story.pk)
         qs = qs.annotate(rel_count=Count('story__categories'))
 
-        return qs.order_by('-rel_count').values('rel_count','story','story__article','start','slug').distinct()
+        return qs.order_by('-rel_count').values('rel_count','story','story__slug','story__article','start','slug').distinct()
 
 
 class CategoryGenera(models.Manager):

@@ -1,4 +1,4 @@
-from libscampi.contrib.cms.newsengine.models import Publish
+from libscampi.contrib.cms.newsengine.models import Publish, Story
 
 class PublishStoryMixin(object):
     """
@@ -13,3 +13,8 @@ class PublishStoryMixin(object):
     date_field = 'start'
     month_format = '%m'
     paginate_by = 16
+
+class StoryMixin(object):
+    model = Story
+    slug_field = "slug"
+    slug_url_kwarg = "slug"

@@ -29,13 +29,13 @@ class RealmManager(models.Manager):
         
 class SectionManager(models.Manager):
     def get_by_natural_key(self, realm, keyname):
-        return self.get(realm__keyname = realm, keyname = section)
+        return self.get(realm__keyname = realm, keyname = keyname)
 
 class CommuneManager(models.Manager):
     def get_query_set(self):
         qs = super(CommuneManager, self).get_query_set()
 
-        ctype = ContentType.objects.get_for_model(self.model)
+        c_type = ContentType.objects.get_for_model(self.model)
 
 
         return qs.extra(select={
@@ -51,7 +51,7 @@ class CommuneManager(models.Manager):
                 where cs.element_type_id = %s
                 and cs.element_id = communism_commune.id
             """
-        }, select_params=[ctype.id,ctype.id], order_by=['r_order','s_order'])
+        }, select_params=[c_type.id,c_type.id], order_by=['r_order','s_order'])
 
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)
@@ -61,14 +61,14 @@ class SliceManager(models.Manager):
         return self.get(commune__keyname = commune, display_order = display_order)
         
 class NamedBoxManager(models.Manager):
-    def get_by_natural_key(self, commune, slice_order, gridy, gridx, display_order, keyname):
-        return self.get(slice__commune__keyname = commune, slice__display_order = slice_order, gridx = gridx, gridy = gridy, display_order = display_order, pkeyname = keyname)
+    def get_by_natural_key(self, commune, slice_order, grid_y, grid_x, display_order, keyname):
+        return self.get(slice__commune__keyname = commune, slice__display_order = slice_order, gridx = grid_x, gridy = grid_y, display_order = display_order, pkeyname = keyname)
         
 class ApplicationManager(models.Manager):
     def get_query_set(self):
         qs = super(ApplicationManager, self).get_query_set()
 
-        ctype = ContentType.objects.get_for_model(self.model)
+        c_type = ContentType.objects.get_for_model(self.model)
 
         return qs.extra(select={
             'r_order': """
@@ -83,7 +83,7 @@ class ApplicationManager(models.Manager):
                 where cs.element_type_id = %s
                 and cs.element_id = communism_application.id
             """
-        }, select_params=[ctype.id,ctype.id], order_by=['r_order','s_order'])
+        }, select_params=[c_type.id,c_type.id], order_by=['r_order','s_order'])
 
     def get_by_natural_key(self, realm, section):
         return self.get(section__realm__keyname = realm, section__keyname = section)

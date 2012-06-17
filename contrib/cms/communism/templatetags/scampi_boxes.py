@@ -1,10 +1,7 @@
 import logging
 
 from django import template
-from django.template.loader import render_to_string
-from django.db.models import Max
 from django.core.cache import cache
-from django.template.defaultfilters import slugify
 
 logger = logging.getLogger('libscampi.contrib.cms.communism.templatetags')
 register = template.Library()

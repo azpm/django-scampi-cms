@@ -1,6 +1,5 @@
 import datetime
 from django.db import models
-from django.http import Http404
 
 def date_from_string(year, year_format, month, month_format, day='', day_format='', delim='__'):
     """
@@ -12,10 +11,7 @@ def date_from_string(year, year_format, month, month_format, day='', day_format=
     try:
         return datetime.datetime.strptime(datestr, format).date()
     except ValueError:
-        raise Http404(_(u"Invalid date string '%(datestr)s' given format '%(format)s'") % {
-            'datestr': datestr,
-            'format': format,
-            })
+        raise ValueError("Invalid date string '{datestr:>s}' given format '{format:>s}'".format(datestr=datestr, format=format))
 
 def date_lookup_for_field(field, date):
     """

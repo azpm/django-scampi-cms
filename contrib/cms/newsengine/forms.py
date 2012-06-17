@@ -44,6 +44,6 @@ class PublishForm(forms.ModelForm):
             check = check.exclude(pk=self.instance.pk)
 
         if check.exists():
-            raise forms.ValidationError("Story is already published as: %s" % category.title)
+            raise forms.ValidationError("Story is already published as: {0:>s}".format(category.title))
 
         return cleaned_data

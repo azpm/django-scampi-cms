@@ -14,7 +14,7 @@ class StoryModerator(CommentModerator):
         check = content_object.publish_set.filter(published=True).latest('start')
         #the check is the latest published version of the story
         if check:
-            return (check.comments_enabled and check.published)
+            return check.comments_enabled and check.published
         else:
             return False
     
@@ -23,8 +23,8 @@ class StoryModerator(CommentModerator):
             return False
         api = akismet.Akismet(
             key = settings.AKISMET_API_KEY or None,
-            blog_url = 'http://%s/' % Site.objects.get_current().domain,
-            agent = "AZPM NewsEngine Python/Django"
+            blog_url = Site.objects.get_current().realm.get_base_url(),
+            agent = "Scampi NewsEngine Python/Django"
         )
         
         for k in comment.userinfo:

@@ -40,9 +40,9 @@ def handle_lock(handle):
         
         start_time = time.time()
         verbosity = options.get('verbosity', 0)
-        if verbosity == 0:
+        if not verbosity:
             level = logging.WARNING
-        elif verbosity == 1:
+        elif 1 == verbosity:
             level = logging.INFO
         else:
             level = logging.DEBUG
@@ -66,7 +66,7 @@ def handle_lock(handle):
         
         try:
             handle(self, *args, **options)
-        except:
+        except Exception:
             import traceback
             logging.warn("Command Failed")
             logging.warn('==' * 72)

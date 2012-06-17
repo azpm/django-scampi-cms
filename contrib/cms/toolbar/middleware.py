@@ -1,4 +1,3 @@
-import thread
 from libscampi.contrib.cms.toolbar.scampitoolbar import ScampiToolbar
 
 _HTML_TYPES = ('text/html', 'application/xhtml+xml')

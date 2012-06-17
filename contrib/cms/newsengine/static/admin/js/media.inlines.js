@@ -53,26 +53,27 @@
             jQuery("div#translations-group").before(tag_cp_area);
 
             return this.each(function(){
-                var $this = $(this);
-                var data = $this.data('keys');
+                var this_ = $(this);
+                var data = this_.data('keys');
 
                 //shouldn't be an data set (we haven't built anything yet)
                 if (!data)
                 {
-                    $this.data('keys',[]);
+                    this_.data('keys',[]);
                 }
 
                 // listen for changes to each field
-                $this.on('change.rtg', methods.update_tags);
+                //noinspection JSUnresolvedFunction
+                this_.on('change.rtg', methods.update_tags);
 
                 // if the field already has a saved value, trigger a change on it to generate the inline helper(s)
-                if ($this.val())
+                if (this_.val())
                 {
-                    $this.change();
+                    this_.change();
                 }
             });
         },
-        update_tags : function(e) {
+        update_tags : function() {
             var input = $(this);
 
             var inline_type = input.attr("name");
@@ -91,8 +92,10 @@
         },
 
         build_inline : function(media) {
+            //noinspection JSUnresolvedVariable
             var html = $("<span>{% inline "+media.form_of+" "+media.slug+" %}</span>").attr("id", media.form_of+'_'+media.pk);
 
+            //noinspection JSUnresolvedVariable
             $(html)
                 .hide()
                 .appendTo("td#"+media.form_of+"_inlines")

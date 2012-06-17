@@ -45,16 +45,16 @@ class SearchableQuerySet(QuerySet):
         # if empty, populate from model attr or char-like fields.
         if search_fields is None:
             search_fields = self._search_fields
-        if len(search_fields) == 0:
+        if not len(search_fields):
             search_fields = {}
             for cls in reversed(self.model.__mro__):
                 super_fields = getattr(cls, "search_fields", {})
                 search_fields.update(search_fields_to_dict(super_fields))
-        if len(search_fields) == 0:
+        if not len(search_fields):
             search_fields = [f.name for f in self.model._meta.fields
                              if issubclass(f.__class__, CharField) or
                                 issubclass(f.__class__, TextField)]
-        if len(search_fields) == 0:
+        if not len(search_fields):
             return self.none()
             # Search fields can be a dict or sequence of pairs mapping
         # fields to their relevant weight in ordering the results.
@@ -162,7 +162,7 @@ class SearchableManager(Manager):
 
     def __init__(self, *args, **kwargs):
         self._search_fields = kwargs.pop("search_fields", [])
-        super(SearchableManager, self).__init__(*args, **kwargs)
+        super(SearchableManager, self).__init__()
 
     def get_query_set(self):
         search_fields = self._search_fields

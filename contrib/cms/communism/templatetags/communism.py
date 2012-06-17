@@ -1,10 +1,10 @@
 from django.template import Library
 from classytags.core import Tag, Options
-from classytags.arguments import Argument, Flag
-from classytags.helpers import InclusionTag, AsTag
+from classytags.arguments import Argument
+from classytags.helpers import InclusionTag
 from django.contrib.sites.models import Site
 
-from libscampi.contrib.cms.communism.models import Theme, Javascript, StyleSheet, Realm, NamedBox
+from libscampi.contrib.cms.communism.models import Theme, Javascript, StyleSheet
 
 register = Library()
 
@@ -24,12 +24,10 @@ class ThemeScripts(InclusionTag):
 
             try:
                 theme = cms_page['theme']
-            except (KeyError, AttributeError, ValueError) as e:
+            except (KeyError, AttributeError, ValueError):
                 # swallows errors and returns empty context
                 return {}
-
         else:
-
             try:
                 theme = Theme.objects.get_by_natural_key(keyname)
             except Theme.DoesNotExist:
@@ -50,18 +48,14 @@ class ThemeStyles(InclusionTag):
 
     def get_context(self, context, **kwargs):
         keyname = kwargs.pop('theme', None)
-
         if not keyname:
             cms_page = context.get('cms_page', None)
-
             try:
                 theme = cms_page['theme']
-            except (KeyError, AttributeError, ValueError) as e:
+            except (KeyError, AttributeError, ValueError):
                 # swallows errors and returns empty context
                 return {}
-
         else:
-
             try:
                 theme = Theme.objects.get_by_natural_key(keyname)
             except Theme.DoesNotExist:

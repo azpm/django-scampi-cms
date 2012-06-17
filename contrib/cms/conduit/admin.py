@@ -67,11 +67,11 @@ class DynamicPickerAdmin(admin.ModelAdmin):
 
         if obj:
             if request.user.has_perm('conduit.change_picker_commune'):
-                return ('keyname', 'content')
+                return 'keyname', 'content'
             else:
-                return ('commune', 'keyname', 'content')
+                return 'commune', 'keyname', 'content'
         else:
-            return ('active',)
+            return 'active',
 
         
         #return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
@@ -109,7 +109,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
         #basically only do something if we are "changing" e.g. the picking fields are available
         if change and has_pickers:
-            logger.debug("changing %s [%s]" % (obj.name, obj.keyname))
+            logger.debug("changing {0:>s} [{1:>s}]".format(obj.name, obj.keyname))
             
             content_model = obj.content.model_class()
         
@@ -130,8 +130,9 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                     except ValueError:
                         continue
             else:
-                logger.debug("%s - inclusion was invalid: %s" % (obj.keyname, inclusion.errors))
-                messages.error(request, "There was an issue with the inclusion filters: %s" % inclusion.errors)
+                logger.debug("{0:>s} - inclusion was invalid: {1:>s}".format(obj.keyname, inclusion.errors))
+                messages.error(request,
+                    "There was an issue with the inclusion filters: {0:>s}".format(inclusion.errors))
 
             if exclusion.is_valid():
                 for form in exclusion:
@@ -141,11 +142,12 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                     except ValueError:
                         continue
             else:
-                logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
-                messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)
+                logger.debug("{0:>s} - exclusion was invalid: {1:>s}".format(obj.keyname, inclusion.errors))
+                messages.error(request,
+                    "There was an issue with the exclusion filters: {0:>s}".format(exclusion.errors))
 
-            logger.debug("[%s] final inclusion: %s" % (obj.name, inclusion_fs))
-            logger.debug("[%s] final exclusion: %s" % (obj.name, exclusion_fs))
+            logger.debug("[{0:>s}] final inclusion: {1:>s}".format(obj.name, inclusion_fs))
+            logger.debug("[{0:>s}] final exclusion: {1:>s}".format(obj.name, exclusion_fs))
 
             obj.include_filters = inclusion_fs or False
             obj.exclude_filters = exclusion_fs or False
@@ -165,7 +167,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         
     #override the urls method to add our picking form fields return
     def get_urls(self):
-        from django.conf.urls.defaults import patterns, url
+        from django.conf.urls import patterns, url
         urls = super(DynamicPickerAdmin, self).get_urls()
         
         my_urls = patterns('',
@@ -213,8 +215,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 except ValueError:
                     continue
         else:
-            logger.debug("%s - inclusion was invalid: %s" % (obj.keyname, inclusion.errors))
-            messages.error(request, "There was an issue with the inclusion filters: %s" % inclusion.errors)
+            logger.debug("inclusion was invalid: {0:>s}".format(inclusion.errors))
+            messages.error(request, "There was an issue with the inclusion filters: {0:>s}".format(inclusion.errors))
 
         if exclusion.is_valid():
             for form in exclusion:
@@ -224,8 +226,8 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 except ValueError:
                     continue
         else:
-            logger.debug("%s - exclusion was invalid: %s" % (obj.keyname, inclusion.errors))
-            messages.error(request, "There was an issue with the exclusion filters: %s" % exclusion.errors)
+            logger.debug("exclusion was invalid: {0:>s}".format(inclusion.errors))
+            messages.error(request, "There was an issue with the exclusion filters: {0:>s}".format(exclusion.errors))
 
         qs = model.objects.all()
         #first we handle any static defers - performance optimisation
@@ -259,7 +261,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 coerce_filters(f)
                 qs = qs.exclude(**f)
 
-        #before we limit the qs we let the picking filterset apply any last minute operations
+        #before we limit the qs we let the picking filter set apply any last minute operations
         if hasattr(picking_filterset, 'static_chain') and callable(picking_filterset.static_chain):
             qs = picking_filterset.static_chain(qs)
 
@@ -322,7 +324,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 incl_picking_fields.append({})
                 for key, val in incl[i].iteritems():
                     m = field_matcher.match(key)
-                    if m != None:
+                    if m is not None:
                         incl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
         
         excl_picking_fields = []
@@ -332,7 +334,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 excl_picking_fields.append({})
                 for key, val in excl[i].iteritems():
                     m = field_matcher.match(key)
-                    if m != None:
+                    if m is not None:
                         excl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
                     
         saved_inclusion = []
@@ -377,11 +379,10 @@ class StaticPickerAdmin(admin.ModelAdmin):
         """
         
         if obj:
-            return ('commune', 'namedbox')
+            return 'commune', 'namedbox'
         else:
-            return ('commune',)
-        
-        return super(StaticPickerAdmin, self).get_readonly_fields(request, obj)
+            return 'commune',
+
                                         
 class StaticPickerInlineAdmin(admin.StackedInline):
     fieldsets = (

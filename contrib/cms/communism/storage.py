@@ -1,8 +1,4 @@
-import urllib2
-
-from django.core.files.storage import Storage, FileSystemStorage
-from libscampi.core.files.storage import OverwriteStorage
-from django.core.files.base import File
+from django.core.files.storage import Storage
 
 class URLStorage(Storage):
     def delete(self, name):

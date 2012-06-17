@@ -1,10 +1,5 @@
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.utils.html import escape
-from django.utils.text import truncate_words
-from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_unicode
-from django.conf import settings
 
 class PickerFilterSelectMultiple(FilteredSelectMultiple):
     """

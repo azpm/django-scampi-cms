@@ -4,8 +4,6 @@ import django_filters
 
 from datetime import datetime, timedelta
 from django.core.cache import cache
-from django.db.models.sql.constants import QUERY_TERMS
-from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -62,20 +60,20 @@ def build_filters(filterset):
             
             if type(filter) is django_filters.filters.ModelMultipleChoiceFilter:
                 # Handle model multiple choice fields -- because django explicitly says
-                # pickled querysets DO NOT work across django versions we need to pickle
+                # pickled query sets DO NOT work across django versions we need to pickle
                 # a FOO__id__in: [LIST OF IDS] for the pickler
                 value = value or ()
                 if not len(value) == len(list(picking_form.fields[name].choices)):
                     fs = {"%s__id__in" % filter.name: [t.pk for t in value]}
             elif type(filter) is django_filters.filters.ModelChoiceFilter:
-                # handle single model choice fields, again because querysets are not likely
+                # handle single model choice fields, again because query sets are not likely
                 # to work across django versions we cannot pickle the QS we need to pickle
                 # proper qs lookup
                 if value is None:
                     continue
                 fs = {"%s__id__%s" % (filter.name, lookup): value.pk}
             elif type(filter) is django_filters.filters.DateRangeFilter:
-                # Handle daterange objects: django_filters says "today" is literally today,
+                # Handle date range objects: django_filters says "today" is literally today,
                 # at initial execute.  We must pickle a coercable concept so that date ranges
                 # are always proper at all execute times
                 try:
@@ -102,15 +100,15 @@ def coerce_filters(filters):
     for key, value in filters.iteritems():
         if isinstance(value, tuple) and value[0] == 'coerce-datetime':
             try:
-                newfilter = DATE_RANGE_COERCION[value[2]](key, value[1])
+                new_filter = DATE_RANGE_COERCION[value[2]](key, value[1])
                 del(filters[key])
-                filters.update(newfilter)
+                filters.update(new_filter)
             except (ValueError, KeyError, TypeError):
                 continue
                 
 def uncoerce_pickled_value(value):
     if type(value) is tuple and value[0] == "coerce-datetime":
-        return (DATE_RANGE_UNCOERCE[value[2]], value[1])
+        return DATE_RANGE_UNCOERCE[value[2]], value[1]
     else:
         #don't modify the value
         return value
@@ -139,17 +137,16 @@ def map_picker_to_commune(sender, instance, **kwargs):
         picker.save()
                 
 def unmap_orphan_picker(sender, instance, **kwargs):  
-    #give no fucks, unset the commune
+    """ give no fucks, unset the commune """
     if instance.content:
         instance.content.commune = None
         instance.content.save()
         
 def cache_picker_template(sender, instance, **kwargs):
-    cache_key = "conduit:dp:tpl:%d" % instance.pk
+    cache_key = "conduit:dp:tpl:{0:d}".format(instance.pk)
     tpl = instance.content
     cache.set(cache_key, tpl)
     
-    logger.info("updating cached template %s [PickerTemplate]" % cache_key)
+    logger.info("updating cached template {0:>s} [PickerTemplate]".format(cache_key))
 
 
-            

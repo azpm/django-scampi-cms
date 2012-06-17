@@ -1,4 +1,4 @@
-from django.views.generic import View, TemplateView
+from django.views.generic import TemplateView
 
 from libscampi.contrib.cms.communism.views.mixins import SectionMixin, ApplicationMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin
 

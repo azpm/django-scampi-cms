@@ -1,14 +1,12 @@
 import logging
 
 from django.core.cache import cache
-from django.db.models import Q, Max
-from django.http import Http404, HttpResponseServerError
-from django.shortcuts import get_object_or_404, get_list_or_404, redirect
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 
 from libscampi.contrib.cms.newsengine.models import StoryCategory
-from libscampi.contrib.cms.communism.models import Javascript, StyleSheet, Theme
 from libscampi.contrib.cms.conduit.models import DynamicPicker
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.views')
@@ -32,38 +30,40 @@ class PickerMixin(object):
             raise Http404("Picker Archives only work for Published Stories")
 
         if self.picker.commune.realm.site_id != Site.objects.get_current().pk:
-            redirect_url = "%sp/%s" % (self.picker.commune.realm.get_base_url(), self.picker.keyname)
+            redirect_url = "{0:>s}p/{1:>s}".format(self.picker.commune.realm.get_base_url(), self.picker.keyname)
             if 'year' in kwargs:
-                redirect_url = "%s/%s" % (redirect_url, kwargs.pop('year'))
+                redirect_url = "{0:>s}/{1:>s}".format(redirect_url, kwargs.pop('year'))
                 if 'month' in kwargs:
-                    redirect_url = "%s/%s" % (redirect_url, kwargs.pop('month'))
+                    redirect_url = "{0:>s}/{1:>s}".format(redirect_url, kwargs.pop('month'))
                     if 'day' in kwargs:
-                        redirect_url = "%s/%s" % (redirect_url, kwargs.pop('day'))
+                        redirect_url = "{0:>s}/{1:>s}".format(redirect_url, kwargs.pop('day'))
                         if 'slug' in kwargs:
-                            redirect_url = "%s/%s/" % (redirect_url, kwargs.pop('slug'))
+                            redirect_url = "{0:>s}/{1:>s}/".format(redirect_url, kwargs.pop('slug'))
 
             return redirect(redirect_url)
 
-        #every PublishPicking picker has base story categories that define it
-        cat_cache_key = "picker:base:categories:%d" % self.picker.id
+        # every PublishPicking picker has base story categories that define it
+        cat_cache_key = "picker:base:categories:{0:d}".format(self.picker.id)
         categories = cache.get(cat_cache_key, set())
         if not categories:
-            categories = set() #no result queryset evals to none, reset it to a blank set
+            categories = set() # no result queryset evals to none, reset it to a blank set
             keep_these = ('story__categories__id__in','story__categories__id__exact')
             if isinstance(self.picker.include_filters, list):
                 for f in self.picker.include_filters:
                     for k in f.keys():
                         if k in keep_these:
-                            categories|=set(f[k]) #build a set of our base categories
+                            categories|=set(f[k]) # build a set of our base categories
             else:
-                logger.critical("invalid picker: cannot build archives from picker %s [id: %d]" % (self.picker.name, self.picker.id))
+                logger.critical(
+                    "invalid picker: cannot build archives from picker {0:>s} [id: {1:d}]".format(self.picker.name,
+                        self.picker.id))
             
             categories = StoryCategory.objects.filter(pk__in=list(categories), browsable=True)
             cache.set(cat_cache_key, categories, 60*60)
             
         self.base_categories = categories
 
-        #add section to the graph by way of the picker
+        # add section to the graph by way of the picker
         kwargs.update({'keyname': self.picker.commune.keyname})
 
         return super(PickerMixin, self).get(request, *args, **kwargs)

@@ -2,21 +2,19 @@
 import mimetypes
 import os
 import datetime
-import re
 
 from django.db import models
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 
 from taggit.managers import TaggableManager
 
 #Local Imports
-from libscampi.contrib.cms.renaissance import settings as appsettings
+from libscampi.contrib.cms.renaissance import settings as local_settings
 from libscampi.contrib.cms.renaissance.validation import ValidImgExtension, ValidVidExtension, ValidDocExtension, ValidAudExtension, ValidObjExtension
 
 # Patch mimetypes w/ any extra types
-mimetypes.types_map.update(appsettings.EXTRA_MIME_TYPES)
+mimetypes.types_map.update(local_settings.EXTRA_MIME_TYPES)
 
 __all__ = [
     'MediaInlineTemplate', 'MediaPlaylistTemplate',
@@ -70,7 +68,7 @@ class MediaType(models.Model):
             height = getattr(self,'height', None)
             
             if width & height:
-                return u"%s [%d x %d]" % (self.title, width, height)
+                return u"{0:>s} [{1:d} x {2:d}]".format(self.title, width, height)
     
         return "%s" % self.title 
 
@@ -129,10 +127,7 @@ class Media(models.Model):
 
     def get_absolute_url(self):
         if hasattr(self,'file') and getattr(self,'file',None):
-            return self.absolute_url((
-                settings.MEDIA_URL,
-                self.creation_date.strftime("%Y/%b/%d"),
-                os.path.basename(self.file.path)))
+            return self.file.url
         return ''
     
     def save(self, *args, **kwargs):
@@ -142,7 +137,7 @@ class Media(models.Model):
         super(Media, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return "%s" % (self.title)
+        return "{0:>s}".format(self.title)
 
 def _file_upload_pathing(cls, fname):
     now = datetime.datetime.now()
@@ -152,7 +147,8 @@ def _file_upload_pathing(cls, fname):
     #fname = re.sub(r'\s','', fname) #strip all whitespace chars from file
     name = slugify(file)
     
-    return "master/%s/%d/%d/%d/%s/%s%s" % (cls.base_type, now.year, now.month, now.day, cls.type.keyname, name, ext)
+    return "master/{0:>s}/{1:d}/{2:d}/{3:d}/{4:>s}/{5:>s}{6:>s}".format(cls.base_type, now.year, now.month, now.day,
+        cls.type.keyname, name, ext)
 
 class Image(Media):
     file = models.ImageField(upload_to=_file_upload_pathing, validators=[ValidImgExtension()])

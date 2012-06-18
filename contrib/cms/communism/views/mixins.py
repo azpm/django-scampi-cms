@@ -270,7 +270,7 @@ class CSSMixin(object):
                 Q(staticpicker__namedbox__active=True) |
                 Q(base=True),
                 Q(theme__pk=theme.id)
-            ).order_by('precedence')
+            ).order_by('precedence').distinct()
             cache.set(cached_css_key, styles, 60*20)
            
         #build a simple collection of styles
@@ -325,7 +325,7 @@ class JScriptMixin(object):
                 Q(staticpicker__namedbox__active=True) |
                 Q(base=True),
                 Q(theme__pk=theme.id)
-            ).order_by('precedence')
+            ).order_by('precedence').distinct()
             cache.set(cached_scripts_key, list(scripts.values_list('id', flat = True)), 60*20)
         else:
             scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')

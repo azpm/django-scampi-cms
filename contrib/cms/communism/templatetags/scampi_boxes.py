@@ -14,7 +14,7 @@ class namedbox_node(template.Node):
         #get the namedbox and see if the template is in the cache
         namedbox = self.namedbox.resolve(context)
         
-        cached_tpl_key = "commune:namedbox:tpl:%d" % namedbox.template_id
+        cached_tpl_key = "commune:namedbox:tpl:{0:d}".format(namedbox.template_id)
         cached_tpl = cache.get(cached_tpl_key, None)
         
         #grab the template from the database and then cache it
@@ -57,7 +57,8 @@ def render_namedbox(parser, token):
     try:
         tag_name, namedbox = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError, "%r tag requires 1 argument, a namedbox" % token.contents.split()[0]
+        raise template.TemplateSyntaxError, "{0!r:s} tag requires 1 argument, a namedbox".format(
+            token.contents.split()[0])
     
     return namedbox_node(namedbox)
 

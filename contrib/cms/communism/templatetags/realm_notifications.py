@@ -25,11 +25,11 @@ def get_notifications(parser, token):
     try:
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
+        raise template.TemplateSyntaxError, "{0!r:s} tag requires arguments".format(token.contents.split()[0])
     
     m = re.search(r'as (\w+)', arg)
     if not m:
-        raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
+        raise template.TemplateSyntaxError, "{0!r:s} tag had invalid arguments".format(tag_name)
     try:
         varname = m.groups()[0]
     except IndexError:

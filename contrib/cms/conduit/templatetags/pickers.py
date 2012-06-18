@@ -33,12 +33,12 @@ class picker_node(template.Node):
                 cached_tpl = picker.template.content
                 cache.set(cached_tpl_key, cached_tpl)
             
-            tpl = template.Template(cached_tpl, name="conduit.PickerTemplate [{0:>s}]".format(picker.template_id))
+            tpl = template.Template(cached_tpl, name="conduit.PickerTemplate [{0:d}]".format(picker.template_id))
 
             cache_control = request.META.get('HTTP_CACHE_CONTROL', None)
             if cache_control and cache_control == "max-age=0":
                 cache_key = "conduit:dp:ids:{0:d}".format(picker.id)
-                logger.debug("deleting picker cache for %s" % cache_key)
+                logger.debug("deleting picker cache for {0:>s}".format(cache_key))
                 cache.delete(cache_key)
 
             c = {

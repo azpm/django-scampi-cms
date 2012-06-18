@@ -192,7 +192,7 @@ class ApplicationMixin(object):
 
         #cache empty, get the styles and refill the cache
         if not styles:
-            logger.debug("missed css cache on %s" % self.cached_css_key)
+            logger.debug("missed css cache on {0:>s}".format(self.cached_css_key))
             styles = StyleSheet.objects.filter(active=True, base=True, theme=self.get_theme()).order_by('precedence')
             cache.set(self.cached_css_key, styles, 60*20)
 
@@ -220,7 +220,7 @@ class ApplicationMixin(object):
 
         #cache empty, get the styles and refill the cache
         if not script_ids:
-            logger.debug("missed script cache on %s" % self.cached_js_key)
+            logger.debug("missed script cache on {0:>s}".format(self.cached_js_key))
             scripts = Javascript.objects.filter(active=True, base=True, theme=self.get_theme()).order_by('precedence')
             cache.set(self.cached_js_key, list(scripts.values_list('id', flat=True)), 60*20)
         else:
@@ -254,7 +254,7 @@ class CSSMixin(object):
         logger.debug("CSSMixin.get_stylesheets called")
 
         #try to get the cached css for this commune
-        cached_css_key = 'commune:css:%s' % self.commune.pk
+        cached_css_key = 'commune:css:{0:d}'.format(self.commune.pk)
         if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_css_key)
@@ -306,7 +306,7 @@ class JScriptMixin(object):
         
         logger.debug("JScriptMixin.get_javascripts called")
         #try to get the cached javascript for this commune
-        cached_scripts_key = 'commune:scripts:{0:>s}'.format(self.commune.pk)
+        cached_scripts_key = 'commune:scripts:{0:d}'.format(self.commune.pk)
         if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_scripts_key)

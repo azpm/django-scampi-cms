@@ -218,7 +218,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
         theme = self.get_theme()
                 
         #try to get the cached css for this published story
-        cached_css_key = 'theme:{0:>s}:story:css:{1:>s}'.format(story.id, theme.id)
+        cached_css_key = 'theme:{0:d}:story:css:{1:d}'.format(story.id, theme.id)
         if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_css_key)
@@ -271,7 +271,7 @@ class PickedStoryDetailArchive(NewsEngineArchivePage, DateDetailView):
         theme = self.get_theme()
         
         #try to get the cached javascript for this published story
-        cached_scripts_key = 'theme:{0:>s}:story:js:{1:>s}'.format(story.id, theme.id)
+        cached_scripts_key = 'theme:{0:d}:story:js:{1:d}'.format(story.id, theme.id)
         if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_scripts_key)
@@ -413,7 +413,7 @@ class StoryDetail(StoryMixin, PageNoView, DetailView):
         theme = self.theme
 
         #try to get the cached css for this published story
-        cached_css_key = 'theme:{0:>s}:story:css:{1:>s}'.format(story.id, theme.id)
+        cached_css_key = 'theme:{0:d}:story:css:{1:d}'.format(story.id, theme.id)
         if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_css_key)
@@ -465,7 +465,7 @@ class StoryDetail(StoryMixin, PageNoView, DetailView):
         theme = self.theme
 
         #try to get the cached javascript for this published story
-        cached_scripts_key = 'theme:{0:>s}:story:js:{1:>s}'.format(story.id, theme.id)
+        cached_scripts_key = 'theme:{0:d}:story:js:{1:d}'.format(story.id, theme.id)
         if self.refresh_caches:
             #invalidate on refresh_cache
             cache.delete(cached_scripts_key)

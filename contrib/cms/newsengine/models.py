@@ -135,6 +135,9 @@ class Story(models.Model):
 
         return qs.order_by('-rel_count','important').values('rel_count','id','slug','article')
 
+    def visible_categories(self):
+        return self.categories.filter(browsable=True)
+
     def get_absolute_url(self):
         return "/s/{0:>s}".format(self.slug)
 

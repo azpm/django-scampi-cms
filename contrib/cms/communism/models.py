@@ -185,9 +185,9 @@ class Realm(models.Model):
 
     def get_base_url(self):
         if self.secure:
-            return "https://{0:>s}/".format(self.site.domain, )
+            return "https://{0:>s}".format(self.site.domain, )
         else:
-            return "http://{0:>s}/".format(self.site.domain, )
+            return "http://{0:>s}".format(self.site.domain, )
 
 class RealmNotification(models.Model):
     """Provides a simple notification system to globally publish alerts to a realm.

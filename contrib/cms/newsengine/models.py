@@ -1,5 +1,5 @@
 import django_filters
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from taggit.managers import TaggableManager
 
@@ -111,6 +111,8 @@ class Story(models.Model):
     document_playlist = models.ForeignKey(DocumentPlaylist, null = True, blank = True)
     object_playlist = models.ForeignKey(ObjectPlaylist, null = True, blank = True)
 
+    objects = models.Manager()
+
     class Meta:
         ordering = ('-creation_date',)
         verbose_name = "Story"
@@ -118,7 +120,25 @@ class Story(models.Model):
         
     def __unicode__(self):
         return u"%s" % self.article
-    
+
+    def related(self):
+        cats = self.categories.values_list('keyname', flat=True)
+
+        right_now = datetime.now()
+        long_ago = right_now - timedelta(days=30)
+
+        qs = Story.objects.filter(
+            models.Q(peers__in=[self.pk]) | models.Q(categories__in=cats),
+            publish__published=True,
+            publish__start__lte=right_now,
+            publish__start__gte=long_ago
+        ).exclude(pk=self.pk).annotate(rel_count=models.Count('categories'))
+
+        return qs.order_by('-rel_count','important').values('rel_count','id','slug','article')
+
+    def get_absolute_url(self):
+        return "/s/{0:>s}".format(self.slug)
+
 class PublishCategory(models.Model):
     keyname = models.SlugField(max_length = 100, db_index = True)
     title = models.CharField(max_length = 100)

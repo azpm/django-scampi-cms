@@ -1,18 +1,18 @@
 import logging
 
 from django import template
+from django.db.models import Q
 from django.conf import settings
 from django.core.cache import cache
-from classytags.core import Tag, Options
-from classytags.arguments import Argument, IntegerArgument
-
+from django.contrib.sites.models import Site
 from django.contrib.markup.templatetags.markup import markdown
 from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, get_language_from_request
 from django.contrib.comments.templatetags.comments import BaseCommentNode
-
-from libscampi.contrib.cms.newsengine.models import Publish, Article
+from classytags.core import Tag, Options
+from classytags.arguments import Argument, IntegerArgument
+from libscampi.contrib.cms.newsengine.models import Article, Publish
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
 
 register = template.Library()
@@ -60,33 +60,30 @@ class RenderArticle(Tag):
 
 register.tag(RenderArticle)
 
-class RelatedPublishes(Tag):
+class RelatedStories(Tag):
     name = "related_stories"
 
     options = Options(
-        Argument('publish', required=True, resolve=True),
+        Argument('story', required=True, resolve=True),
         'as',
         Argument('varname', required=True, resolve=False),
         IntegerArgument('limit', default=3, required=False, resolve=False),
     )
 
     def render_tag(self, context, **kwargs):
-        publish = kwargs.pop('publish', None)
+        story = kwargs.pop('publish')
         varname = kwargs.pop('varname')
         limit = kwargs.pop('limit')
 
-        if not publish:
-            return u""
-
-        cache_key = "stories:related:to:%d" % publish.story.id
+        cache_key = "stories:related:to:{0:d}".format(story.id)
         related = cache.get(cache_key, None)
 
         if not related:
-            logger.debug("missed related story cache on %s" % cache_key)
-            related = Publish.active.find_related(publish.story)[:limit]
+            logger.debug("missed related story cache on {0:>s}".format(cache_key))
+            related = story.related()[:limit]
 
             for item in related:
-                item['article'] = Article.objects.get(pk=item['story__article'])
+                item['article'] = Article.objects.get(pk=item['article'])
 
             cache.set(cache_key, list(related), 60*20)
 
@@ -94,7 +91,30 @@ class RelatedPublishes(Tag):
 
         return u""
 
-register.tag(RelatedPublishes)
+register.tag(RelatedStories)
+
+class StoryPermaLink(Tag):
+    name = "story_permalink"
+
+    options = Options(
+        Argument('story', required=True, resolve=True)
+    )
+
+    def render_tag(self, context, **kwargs):
+        story = kwargs.pop('story')
+        site = Site.objects.get_current()
+
+        if story.publish_set.filter(Q(publish__site__id = site.pk)|Q(publish__site__isnull=True)).exists():
+            return "{0:>2}{1:>s}".format(site.realm.get_base_url(), story.get_absolute_url())
+        else:
+            try:
+                first_pub = story.publish_set.select_related('site__domain','realm__secure','site__realm').filter(publish__site__isnull=False)[0]
+            except Publish.DoesNotExist:
+                return ""
+            else:
+                return "{0:>2}{1:>s}".format(first_pub.site.realm.get_base_url(), story.get_absolute_url())
+
+register.tag(StoryPermaLink)
 
 class cloud_node(template.Node):
     def __init__(self, categories, context_var, **kwargs):

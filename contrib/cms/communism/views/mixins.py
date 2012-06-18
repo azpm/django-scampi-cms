@@ -18,7 +18,7 @@ class html_link_refs(collections.MutableSet):
     def __init__(self, iterable = None):
         self.elements = lst = []
         if None != iterable:
-            raise ValueError("Can only build html_link_refs with iterable, or None")
+            pass
         try:
             for value in iterable:
                 if value not in lst:

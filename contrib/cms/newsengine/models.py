@@ -128,13 +128,14 @@ class Story(models.Model):
         long_ago = right_now - timedelta(days=30)
 
         qs = Story.objects.filter(
-            models.Q(peers__in=[self.pk]) | models.Q(categories__in=cats),
+            models.Q(peers__in=[self.pk]) | models.Q(categories__in=cats)
+        ).filter(
             publish__published=True,
             publish__start__lte=right_now,
             publish__start__gte=long_ago
         ).exclude(pk=self.pk).annotate(rel_count=models.Count('categories'))
 
-        return qs.order_by('-rel_count','important').values('rel_count','id','slug','article')
+        return qs.order_by('-rel_count','important')
 
     def get_absolute_url(self):
         return "/s/{0:>s}".format(self.slug)

@@ -17,8 +17,8 @@ logger = logging.getLogger('libscampi.contrib.cms.communism.views')
 class html_link_refs(collections.MutableSet):
     def __init__(self, iterable = None):
         self.elements = lst = []
-        if not iterable:
-            raise ValueError("Can only build html_link_refs with iterable")
+        if None != iterable:
+            raise ValueError("Can only build html_link_refs with iterable, or None")
         try:
             for value in iterable:
                 if value not in lst:

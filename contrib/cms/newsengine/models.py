@@ -133,7 +133,7 @@ class Story(models.Model):
             publish__start__gte=long_ago
         ).exclude(pk=self.pk).annotate(rel_count=Count('categories'))
 
-        return qs.order_by('-rel_count','important').values('rel_count','id','slug','article')
+        return qs #qs.order_by('-rel_count','important').values('rel_count','id','slug','article')
 
     def get_absolute_url(self):
         return "/s/{0:>s}".format(self.slug)

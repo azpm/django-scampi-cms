@@ -71,7 +71,7 @@ class RelatedStories(Tag):
     )
 
     def render_tag(self, context, **kwargs):
-        story = kwargs.pop('publish')
+        story = kwargs.pop('story')
         varname = kwargs.pop('varname')
         limit = kwargs.pop('limit')
 

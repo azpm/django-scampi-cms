@@ -122,7 +122,7 @@ class StoryDetail(StoryPage, DetailView):
 
     def get_template_names(self):
         tpl_list = (
-            "{0:>s}/newsengine/story/{1:>s}/{:2>s}.html".format(self.theme.keyname, self.realm.keyname, self.object.slug),
+            "{0:>s}/newsengine/story/{1:>s}/{2:>s}.html".format(self.theme.keyname, self.realm.keyname, self.object.slug),
             "{0:>s}/newsengine/story/{1:>s}.html".format(self.theme.keyname, self.object.slug),
             "{0:>s}/newsengine/story/{1:>s}/detail.html".format(self.theme.keyname, self.realm.keyname),
             "{0:>s}/newsengine/story/detail.html".format(self.theme.keyname),

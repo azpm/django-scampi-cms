@@ -260,6 +260,9 @@ class MagicSection(Section):
     class Meta:
         proxy = True
 
+    def __unicode__(self):
+        return u"Magic Section"
+
     def breadcrumb_helper(self):
         return u""
 

@@ -130,6 +130,8 @@ class StoryDetail(StoryPage, DetailView):
             "{0:>s}/newsengine/story/detail.html".format(self.theme.keyname),
         )
 
+        return tpl_list
+
     def get_javascripts(self):
         story = self.object
         theme = self.get_theme()

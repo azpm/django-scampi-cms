@@ -141,6 +141,13 @@ class Story(models.Model):
     def get_absolute_url(self):
         return "/s/{0:>s}".format(self.slug)
 
+    @property
+    def comments_enabled(self):
+        latest_pub = Publish.objects.filter(story__id=self.pk, published=True, start__lte=datetime.now()).latest('start')
+
+        delta = datetime.now() - latest_pub.start
+        return delta.days < 30
+
 class PublishCategory(models.Model):
     keyname = models.SlugField(max_length = 100, db_index = True)
     title = models.CharField(max_length = 100)

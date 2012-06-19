@@ -44,9 +44,6 @@ class html_link_refs(collections.MutableSet):
         if self.__contains__(value):
             del(self.elements[value])
 
-    def __del__(self):
-        self.clear()
-
     def reset(self):
         self.elements = []
         

@@ -104,11 +104,11 @@ class StoryPermaLink(Tag):
         story = kwargs.pop('story')
         site = Site.objects.get_current()
 
-        if story.publish_set.filter(Q(publish__site__id = site.pk)|Q(publish__site__isnull=True)).exists():
+        if story.publish_set.filter(Q(site__id = site.pk)|Q(site__isnull=True)).exists():
             return "{0:>2}{1:>s}".format(site.realm.get_base_url(), story.get_absolute_url())
         else:
             try:
-                first_pub = story.publish_set.select_related('site__domain','realm__secure','site__realm').filter(publish__site__isnull=False)[0]
+                first_pub = story.publish_set.select_related('site__domain','realm__secure','site__realm').filter(site__isnull=False)[0]
             except Publish.DoesNotExist:
                 return ""
             else:

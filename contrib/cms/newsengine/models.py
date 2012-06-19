@@ -133,7 +133,7 @@ class Story(models.Model):
             publish__published=True,
             publish__start__lte=right_now,
             publish__start__gte=long_ago
-        ).exclude(pk=self.pk, categories__excluded=True).annotate(rel_count=Count('categories'))
+        ).exclude(Q(pk=self.pk) | Q(categories__excluded=True)).annotate(rel_count=Count('categories'))
 
         return qs.order_by('-rel_count','important').values('rel_count','id','slug','article')
 

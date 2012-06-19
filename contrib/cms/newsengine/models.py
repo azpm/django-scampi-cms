@@ -14,6 +14,7 @@ from django.contrib.comments.moderation import moderator
 from django.template.defaultfilters import slugify
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.functional import cached_property
 
 #libscampi contributed packages
 from libscampi.contrib.multilingual.models import Language, MultilingualModel
@@ -78,6 +79,7 @@ class StoryCategory(models.Model):
     keyname =  models.SlugField(max_length = 100, db_index = True)
     
     browsable = models.BooleanField(default=True)
+    excluded = models.BooleanField(default=False, help_text=_("Exclude from Story Listings"))
     seen = models.PositiveIntegerField(default = 0, editable = False)
     shared = models.PositiveIntegerField(default = 0, editable = False)
     
@@ -131,7 +133,7 @@ class Story(models.Model):
             publish__published=True,
             publish__start__lte=right_now,
             publish__start__gte=long_ago
-        ).exclude(pk=self.pk).annotate(rel_count=Count('categories'))
+        ).exclude(pk=self.pk, categories__excluded=True).annotate(rel_count=Count('categories'))
 
         return qs.order_by('-rel_count','important').values('rel_count','id','slug','article')
 
@@ -141,11 +143,15 @@ class Story(models.Model):
     def get_absolute_url(self):
         return "/s/{0:>s}".format(self.slug)
 
+    @cached_property
+    def latest_publish(self):
+        return Publish.objects.filter(story__id=self.pk, published=True).exclude(start__gte=datetime.now()).latest('start')
+
     @property
     def comments_enabled(self):
-        latest_pub = Publish.objects.filter(story__id=self.pk, published=True, start__lte=datetime.now()).latest('start')
+        lastest_pub = self.latest_publish
 
-        delta = datetime.now() - latest_pub.start
+        delta = datetime.now() - lastest_pub.start
         return delta.days < 30
 
 class PublishCategory(models.Model):

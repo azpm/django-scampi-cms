@@ -11,7 +11,6 @@ from django.contrib.sites.models import Site
 from libscampi.contrib.cms.views.base import PageNoView
 
 from libscampi.contrib.cms.newsengine.models import StoryCategory
-from libscampi.utils.dating import date_from_string, date_lookup_for_field
 from libscampi.contrib.cms.newsengine.views.helpers import story_javascripts, story_stylesheets
 from libscampi.contrib.cms.newsengine.views.story.mixins import StoryMixin
 
@@ -37,6 +36,9 @@ class StoryPage(StoryMixin, PageNoView):
         if request.user.has_perm('newsengine.can_preview_story'):
             self.restrict = False
 
+        self.cached_css_key = "story:list:css:{0:d}".format(realm.id)
+        self.cached_js_key = "story:list:js:{0:d}".format(realm.id)
+
         #category filtering specified in url
         if 'c' in request.GET:
             limits = request.GET.get('c','').split(' ')
@@ -57,7 +59,7 @@ class StoryPage(StoryMixin, PageNoView):
         return super(StoryPage, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = self.model.objects.distinct()
+        qs = self.model.objects.exclude(categories__excluded=True).distinct()
 
         # limit to stories that are published, before right now, to the current site, or no specific site
         now = datetime.now()
@@ -71,14 +73,14 @@ class StoryPage(StoryMixin, PageNoView):
 
         categories = StoryCategory.genera.for_cloud(qs)
         if self.limits:
-            filters = [Q(story__categories__pk=value[0]) for value in self.limits.values_list('id')]
+            filters = [Q(categories__pk=value[0]) for value in self.limits.values_list('id')]
             for filter in filters:
                 qs = qs.filter(filter)
             self.available_categories = categories.exclude(pk__in=self.limits.values_list('id'))
         else:
             self.available_categories = categories
 
-        self.base_categories = categories
+        self.base_categories = StoryCategory.objects.none()
 
         return qs
 

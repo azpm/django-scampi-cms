@@ -40,7 +40,11 @@ class Theme(models.Model):
     def _get_url(self):
         return "{0:>s}{1:>s}/".format(settings.MEDIA_URL, self.keyname)
     base_url = property(_get_url)
-        
+
+    def _static_url(self):
+        return "{0:>s}{1:>s}/".format(settings.STATIC_URL, self.keyname)
+    static_url = property(_static_url)
+
 class HtmlLinkRef(models.Model):
     """Abstract base for HTML includes (css/js)"""
     name = models.CharField(max_length = 50)

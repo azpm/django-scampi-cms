@@ -51,9 +51,9 @@ class RenderArticle(Tag):
         inlined_images = article.image_inlines.all()
         if inlined_images.count() > 0:
             md_friendly = "\n".join(["[%s]: %s" % (t.slug, t.file.url) for t in inlined_images])
-            second_pass = "\n".join([mark_safe(first_pass), md_friendly])
+            second_pass = "\n".join([first_pass, md_friendly])
         else:
-            second_pass = mark_safe(first_pass)
+            second_pass = first_pass
 
         final = markdown(second_pass)
         return final

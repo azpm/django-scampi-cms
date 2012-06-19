@@ -100,6 +100,8 @@ class StoryPage(StoryMixin, PageNoView):
         })
         logger.debug("StoryPage.get_context_data ended")
 
+        return context
+
 
     def get_theme(self):
         return self.theme

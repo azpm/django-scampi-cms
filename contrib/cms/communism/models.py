@@ -168,24 +168,28 @@ class Realm(models.Model):
     @cached_property
     def get_absolute_url(self):
         # Returns fully qualified link to realm, including http/https
-        ps = self.primary_section
-        if ps and ps.generates_navigation == True: 
-            if self.secure:
-                return "https://{0:>s}{1:>s}".format(self.site.domain, ps.get_absolute_url())
-            else:
-                return "http://{0:>s}{1:>s}".format(self.site.domain, ps.get_absolute_url())
-        elif ps and ps.generates_navigation == False:
-            if self.secure:
-                return "https://{0:>s}/".format(self.site.domain, )
-            else:
-                return "http://{0:>s}/".format(self.site.domain, )
-        elif self.direct_link:
-            if self.secure:
-                return "https://{0:>s}/".format(self.site.domain, )
-            else:
-                return "http://{0:>s}/".format(self.site.domain, )
+
+        try:
+            ps = self.primary_section
+        except ObjectDoesNotExist:
+            if self.direct_link:
+                if self.secure:
+                    return "https://{0:>s}/".format(self.site.domain, )
+                else:
+                    return "http://{0:>s}/".format(self.site.domain, )
         else:
-            return "#"
+            if ps.generates_navigation:
+                if self.secure:
+                    return "https://{0:>s}{1:>s}".format(self.site.domain, ps.get_absolute_url())
+                else:
+                    return "http://{0:>s}{1:>s}".format(self.site.domain, ps.get_absolute_url())
+            else:
+                if self.secure:
+                    return "https://{0:>s}/".format(self.site.domain, )
+                else:
+                    return "http://{0:>s}/".format(self.site.domain, )
+
+        return "#"
 
     def get_base_url(self):
         if self.secure:

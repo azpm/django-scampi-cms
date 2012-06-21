@@ -113,7 +113,7 @@ class SectionMixin(object):
         logger.debug("SectionMixin.get called")
 
         self._process_request(request, *args, **kwargs)
-                   
+
         # finally return the parent get method
         return super(SectionMixin, self).get(request, *args, **kwargs)
         

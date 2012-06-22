@@ -288,6 +288,7 @@ def slug_for_story(sender, instance, created, raw, **kwargs):
         slugged_headline = slugify(instance.article.headline)
         slug = "%d-%s" % (instance.pk, slugged_headline)
         instance.slug = slug[:255]
+        instance.save()
 
 #moderate publish comments
 moderator.register(Story, StoryModerator)

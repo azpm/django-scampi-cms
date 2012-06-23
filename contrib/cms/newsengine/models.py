@@ -191,7 +191,7 @@ class Publish(models.Model):
         ordering = ('sticky','order_me','-start')
     
     def __unicode__(self):
-        if self.category.title:
+        if self.category:
             return "[%s] > %s" % (self.category.title, self.story.article.headline)
         else:
             return "%s" % self.story.article.headline

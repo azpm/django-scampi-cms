@@ -75,7 +75,7 @@ class ArticleAdmin(admin.ModelAdmin):
      #provide the JS for the picking filter magic
     class Media:
         js = (
-            'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
+            'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js',
             'admin/js/media.inlines.js',
             'admin/js/article.preview.js',
         )

@@ -43,14 +43,14 @@ class RenderArticle(Tag):
             body = article.body
 
         # first pass, scampi 2.0+ style media
-        tpl = template.Template(" ".join(["{% load renaissance %}", body]), name="internal_article_tpl")
+        tpl = template.Template(u" ".join(["{% load renaissance %}", body]), name="internal_article_tpl")
         c = template.Context({'article': article})
         first_pass = tpl.render(c)
 
         # second pass, scampi 1.0 style media
         inlined_images = article.image_inlines.all()
         if inlined_images.count() > 0:
-            md_friendly = "\n".join(["[%s]: %s" % (t.slug, t.file.url) for t in inlined_images])
+            md_friendly = "\n".join([u"[%s]: %s" % (t.slug, t.file.url) for t in inlined_images])
             second_pass = "\n".join([first_pass, md_friendly])
         else:
             second_pass = first_pass

@@ -49,7 +49,13 @@ class picker_node(template.Node):
             }
             
             new_context = template.RequestContext(request, c, current_app = context.current_app)
-            return tpl.render(new_context)
+
+            try:
+                rendered = tpl.render(new_context)
+            except Exception, e:
+                logger.error("could not render picker {0:>s}, got: {1:>s}".format(picker.name, e))
+            else:
+                return rendered
         
         elif type(picker) is StaticPicker:
             return markdown(picker.content)

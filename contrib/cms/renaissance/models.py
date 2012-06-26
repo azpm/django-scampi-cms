@@ -33,7 +33,7 @@ class MediaInlineTemplate(models.Model):
     javascript = models.ManyToManyField('communism.Javascript', blank = True)
     
     def __unicode__(self):
-        return "%s" % self.title
+        return u"%s" % self.title
     class Meta:
         verbose_name = 'Template (Inline)'
         verbose_name_plural = 'Templates (Inline)'
@@ -48,7 +48,7 @@ class MediaPlaylistTemplate(models.Model):
     content = models.TextField()
     
     def __unicode__(self):
-        return "%s" % self.title
+        return u"%s" % self.title
     class Meta:
         verbose_name = 'Template (Playlist)'
         verbose_name_plural = 'Templates (Playlist)'
@@ -70,7 +70,7 @@ class MediaType(models.Model):
             if width & height:
                 return u"{0:>s} [{1:d} x {2:d}]".format(self.title, width, height)
     
-        return "%s" % self.title 
+        return u"%s" % self.title
 
 class ImageType(MediaType):
     width = models.PositiveIntegerField()
@@ -123,7 +123,7 @@ class Media(models.Model):
         abstract = True
         
     def __unicode__(self):
-        return self.title
+        return u"{0:>s}".format(self.title)
 
     def get_absolute_url(self):
         if hasattr(self,'file') and getattr(self,'file',None):
@@ -135,9 +135,6 @@ class Media(models.Model):
             self.mime_type = mimetypes.guess_type(self.file.path)[0]
             
         super(Media, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return "{0:>s}".format(self.title)
 
 def _file_upload_pathing(cls, fname):
     now = datetime.datetime.now()

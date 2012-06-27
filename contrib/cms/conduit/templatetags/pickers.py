@@ -9,6 +9,8 @@ from libscampi.contrib.cms.conduit.models import *
 logger = logging.getLogger('libscampi.contrib.cms.conduit.templatetags')
 register = template.Library()
 
+# TO DO convert to classy tag
+
 class picker_node(template.Node):
     def __init__(self, picker):
         self.picker = template.Variable(picker)

@@ -188,7 +188,7 @@ class Publish(models.Model):
     class Meta:
         verbose_name = "Published Story"
         verbose_name_plural = "Published Stories"
-        ordering = ('sticky','order_me','-start')
+        ordering = ('-sticky','order_me','-start')
     
     def __unicode__(self):
         if self.category:

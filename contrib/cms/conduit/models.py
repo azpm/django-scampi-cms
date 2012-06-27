@@ -57,6 +57,7 @@ class PickerBase(models.Model):
         )
 
 class DynamicPicker(PickerBase):
+    # TODO display_name = models.CharField(verbose_name=_("Display Name"), max_length = 100, null=True, blank=True, help_text=_("Optional display name."))
     active = models.BooleanField(default = False)
     keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"), validators=[magic_keyname])
     template = models.ForeignKey(PickerTemplate)

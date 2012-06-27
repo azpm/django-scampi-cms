@@ -34,7 +34,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     search_fields = ('commune__name',)
     
     fieldsets = (
-        ('Designation', {'fields': ('name', 'active', ('keyname', 'commune'))}),
+        ('Designation', {'fields': ('name', 'display_name' 'active', ('keyname', 'commune'))}), # TO DO enable display_name
         ('Display', {'fields': ('template',)}),
         ('Picking', {'fields': ('content', 'max_count')}), 
     )

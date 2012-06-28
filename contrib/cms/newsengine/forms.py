@@ -36,8 +36,11 @@ class PublishForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(PublishForm, self).clean()
 
-        story = cleaned_data['story']
-        category = cleaned_data['category']
+        if "story" in cleaned_data and "category" in cleaned_data:
+            story = cleaned_data['story']
+            category = cleaned_data['category']
+        else:
+            raise forms.ValidationError("Story & Type required.")
 
         check = Publish.objects.filter(story=story, category=category)
         if self.instance:

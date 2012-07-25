@@ -23,6 +23,7 @@ from libscampi.contrib.cms.conduit import picker
 from libscampi.contrib.cms.conduit.widgets import PickerFilterSelectMultiple
 from libscampi.contrib.cms.newsengine.managers import PublishedManager, CategoryGenera
 from libscampi.contrib.cms.newsengine.commenting import StoryModerator
+from libscampi.contrib.cms.newsengine.validators import validate_article
 
 __all__ = ['ArticleTranslation','Article','StoryCategory','Story','PublishCategory','Publish','PublishPicking']
     
@@ -37,7 +38,9 @@ class ArticleTranslation(models.Model):
     synopsis = models.TextField(blank = True,
             help_text = _("Article Synopsis, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
     body = models.TextField(blank = True,
-            help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
+            help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"),
+            validators=[validate_article]
+    )
             
     class Meta:
         unique_together = ('language', 'model')

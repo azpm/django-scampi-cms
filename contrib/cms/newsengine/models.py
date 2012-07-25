@@ -132,7 +132,7 @@ class Story(models.Model):
         long_ago = right_now - timedelta(days=30)
 
         qs = Story.objects.filter(
-            Q(peers__in=[self.pk]) | Q(categories__in=cats),
+            Q(peers__in=[self.pk]) | Q(categories__in=list(cats)),
             publish__published=True,
             publish__start__lte=right_now,
             publish__start__gte=long_ago

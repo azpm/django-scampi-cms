@@ -38,11 +38,11 @@ def story_stylesheets(story, theme, refresh_cache = False):
             #playlist finders
             playlist_filters |
             #inline finders
-            Q(mediainlinetemplate__videotype__video__id__in=article.video_inlines.values_list('id')) |
-            Q(mediainlinetemplate__imagetype__image__id__in=article.image_inlines.values_list('id')) |
-            Q(mediainlinetemplate__audiotype__audio__id__in=article.audio_inlines.values_list('id')) |
-            Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
-            Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id'))
+            Q(mediainlinetemplate__videotype__video__id__in=list(article.video_inlines.values_list('id', flat=True))) |
+            Q(mediainlinetemplate__imagetype__image__id__in=list(article.image_inlines.values_list('id', flat=True))) |
+            Q(mediainlinetemplate__audiotype__audio__id__in=list(article.audio_inlines.values_list('id', flat=True))) |
+            Q(mediainlinetemplate__documenttype__document__id__in=list(article.document_inlines.values_list('id', flat=True))) |
+            Q(mediainlinetemplate__objecttype__object__id__in=list(article.object_inlines.values_list('id', flat=True)))
         ).order_by('precedence').distinct()
         cache.set(cached_css_key, styles, 60*10)
 
@@ -87,11 +87,11 @@ def story_javascripts(story, theme, refresh_cache = False):
         scripts = Javascript.objects.filter(active=True, theme__id=theme.id).filter(
             playlist_filters |
             #inline finders
-            Q(mediainlinetemplate__videotype__video__id__in=article.video_inlines.values_list('id')) |
-            Q(mediainlinetemplate__imagetype__image__id__in=article.image_inlines.values_list('id')) |
-            Q(mediainlinetemplate__audiotype__audio__id__in=article.audio_inlines.values_list('id')) |
-            Q(mediainlinetemplate__documenttype__document__id__in=article.document_inlines.values_list('id')) |
-            Q(mediainlinetemplate__objecttype__object__id__in=article.object_inlines.values_list('id'))
+            Q(mediainlinetemplate__videotype__video__id__in=list(article.video_inlines.values_list('id', flat=True))) |
+            Q(mediainlinetemplate__imagetype__image__id__in=list(article.image_inlines.values_list('id', flat=True))) |
+            Q(mediainlinetemplate__audiotype__audio__id__in=list(article.audio_inlines.values_list('id', flat=True))) |
+            Q(mediainlinetemplate__documenttype__document__id__in=list(article.document_inlines.values_list('id', flat=True))) |
+            Q(mediainlinetemplate__objecttype__object__id__in=list(article.object_inlines.values_list('id', flat=True)))
         ).order_by('precedence').distinct()
         cache.set(cached_scripts_key, list(scripts.values_list('id', flat = True)), 60*20)
     else:

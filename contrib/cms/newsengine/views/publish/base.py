@@ -83,14 +83,14 @@ class PublishArchivePage(PublishMixin, PickerMixin, CMSPageNoView):
                     "invalid picker: cannot build archives from picker {0:>s} [id: {1:d}]".format(self.picker.name,
                         self.picker.id))
 
-        categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=self.base_categories)
+        categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=list(self.base_categories.values_list('id', flat=True)))
 
         if self.limits:
             filters = [Q(story__categories__pk=value[0]) for value in self.limits.values_list('id')]
             for filter in filters:
                 qs = qs.filter(filter)
 
-            self.available_categories = categories.exclude(pk__in=self.limits.values_list('id'))
+            self.available_categories = categories.exclude(pk__in=list(self.limits.values_list('id', flat=True)))
         else:
             self.available_categories = categories
 

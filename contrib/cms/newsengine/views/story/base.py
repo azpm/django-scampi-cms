@@ -76,7 +76,7 @@ class StoryPage(StoryMixin, PageNoView):
             filters = [Q(categories__pk=value[0]) for value in self.limits.values_list('id')]
             for filter in filters:
                 qs = qs.filter(filter)
-            self.available_categories = categories.exclude(pk__in=self.limits.values_list('id'))
+            self.available_categories = categories.exclude(pk__in=list(self.limits.values_list('id', flat=True)))
         else:
             self.available_categories = categories
 

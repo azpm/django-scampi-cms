@@ -93,7 +93,7 @@ class MultilingualModel(models.Model):
                 translation = self.__dict__.get(translation_key, None)
                 if not translation:
                     try:
-                        translation = self._meta.translation.objects.get(model=self, language__code=code)
+                        translation = self._meta.translation.objects.using(self._state.db).get(model=self, language__code=code)
                     except ObjectDoesNotExist:
                         if MULTILINGUAL_FALL_BACK_TO_DEFAULT and MULTILINGUAL_DEFAULT and code != MULTILINGUAL_DEFAULT:
                             try:

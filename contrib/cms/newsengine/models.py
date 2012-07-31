@@ -284,6 +284,15 @@ def slug_for_publish(sender, instance, created, raw, **kwargs):
         instance.slug = slug[:255]
         instance.save()
 
+@receiver(post_save, sender=PublishQueue)
+def slug_for_publish(sender, instance, created, raw, **kwargs):
+    if instance.slug == '' or not instance.slug and None != instance.story:
+        # this publish needs a slug
+        slugged_headline = slugify(instance.story.article.headline)
+        slug = "%d-%s" % (instance.pk, slugged_headline)
+        instance.slug = slug[:255]
+        instance.save()
+
 @receiver(post_save, sender=Story)
 def slug_for_story(sender, instance, created, raw, **kwargs):
     if instance.slug == '' or not instance.slug and None != instance.article:

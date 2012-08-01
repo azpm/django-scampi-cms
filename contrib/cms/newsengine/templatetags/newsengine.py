@@ -109,7 +109,7 @@ class StoryPermaLink(Tag):
         else:
             try:
                 first_pub = story.publish_set.select_related('site__domain','realm__secure','site__realm').filter(site__isnull=False)[0]
-            except Publish.DoesNotExist:
+            except IndexError:
                 return ""
             else:
                 return "{0:>2}{1:>s}".format(first_pub.site.realm.get_base_url(), story.get_absolute_url())

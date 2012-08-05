@@ -27,7 +27,7 @@ class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
 
     def get_list_display(self, request):
         if self.model is Image:
-            return self.list_display + ['popover']
+            return ['title', 'slug','popover','creation_date', 'reproduction_allowed']
         else:
             return self.list_display
 

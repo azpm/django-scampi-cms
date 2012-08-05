@@ -43,6 +43,7 @@
        mouse_move : function(event) {
            "use strict";
            var elem = $(this);
+           console.log("y: "+event.pageY + " x: " + event.pageX);
            $("#img_preview_popover")
                //.css("top",(elem.offset().top - settings.xOffset) + "px")
                //.css("right",(elem.offset().left + settings.yOffset) + "px");

@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 
 from libscampi.contrib.cms.renaissance.models import *
 
@@ -22,7 +24,20 @@ class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
     fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file','type')}), )
     list_filter = MediaAdmin.list_filter+['type']
     prepopulated_fields = {'slug': ('title',)}
-    
+
+    def get_list_display(self, request):
+        if self.model is Image:
+            return self.list_display + ['popover']
+        else:
+            return self.list_display
+
+    def popover(self, cls):
+        args = {'url': cls.file.url, 'name': cls.title, 'preview': _("mouse over me")}
+        return mark_safe(u"<a class='popover' rel='%(url)s' title=%(name)s'>%(preview)s</a>" % args)
+    popover.short_description = u"Preview"
+    popover.allow_tags = True
+
+
 class VideoMediaAdmin(MediaAdmin, admin.ModelAdmin):
     fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file','thumbnail','type')}), )
     list_filter = MediaAdmin.list_filter+['type']

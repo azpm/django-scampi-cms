@@ -28,12 +28,13 @@
            "use strict";
             var elem = $(this);
             var text = elem.attr("title");
+            var total_width = $(window).width();
             $("body").append("<p id='img_preview_popover'><img src='"+ elem.attr('rel') +"' alt='url preview' /><br/>&nbsp;&nbsp;"+ text +"</p>");
             $("#img_preview_popover")
                    //.css("top",(elem.offset().top - settings.xOffset) + "px")
                    //.css("right",(elem.offset().left + settings.yOffset) + "px")
                    .css("top",(event.pageY - settings.yOffset) + "px")
-                   .css("right",(event.pageX + settings.xOffset) + "px")
+                   .css("right",((total_width-event.pageX) + settings.xOffset) + "px")
                    .fadeIn("fast");
        },
        hover_out : function(event) {
@@ -43,12 +44,14 @@
        mouse_move : function(event) {
            "use strict";
            var elem = $(this);
+           var total_width = $(window).width();
+
            console.log("y: "+event.pageY + " x: " + event.pageX);
            $("#img_preview_popover")
                //.css("top",(elem.offset().top - settings.xOffset) + "px")
                //.css("right",(elem.offset().left + settings.yOffset) + "px");
                .css("top",(event.pageY - settings.yOffset) + "px")
-               .css("right",(event.pageX + settings.xOffset) + "px");
+               .css("right",((total_width-event.pageX) + settings.xOffset) + "px");
        }
     };
 })(jQuery);

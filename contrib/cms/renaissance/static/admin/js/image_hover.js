@@ -28,7 +28,7 @@
            "use strict";
             var elem = $(this);
             var text = elem.attr("title");
-            $("body").append("<p id='img_preview_popover'><img src='"+ elem.rel +"' alt='url preview' /><br/>&nbsp;&nbsp;"+ text +"</p>");
+            $("body").append("<p id='img_preview_popover'><img src='"+ elem.attr('rel') +"' alt='url preview' /><br/>&nbsp;&nbsp;"+ text +"</p>");
             $("#img_preview_popover")
                    .css("top",(elem.offset().top - settings.xOffset) + "px")
                    .css("left",(elem.offset().left + settings.yOffset) + "px")

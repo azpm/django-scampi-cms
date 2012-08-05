@@ -43,7 +43,7 @@
            var elem = $(this);
            $("#img_preview_popover")
                    .css("top",(event.pageY - settings.xOffset) + "px")
-                   .css("left",(event.pageX + settings.yOffset) + "px");
+                   .css("right",(event.pageX + settings.yOffset) + "px");
        }
     };
 })(jQuery);

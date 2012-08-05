@@ -33,7 +33,7 @@
                    //.css("top",(elem.offset().top - settings.xOffset) + "px")
                    //.css("right",(elem.offset().left + settings.yOffset) + "px")
                    .css("top",(event.pageY - settings.xOffset) + "px")
-                   .css("right",(event.pageX + settings.yOffset) + "px")
+                   .css("right",(event.pageX - settings.yOffset) + "px")
                    .fadeIn("fast");
        },
        hover_out : function(event) {
@@ -47,7 +47,7 @@
                //.css("top",(elem.offset().top - settings.xOffset) + "px")
                //.css("right",(elem.offset().left + settings.yOffset) + "px");
                .css("top",(event.pageY - settings.xOffset) + "px")
-               .css("right",(event.pageX + settings.yOffset) + "px");
+               .css("right",(event.pageX - settings.yOffset) + "px");
        }
     };
 })(jQuery);

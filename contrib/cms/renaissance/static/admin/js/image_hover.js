@@ -46,4 +46,4 @@
                    .css("left",(event.pageX + settings.yOffset) + "px");
        }
     };
-})(django.jQuery);
+})(jQuery);

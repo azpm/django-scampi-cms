@@ -4,10 +4,11 @@
 
 {% block extrahead %}
     {{ block.super }}
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script type="text/javascript" src="{% static "admin/js/image_hover.js" %}"></script>
     <script type="text/javascript">
-        django.jQuery(document).ready(function() {
-            django.jQuery("a.popover").imageRollover();
+        jQuery(document).ready(function() {
+            jQuery("a.popover").imageRollover();
         });
     </script>
     <style type="text/css">

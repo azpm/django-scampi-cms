@@ -31,7 +31,7 @@
             $("body").append("<p id='img_preview_popover'><img src='"+ elem.attr('rel') +"' alt='url preview' /><br/>&nbsp;&nbsp;"+ text +"</p>");
             $("#img_preview_popover")
                    .css("top",(elem.offset().top - settings.xOffset) + "px")
-                   .css("left",(elem.offset().left + settings.yOffset) + "px")
+                   .css("left",(elem.offset().right + settings.yOffset) + "px")
                    .fadeIn("fast");
        },
        hover_out : function(event) {

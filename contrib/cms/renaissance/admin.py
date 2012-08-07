@@ -36,7 +36,7 @@ class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
 
     def popover(self, cls):
         args = {'url': cls.file.url, 'name': cls.title, 'preview': _("rollover")}
-        return mark_safe(u"<a class='popover' href='#' rel='%(url)s' title='%(name)s'>%(preview)s</a>" % args)
+        return mark_safe(u"<a class='popover' href='%(url)s' target='_blank' rel='%(url)s' title='%(name)s'>%(preview)s</a>" % args)
     popover.short_description = u"Preview"
     popover.allow_tags = True
 

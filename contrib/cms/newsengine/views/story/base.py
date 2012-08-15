@@ -3,7 +3,6 @@ from datetime import datetime
 
 from django.views.generic import DetailView, ListView
 from django.db.models import Q
-from django.core.cache import cache
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.sites.models import Site

@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import Language
+from libscampi.contrib.multilingual.models import Language
 
 admin.site.register(Language)

@@ -13,8 +13,8 @@ from taggit.managers import TaggableManager
 from libscampi.contrib.cms.renaissance import settings as local_settings
 from libscampi.contrib.cms.renaissance.validation import ValidImgExtension, ValidVidExtension, ValidDocExtension, ValidAudExtension, ValidObjExtension
 
-# Patch mimetypes w/ any extra types
-mimetypes.types_map.update(local_settings.EXTRA_MIME_TYPES)
+# Patch mime types w/ any extra types
+mimetypes.MimeTypes.types_map.update(local_settings.EXTRA_MIME_TYPES)
 
 __all__ = [
     'MediaInlineTemplate', 'MediaPlaylistTemplate',
@@ -132,7 +132,8 @@ class Media(models.Model):
     
     def save(self, *args, **kwargs):
         if hasattr(self,'file') and getattr(self,'file', None) and not self.mime_type:
-            self.mime_type = mimetypes.guess_type(self.file.path)[0]
+            f = getattr(self, 'file')
+            self.mime_type = mimetypes.guess_type(f.path)[0]
             
         super(Media, self).save(*args, **kwargs)
 

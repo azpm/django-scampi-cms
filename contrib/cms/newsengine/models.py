@@ -1,7 +1,4 @@
-import django_filters
 from datetime import datetime, timedelta
-
-from taggit.managers import TaggableManager
 
 from django.db import models
 from django.db.models import Q, Count
@@ -16,7 +13,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.functional import cached_property
 
+from taggit.managers import TaggableManager
+
 #libscampi contributed packages
+from libscampi.contrib import django_filters
 from libscampi.contrib.multilingual.models import Language, MultilingualModel
 from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External, ImagePlaylist, VideoPlaylist, AudioPlaylist, DocumentPlaylist, ObjectPlaylist
 from libscampi.contrib.cms.conduit import picker

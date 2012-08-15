@@ -11,15 +11,15 @@ from django.http import Http404, HttpResponse
 from django.forms.formsets import all_valid
 from django.utils import simplejson
 from django.template.response import TemplateResponse
-from django.template.defaultfilters import slugify, truncatewords
+from django.template.defaultfilters import truncatewords
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 
-from .models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue
-from .forms import StoryForm, ArticleTranslationForm, PublishForm
-from .filtering import PublishTypeListFilter, ArticleAuthorListFilter
+from libscampi.contrib.cms.newsengine.models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue
+from libscampi.contrib.cms.newsengine.forms import StoryForm, ArticleTranslationForm, PublishForm
+from libscampi.contrib.cms.newsengine.filtering import PublishTypeListFilter, ArticleAuthorListFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
 csrf_protect_m = method_decorator(csrf_protect)
@@ -111,7 +111,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
         return my_urls + urls
 
-    def inline_media_helper(self, request, *args, **kwargs):
+    def inline_media_helper(self, request):
         media_id = request.REQUEST.get('media_id', None)
         media_type = request.REQUEST.get('media_ctype', None)
 
@@ -144,12 +144,12 @@ class ArticleAdmin(admin.ModelAdmin):
         return response
 
     @csrf_protect_m
-    def preview(self, request, *args, **kwargs):
+    def preview(self, request):
         """
         Preview an article
         """
-        model = self.model
-        opts = model._meta
+        # model = self.model TODO: Understand why these lines are here
+        # opts = model._meta
 
         if not self.has_add_permission(request):
             raise PermissionDenied
@@ -201,7 +201,7 @@ class StoryAdmin(admin.ModelAdmin):
     search_fields = ['article__translations__headline','author__first_name','author__last_name','author__username']
     fieldsets = (
         ('Meta Data', {'fields': ('author','categories','article','tags')}),
-        ('Media Playlists', {'fields': (('image_playlist', 'video_playlist', 'audio_playlist'),('document_playlist', 'object_playlist'))}),
+        ('Media Play Lists', {'fields': (('image_playlist', 'video_playlist', 'audio_playlist'),('document_playlist', 'object_playlist'))}),
         ('Relationships', {'fields': ('peers','important')}),
     )
     
@@ -289,9 +289,9 @@ class PublishStoryAdmin(admin.ModelAdmin):
                 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.start is not None and obj.start < datetime.now():
-            return ('start', 'slug', 'approved_by')
+            return 'start', 'slug', 'approved_by'
         else:
-            return ('slug', 'approved_by')
+            return 'slug', 'approved_by'
     
     def save_model(self, request, obj, form, change):
         if not obj.seen:

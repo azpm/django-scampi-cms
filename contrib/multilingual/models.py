@@ -1,9 +1,10 @@
+import re
+
 from django.db import models
 from django.db.models import options
 from django.conf import settings
 from django.utils.translation import get_language
 from django.core.exceptions import ObjectDoesNotExist
-import re
 
 options.DEFAULT_NAMES += ('translation', 'multilingual')
 MULTILINGUAL_FAIL_SILENTLY = not settings.DEBUG

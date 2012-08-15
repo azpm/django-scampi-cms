@@ -1,12 +1,11 @@
 import logging
-
-import django_filters
-
 from datetime import datetime, timedelta
+
 from django.core.cache import cache
 from django import forms
-
 from django.core.exceptions import ObjectDoesNotExist
+
+from libscampi.contrib.django_filters.filters import ModelMultipleChoiceFilter, ModelChoiceFilter, DateRangeFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.utils')
 
@@ -31,12 +30,12 @@ DATE_RANGE_UNCOERCE = {
     '-thisyear': 4,
 }
 
-def build_filters(filterset):
-    picking_form = filterset.form
+def build_filters(fs):
+    picking_form = fs.form
     
     filters = {}
         
-    for name, filter in filterset.filters.iteritems():
+    for name, filter in fs.filters.iteritems():
         fs = None
         try:
             #get the data from the cleaned form
@@ -58,23 +57,23 @@ def build_filters(filterset):
                 lookup = filter.lookup_type
             
             
-            if type(filter) is django_filters.filters.ModelMultipleChoiceFilter:
+            if type(filter) is ModelMultipleChoiceFilter:
                 # Handle model multiple choice fields -- because django explicitly says
                 # pickled query sets DO NOT work across django versions we need to pickle
                 # a FOO__id__in: [LIST OF IDS] for the pickler
                 value = value or ()
                 if not len(value) == len(list(picking_form.fields[name].choices)):
                     fs = {"%s__id__in" % filter.name: [t.pk for t in value]}
-            elif type(filter) is django_filters.filters.ModelChoiceFilter:
+            elif type(filter) is ModelChoiceFilter:
                 # handle single model choice fields, again because query sets are not likely
                 # to work across django versions we cannot pickle the QS we need to pickle
                 # proper qs lookup
                 if value is None:
                     continue
                 fs = {"%s__id__%s" % (filter.name, lookup): value.pk}
-            elif type(filter) is django_filters.filters.DateRangeFilter:
+            elif type(filter) is DateRangeFilter:
                 # Handle date range objects: django_filters says "today" is literally today,
-                # at initial execute.  We must pickle a coercable concept so that date ranges
+                # at initial execute.  We must pickle a coercible concept so that date ranges
                 # are always proper at all execute times
                 try:
                     value = int(value)

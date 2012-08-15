@@ -7,12 +7,11 @@ from django.core.cache import cache
 from django.contrib.sites.models import Site
 from django.contrib.markup.templatetags.markup import markdown
 from django.utils.encoding import smart_unicode
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, get_language_from_request
 from django.contrib.comments.templatetags.comments import BaseCommentNode
 from classytags.core import Tag, Options
 from classytags.arguments import Argument, IntegerArgument
-from libscampi.contrib.cms.newsengine.models import Article, Publish
+from libscampi.contrib.cms.newsengine.models import Article
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
 
 register = template.Library()
@@ -200,23 +199,23 @@ def category_cloud(parser, token):
     return cloud_node(bits[1], bits[3], **kwargs)
     
 @register.simple_tag
-def build_pagelist(pages, currentpage, get_args = None):
-    if currentpage > pages[-1]:
+def build_pagelist(pages, current_page, get_args = None):
+    if current_page > pages[-1]:
         return u""
 
     list = []
-    if currentpage < 8:
-        if currentpage-4 > pages[0]:
-            list = pages[currentpage-4:currentpage+4:1]
+    if current_page < 8:
+        if current_page-4 > pages[0]:
+            list = pages[current_page-4:current_page+4:1]
         else:
-            max = 8-currentpage
-            list = pages[0:currentpage+max:1]
-    elif currentpage >= 8:
-        if currentpage+4 < pages[-1]:
-            list = pages[currentpage-4:currentpage+4:1]
+            max = 8-current_page
+            list = pages[0:current_page+max:1]
+    elif current_page >= 8:
+        if current_page+4 < pages[-1]:
+            list = pages[current_page-4:current_page+4:1]
         else:
-            max = pages[-1] - currentpage
-            list = pages[currentpage-4:currentpage+max:1]
+            max = pages[-1] - current_page
+            list = pages[current_page-4:current_page+max:1]
     
     if get_args:
         li = """<li {class:>s}><a href="?page={page:d}&{get_args:>s}">{page:d}</a></li>"""
@@ -225,7 +224,7 @@ def build_pagelist(pages, currentpage, get_args = None):
     html = []
     
     for page in list:
-        if page == currentpage:
+        if page == current_page:
             css = 'class="active"'
         else:
             css = ""
@@ -237,26 +236,25 @@ def build_pagelist(pages, currentpage, get_args = None):
             
     return "".join(html)
     
-@register.simple_tag(takes_context=True)
-def chain_archival_categories(context, needle, haystack):
-    
+@register.simple_tag()
+def chain_archival_categories(needle, haystack):
     if haystack:
-        category_pathing = "{0:>s}+{1:>s}".format("+".join([t.keyname for t in haystack]), needle['keyname'])
+        category_path = "{0:>s}+{1:>s}".format("+".join([t.keyname for t in haystack]), needle['keyname'])
     else:
-        category_pathing = "{0:>s}".format(needle['keyname'])
+        category_path = "{0:>s}".format(needle['keyname'])
         
-    url = "?c={0:>s}".format(category_pathing)
+    url = "?c={0:>s}".format(category_path)
     
     return url
     
-@register.simple_tag(takes_context=True)
-def dechain_archival_categories(context, needle, haystack):
-    category_pathing = "{0:>s}".format("+".join([t.keyname for t in haystack if t.id != needle.id]))
+@register.simple_tag()
+def dechain_archival_categories(needle, haystack):
+    category_path= "{0:>s}".format("+".join([t.keyname for t in haystack if t.id != needle.id]))
     
-    if category_pathing == '':
+    if category_path == '':
         url = "./"
     else:
-        url = "?c={0:>s}".format(category_pathing)
+        url = "?c={0:>s}".format(category_path)
     
     return url
 
@@ -265,12 +263,12 @@ def dechain_archival_categories(context, needle, haystack):
 class xsite_BaseCommentNode(BaseCommentNode):
     """fetch comments without respect to a site"""
     def get_query_set(self, context):
-        ctype, object_pk = self.get_target_ctype_pk(context)
+        c_type, object_pk = self.get_target_ctype_pk(context)
         if not object_pk:
             return self.comment_model.objects.none()
 
         qs = self.comment_model.objects.filter(
-            content_type = ctype,
+            content_type = c_type,
             object_pk    = smart_unicode(object_pk),
         )
 

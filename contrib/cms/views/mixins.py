@@ -7,6 +7,7 @@ class PageMixin(object):
     onload = None
     
     def get_context_data(self, *args, **kwargs):
+        # it's okay pycharm
         context = super(PageMixin, self).get_context_data(*args, **kwargs)
         logger.debug("PageMixin.get_context_data started")
         if 'cms_page' in context:

@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 from libscampi.core.fields import UserModelChoiceField
-from .models import ArticleTranslation, Story, Publish
+from libscampi.contrib.cms.newsengine.models import ArticleTranslation, Story, Publish
 
 class ArticleTranslationForm(forms.ModelForm):
     headline = forms.CharField(label = _('Headline'), widget = forms.TextInput(attrs={'size': 100}))

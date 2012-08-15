@@ -1,5 +1,5 @@
 libscampi was originally created in 2011 by Joey Leingang
-of Arizona Public Media in the University of Arizona (Tucson, AZ)
+of Arizona Public Media a department the University of Arizona (Tucson, AZ)
 
 The PRIMARY AUTHOR(S) are (and/or have been):
 
@@ -19,3 +19,14 @@ A big THANK YOU  goes to:
     The #django IRC channel on irc.freenode.net for answering silly questions.
     
     Guido van Rossum for creating python.
+
+libscampi uses code from several open source projects and authors, including but not limited to:
+
+django_filter from Alex Gaynor -- used as libscampi.contrib.django_filters
+    - django_filter is used under the BSD License
+multilingual model from http://django-multilingual-model.googlecode.com/ -- used as libscampi.contrib.multilingual
+    - multilingual is used under the Apache License 2.0
+crypto-fields from Alexander Artemenko -- used as libscampi.core.fields.crypto
+    - crypto-fields is used under the BSD License
+django-picklefield from Gintautas Miliauskas -- used as libscampi.core.fields.pickle
+    - django-picklefield is used under the MIT License

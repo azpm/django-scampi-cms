@@ -1,11 +1,3 @@
-__author__ = 'Joey Leingang'
-__date__ = '5/3/12'
-
-# Performance note: I benchmarked this code using a set instead of
-# a list for the stopwords and was surprised to find that the list
-# performed /better/ than the set - maybe because it's only a small
-# list.
-
 stopwords = '''
 i
 a

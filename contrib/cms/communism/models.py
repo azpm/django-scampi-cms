@@ -62,7 +62,7 @@ class HtmlLinkRef(models.Model):
         ordering = ['precedence']
         
     def __unicode__(self):
-        return "[{0:>s}] {1:>s}".format(self.theme.keyname, self.name)
+        return u"[{0:>s}] {1:>s}".format(self.theme.keyname, self.name)
 
 class Javascript(HtmlLinkRef):
     """Provides the ability to utilize either an uploaded javascript file
@@ -140,7 +140,7 @@ class Realm(models.Model):
         ordering = ['display_order']
     
     def __unicode__(self):
-        return "{0:>s}".format(self.site.domain)
+        return u"{0:>s}".format(self.site.domain)
         
     def natural_key(self):
         return self.keyname
@@ -211,7 +211,7 @@ class RealmNotification(models.Model):
         verbose_name_plural = "Service Announcements"
     
     def __unicode__(self):
-        return "<{0:>s}> {1:>s}".format(self.realm, self.name)
+        return u"<{0:>s}> {1:>s}".format(self.realm, self.name)
 
 class Section(models.Model):
     """Sections are transparent, and are a 'generic' middleman to provide
@@ -242,7 +242,7 @@ class Section(models.Model):
         ordering = ('realm__display_order', 'display_order')
         
     def __unicode__(self):
-        return "{0:>s} [{1:>s}]".format(self.element, self.element_type.name)
+        return u"{0:>s} [{1:>s}]".format(self.element, self.element_type.name)
         
     def natural_key(self):
         return self.realm.keyname, self.keyname
@@ -296,7 +296,7 @@ class BaseHierarchyElement(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return "%s" % self.name
+        return u"{0:>s}".format(self.name)
         
     def natural_key(self):
         return self.realm.keyname, self.keyname
@@ -369,7 +369,7 @@ class Slice(models.Model):
         unique_together = ('commune', 'display_order')
     
     def __unicode__(self):
-        return "{0:>s} - {1:>s} #{2:d}".format(self.commune.realm.name, self.commune.keyname, self.display_order)
+        return u"{0:>s} - {1:>s} #{2:d}".format(self.commune.realm.name, self.commune.keyname, self.display_order)
 
     def natural_key(self):
         return self.commune.keyname, self.display_order
@@ -402,7 +402,7 @@ class NamedBoxTemplate(models.Model):
         ordering = ['name',]
         
     def __unicode__(self):
-        return self.name
+        return u"{0:>s}".format(self.name)
         
 class NamedBox(models.Model):
     """Holds content, either static or picked
@@ -441,7 +441,7 @@ class NamedBox(models.Model):
         ordering = ['slice', 'gridy', 'gridx', 'display_order']
     
     def __unicode__(self):
-        return "{0:>s} Column #{1:d}, {2:d}".format(self.name, self.gridx, self.display_order)
+        return u"{0:>s} Column #{1:d}, {2:d}".format(self.name, self.gridx, self.display_order)
         
     def natural_key(self):
         return self.slice.commune.keyname, self.slice.display_order, self.gridy, self.gridx, self.display_order, self.keyname

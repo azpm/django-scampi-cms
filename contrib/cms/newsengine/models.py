@@ -48,7 +48,7 @@ class ArticleTranslation(models.Model):
         verbose_name_plural = 'Article Translations'
     
     def __unicode__(self):
-        return u"%s" % self.headline
+        return u"{0:>s}".format(self.headline)
     
 class Article(MultilingualModel):
     contributors = models.ManyToManyField(User, related_name = "contributors", null = True, blank = True)
@@ -75,7 +75,7 @@ class Article(MultilingualModel):
     who_made_me.short_description = "Creating Editor"
     
     def __unicode__(self):
-        return u"%s" % self.headline
+        return u"{0:>s}".format(self.headline)
   
 class StoryCategory(models.Model):
     title = models.CharField(max_length = 100)
@@ -97,7 +97,7 @@ class StoryCategory(models.Model):
         verbose_name_plural = "Story Categories"
     
     def __unicode__(self):
-        return u"%s" % self.title
+        return u"{0:>s}".format(self.title)
     
 class Story(models.Model):
     article = models.ForeignKey(Article)
@@ -123,7 +123,7 @@ class Story(models.Model):
         verbose_name_plural = "Stories"
         
     def __unicode__(self):
-        return u"%s" % self.article
+        return u"{0:>s}".format(self.article)
 
     def related(self):
         cats = self.categories.values_list('id', flat=True)
@@ -167,7 +167,7 @@ class PublishCategory(models.Model):
         verbose_name_plural = "Publishing Words"
         
     def __unicode__(self):
-        return u"%s" % self.title
+        return u"{0:>s}".format(self.title)
     
 class Publish(models.Model):
     story = models.ForeignKey(Story)
@@ -195,12 +195,12 @@ class Publish(models.Model):
     
     def __unicode__(self):
         if self.category:
-            return "[%s] > %s" % (self.category.title, self.story.article.headline)
+            return u"[{0:>s}] > {1:>s}".format(self.category.title, self.story.article.headline)
         else:
-            return "%s" % self.story.article.headline
+            return u"{0:>s}".format(self.story.article.headline)
 
     def get_absolute_url(self):
-        return "%d/%d/%d/%s/" % (self.start.year, self.start.month, self.start.day, self.slug)
+        return "{0:d}/{1:d}/{2:d}/{3:>s}/".format(self.start.year, self.start.month, self.start.day, self.slug)
 
     @property
     def comments_enabled(self):

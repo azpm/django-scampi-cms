@@ -43,7 +43,7 @@ class PickerTemplate(models.Model):
         verbose_name_plural = "Picker Templates"
         
     def __unicode__(self):
-        return self.name
+        return u"{0:>s}".format(self.name)
 
 class PickerBase(models.Model):
     name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
@@ -72,9 +72,9 @@ class DynamicPicker(PickerBase):
         unique_together = ('keyname',)
         verbose_name = "Dynamic Content Picker"
         verbose_name_plural = "Dynamic Content Pickers"
-        
+
     def __unicode__(self):
-        return self.name
+        return u"{0:>s}".format(self.name)
         
     def natural_key(self):
         if self.commune:
@@ -185,9 +185,9 @@ class StaticPicker(PickerBase):
     class Meta:
         verbose_name = "Static Content Picker"
         verbose_name_plural = "Static Content Pickers"
-        
+
     def __unicode__(self):
-        return self.name
+        return u"{0:>s}".format(self.name)
         
     def natural_key(self):
         return self.commune.keyname, self.commune.section.display_order, self.namedbox.gridy, self.namedbox.gridx, self.namedbox.display_order, self.namedbox.keyname

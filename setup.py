@@ -4,7 +4,7 @@ setup(
     name='libscampi',
     version='4.1',
     packages=['libscampi'],
-    package_dir={'': 'libscampi'},
+    package_dir={'': '.'},
     url='https://github.com/azpm/django-scampi-cms',
     license='BSD',
     author='Joey Leingang',

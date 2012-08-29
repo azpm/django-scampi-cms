@@ -72,6 +72,13 @@ class PublishedByAuthor(Tag):
 register.tag(PublishedByAuthor)
 
 class RenderArticle(Tag):
+    """
+    {% render_article [article :model:`newsengine.Article`] %}
+
+    returns: a fully rendered article in users language, if available
+
+    example: {% render_article publish.story.article %}
+    """
     name = "render_article"
 
     options = Options(
@@ -158,6 +165,14 @@ class RelatedStories(Tag):
 register.tag(RelatedStories)
 
 class StoryPermaLink(Tag):
+    """
+    {% story_permalink [story :model:`newsengine.Story`] %}
+
+    returns: URL for a story
+
+    example:
+        {% story_permalink publish.story %}
+    """
     name = "story_permalink"
 
     options = Options(
@@ -265,6 +280,17 @@ def category_cloud(parser, token):
     
 @register.simple_tag
 def build_pagelist(pages, current_page, get_args = None):
+    """
+    {% build_pagelist [pages int] [current_page int] <get_args optional string> %}
+
+    returns: html list elements <li> with class="active" for current page, 4 pages in each direction of current,
+    if available
+
+    example:
+        <ul>
+            {% build_pagelist paginator.page_range page_obj.number get_args %}
+        </ul>
+    """
     if current_page > pages[-1]:
         return u""
 
@@ -303,6 +329,11 @@ def build_pagelist(pages, current_page, get_args = None):
     
 @register.simple_tag()
 def chain_archival_categories(needle, haystack):
+    """
+    {% chain_archival_categories new current %}
+
+    returns: ?c=new+current or ?c=new if current is empty
+    """
     if haystack:
         category_path = "{0:>s}+{1:>s}".format("+".join([t.keyname for t in haystack]), needle['keyname'])
     else:
@@ -314,6 +345,11 @@ def chain_archival_categories(needle, haystack):
     
 @register.simple_tag()
 def dechain_archival_categories(needle, haystack):
+    """
+    {% dechain_archival_categories needle current %}
+
+    returns: strips needle from current ?c=updated or ./ if current is empty
+    """
     category_path= "{0:>s}".format("+".join([t.keyname for t in haystack if t.id != needle.id]))
     
     if category_path == '':

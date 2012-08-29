@@ -4,7 +4,7 @@ import os
 setup(
     name='libscampi',
     version='4.1',
-    packages=['contrib','core','utils'],
+    packages=['libscampi'],
     url='https://github.com/azpm/django-scampi-cms',
     package_dir={'libscampi': 'libscampi'},
     packages=packages,

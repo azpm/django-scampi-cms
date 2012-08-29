@@ -24,7 +24,7 @@ class PublishedByAuthor(Tag):
     """
     {% recent_stories_by [author :model:`auth.User`] as [varname str] <limit optional int, default 3> %}
 
-    returns: values query set of published stories by author
+    returns: values query set of stories by author
 
     example:
         {% recent_stories_by pub.story.author as author_stories 6 %}
@@ -113,6 +113,18 @@ class RenderArticle(Tag):
 register.tag(RenderArticle)
 
 class RelatedStories(Tag):
+    """
+    {% related_stories [story :model:`newsengine.Story`] as [varname str] <limit optional int, default 3> %}
+
+    returns: values query set of stories related to input story
+
+    example:
+        {% related_stories pub.story as rel_stories 6 %}
+        {% for story in rel_stories %}
+            <a data-story-id="{{ story.id }}" href="{% url cms:story:story-detail story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
+        {% endfor %}
+
+    """
     name = "related_stories"
 
     options = Options(

@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from django import template
 from django.db.models import Q
@@ -11,12 +12,64 @@ from django.utils.translation import ugettext_lazy as _, get_language_from_reque
 from django.contrib.comments.templatetags.comments import BaseCommentNode
 from classytags.core import Tag, Options
 from classytags.arguments import Argument, IntegerArgument
-from libscampi.contrib.cms.newsengine.models import Article
+
+from libscampi.contrib.cms.newsengine.models import Article, Story
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
 
 register = template.Library()
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.templatetags')
+
+class PublishedByAuthor(Tag):
+    """
+    {% recent_stories_by [author :model:`auth.User`] as [varname str] <limit optional int, default 3> %}
+
+    returns: values query set of published stories by author
+
+    example:
+        {% recent_stories_by pub.story.author as author_stories 6 %}
+        {% for story in author_stories %}
+            <a data-story-id="{{ story.id }}" href="{% url cms:story:story-detail story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
+        {% endfor %}
+
+    """
+    name = "recent_stories_by"
+
+    options = Options(
+        Argument('author', required=True, resolve=True),
+        'as',
+        Argument('varname', required=True, resolve=False),
+        IntegerArgument('limit', default=3, required=False, resolve=False),
+    )
+
+    def render_tag(self, context, **kwargs):
+        author = kwargs.pop('author')
+        varname = kwargs.pop('varname')
+        limit = kwargs.pop('limit')
+
+        cache_key = "stories:recent:by:{0:d}".format(author.id)
+        related = cache.get(cache_key, None)
+
+        if not related:
+            logger.debug("missed authors story cache on {0:>s}".format(cache_key))
+
+            right_now = datetime.now()
+            related = Story.objects.filter(
+                publish__published=True,
+                publish__start__lte=right_now,
+                author=author
+            ).values('id','slug','article')[:limit]
+
+            for item in related:
+                item['article'] = Article.objects.get(pk=item['article'])
+
+            cache.set(cache_key, list(related), 60*20)
+
+        context[varname] = related
+
+        return u""
+
+register.tag(PublishedByAuthor)
 
 class RenderArticle(Tag):
     name = "render_article"

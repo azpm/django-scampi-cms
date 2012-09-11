@@ -14,7 +14,7 @@ from libscampi.contrib.cms.renaissance import settings as local_settings
 from libscampi.contrib.cms.renaissance.validation import ValidImgExtension, ValidVidExtension, ValidDocExtension, ValidAudExtension, ValidObjExtension
 
 # Patch mime types w/ any extra types
-mimetypes.MimeTypes.types_map.update(local_settings.EXTRA_MIME_TYPES)
+mimetypes.types_map.update(local_settings.EXTRA_MIME_TYPES)
 
 __all__ = [
     'MediaInlineTemplate', 'MediaPlaylistTemplate',

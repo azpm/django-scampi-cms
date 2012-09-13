@@ -1,6 +1,6 @@
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import DefaultStorage
 
-class OverwriteStorage(FileSystemStorage):
+class OverwriteStorage(DefaultStorage):
     """
     A simple storage engine that replaces an uploaded file
     """

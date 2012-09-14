@@ -60,7 +60,7 @@ def calculate_cloud(categories, steps=4, distribution=LOGARITHMIC):
 def cache_publishpicker_base_cats(sender, instance, **kwargs):
     created = kwargs.get('created', False)
     
-    if instance.content == ContentType.objects.get_by_natural_key('newsengine','Publish') and not created:
+    if instance.content == ContentType.objects.get_by_natural_key('newsengine','publish') and not created:
         #every PublishPicking picker has base story categories that define it
         cat_cache_key = "picker:base:categories:{0:d}".format(instance.pk)
         keep_these = ('story__categories__id__in','story__categories__id__exact')

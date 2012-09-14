@@ -1,0 +1,17 @@
+include README.md
+include AUTHORS
+include INSTALL
+include LICENSE
+include MANIFEST.in
+recursive-include libscampi/cms/communism/templates *
+recursive-include libscampi/cms/conduit/templates *
+recursive-include libscampi/cms/conduit/static *
+recursive-include libscampi/cms/newsengine/static *
+recursive-include libscampi/cms/newsengine/templates *
+recursive-include libscampi/cms/renaissance/static *
+recursive-include libscampi/cms/renaissance/templates *
+recursive-include libscampi/cms/toolbar/static *
+recursive-include libscampi/cms/toolbar/templates *
+recursive-include libscampi/django_filters/docs *
+recursive-include libscampi/django_filters/notice *
+recursive-include libscampi/multilingual/fixture *

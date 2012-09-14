@@ -121,7 +121,7 @@ register.tag(RenderArticle)
 
 class RelatedStories(Tag):
     """
-    {% related_stories [story :model:`newsengine.Story`] as [varname str] <limit optional int, default 3> %}
+    {% related_stories [story :model:`newsengine.Story`] as [varname str] <limit optional int, default 3, max 10> %}
 
     returns: values query set of stories related to input story
 
@@ -145,6 +145,9 @@ class RelatedStories(Tag):
         story = kwargs.pop('story')
         varname = kwargs.pop('varname')
         limit = kwargs.pop('limit')
+
+        if limit > 10:
+            limit = 10
 
         cache_key = "stories:related:to:{0:d}".format(story.id)
         related = cache.get(cache_key, None)

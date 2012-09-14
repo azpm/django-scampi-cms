@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from itertools import chain
 
 from django.db import models
 from django.db.models import Q, Count
@@ -126,19 +127,28 @@ class Story(models.Model):
         return u"{0:>s}".format(self.article)
 
     def related(self):
-        cats = self.categories.values_list('id', flat=True)
+        cats = self.categories.exclude(excluded=True).values_list('id', flat=True)
 
         right_now = datetime.now()
         long_ago = right_now - timedelta(days=30)
 
-        qs = Story.objects.filter(
-            Q(peers__in=[self.pk]) | Q(categories__in=list(cats)),
+        # lets grab peers first
+        peers = Story.objects.filter(
+            Q(peers__in=[self.pk]),
+            publish__published=True,
+            publish__start__lte=right_now
+        ).annotate(rel_count=Count('peers')).exclude(Q(pk=self.pk)).values('rel_count','id','slug','article')[:10]
+
+        # then the related by categories
+        by_categories = Story.objects.filter(
+            Q(categories__in=list(cats)),
             publish__published=True,
             publish__start__lte=right_now,
             publish__start__gte=long_ago
-        ).exclude(Q(pk=self.pk) | Q(categories__excluded=True)).annotate(rel_count=Count('categories'))
+        ).exclude(Q(pk=self.pk)).annotate(rel_count=Count('categories')).order_by('-rel_count','important').values('rel_count','id','slug','article')[:10]
 
-        return qs.order_by('-rel_count','important').values('rel_count','id','slug','article')
+        combined = list(chain(peers, by_categories))
+        return combined
 
     def visible_categories(self):
         return self.categories.filter(browsable=True)

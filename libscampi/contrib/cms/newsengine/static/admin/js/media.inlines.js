@@ -93,7 +93,7 @@
 
         build_inline : function(media) {
             //noinspection JSUnresolvedVariable
-            var html = $("<span>{% inline "+media.form_of+" "+media.slug+" %}</span>").attr("id", media.form_of+'_'+media.pk);
+            var html = $('<span>{'+'% inline '+media.form_of+' '+media.slug+' %'+'}</span>').attr("id", media.form_of+'_'+media.pk);
 
             //noinspection JSUnresolvedVariable
             $(html)

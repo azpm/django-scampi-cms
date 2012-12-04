@@ -1,5 +1,6 @@
 import logging
 
+from operator import and_
 from django.views.generic.dates import *
 from django.db.models import Q
 
@@ -22,12 +23,9 @@ class PublishArchivePage(PublishMixin, PickerMixin, CMSPageNoView):
     available_categories = None
 
     def get(self, request, *args, **kwargs):
-        logger.debug("NewsEngineArchivePage.get called")
-
         #keyname specified in url
         if 'c' in request.GET:
             limits = request.GET.get('c','').split(' ')
-            logger.debug(limits)
 
             filters = [Q(keyname=value) for value in limits]
             query = filters.pop()
@@ -86,11 +84,11 @@ class PublishArchivePage(PublishMixin, PickerMixin, CMSPageNoView):
         categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=list(self.base_categories.values_list('id', flat=True)))
 
         if self.limits:
-            filters = [Q(story__categories__pk=value[0]) for value in self.limits.values_list('id')]
-            for filter in filters:
-                qs = qs.filter(filter)
+            limit_ids = self.limits.values_list('id', flat=True)
+            query = reduce(and_, [Q(story__categories__pk=limit_ids)])
+            qs = qs.filter(query)
 
-            self.available_categories = categories.exclude(pk__in=list(self.limits.values_list('id', flat=True)))
+            self.available_categories = categories.exclude(pk__in=limit_ids)
         else:
             self.available_categories = categories
 

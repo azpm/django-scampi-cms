@@ -1,10 +1,12 @@
 import logging
 from datetime import datetime
+from operator import and_
 
 from django.views.generic import DetailView, ListView
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.cache import cache
 from django.contrib.sites.models import Site
 
 from libscampi.contrib.cms.views.base import PageNoView
@@ -23,8 +25,6 @@ class StoryPage(StoryMixin, PageNoView):
     restrict = True
 
     def get(self, request, *args, **kwargs):
-        logger.debug("StoryPage.get called")
-
         try:
             realm = Site.objects.get_current().realm
         except (AttributeError, ObjectDoesNotExist):
@@ -41,7 +41,6 @@ class StoryPage(StoryMixin, PageNoView):
         #category filtering specified in url
         if 'c' in request.GET:
             limits = request.GET.get('c','').split(' ')
-            logger.debug(limits)
 
             filters = [Q(keyname=value) for value in limits]
             query = filters.pop()
@@ -58,7 +57,21 @@ class StoryPage(StoryMixin, PageNoView):
         return super(StoryPage, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = self.model.objects.exclude(categories__excluded=True).distinct()
+        """
+        excluded_categories_key = 'storycategory:excluded'
+        if self.refresh_caches:
+            cache.delete(excluded_categories_key)
+
+        excluded_categories_ids = cache.get(excluded_categories_key, None)
+        if not excluded_categories_ids:
+            excluded_categories_ids = StoryCategory.objects.filter(excluded=True).values_list('id', flat=True)
+            cache.set(excluded_categories_key, list(excluded_categories_ids), 60*60)
+
+        qs = self.model.objects.exclude(categories__pk__in=excluded_categories_ids).distinct()
+        """
+
+        excluded_stories = self.model.objects.filter(categories__excluded=True).values_list('id',flat=True)
+        qs = self.model.objects.exclude(pk__in=excluded_stories).distinct()
 
         # limit to stories that are published, before right now, to the current site, or no specific site
         now = datetime.now()
@@ -71,11 +84,14 @@ class StoryPage(StoryMixin, PageNoView):
             )
 
         categories = StoryCategory.genera.for_cloud(qs)
+        #categories = StoryCategory.objects.filter(browsable=True,excluded=False).annotate(occurances=Count('story')).values('id','title','keyname','occurances')
+
+        #filter(story__publish__in=qs, browsable=True).annotate(occurances=Count('story')).values('id','title','keyname','occurances')
         if self.limits:
-            filters = [Q(categories__pk=value[0]) for value in self.limits.values_list('id')]
-            for filter in filters:
-                qs = qs.filter(filter)
-            self.available_categories = categories.exclude(pk__in=list(self.limits.values_list('id', flat=True)))
+            limit_ids = self.limits.values_list('id', flat=True)
+            query = reduce(and_, [Q(categories__pk=limit_ids)])
+            qs = qs.filter(query)
+            self.available_categories = categories.exclude(pk__in=limit_ids)
         else:
             self.available_categories = categories
 
@@ -84,7 +100,6 @@ class StoryPage(StoryMixin, PageNoView):
         return qs
 
     def get_context_data(self, *args, **kwargs):
-        logger.debug("StoryPage.get_context_data started")
         context = super(StoryPage, self).get_context_data(*args, **kwargs)
 
         if self.limits:
@@ -99,7 +114,6 @@ class StoryPage(StoryMixin, PageNoView):
             'get_args': get_args,
             'base_categories': self.base_categories,
         })
-        logger.debug("StoryPage.get_context_data ended")
 
         return context
 

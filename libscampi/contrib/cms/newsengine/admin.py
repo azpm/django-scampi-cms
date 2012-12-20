@@ -210,6 +210,12 @@ class StoryAdmin(admin.ModelAdmin):
 
     save_on_top = True
 
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == 'categories':
+            kwargs['queryset'] = StoryCategory.objects.filter(active=True).order_by("collection","title")
+
+        return super(StoryAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+
     def author_name(self, cls):
         return cls.author.get_full_name()
 
@@ -238,7 +244,15 @@ class StoryAdmin(admin.ModelAdmin):
             try:
                 publish_request.save()
             except (DatabaseError, IntegrityError):
-                mail_admins("couldn't pre-publish a story", "%s" % locals(), fail_silently = True)
+                logger.error("couldn't pre-publish a story")
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.categories.filter(active=False).exists() and not request.user.is_superuser:
+            return ('categories',)
+
+        else:
+
+            return super(StoryAdmin, self).get_readonly_fields(request, obj)
     
     form = StoryForm
     
@@ -310,8 +324,20 @@ class PublishQueueAdmin(PublishStoryAdmin):
         qs = super(PublishQueueAdmin, self).queryset(request)
         return qs.filter(seen = False, published = False)
 
+class StoryCategoryAdmin(admin.ModelAdmin):
+    list_display = ('title','keyname','browsable','excluded','active','collection')
+    list_filter = ('browsable','excluded','active','collection')
+    search_fields = ('title','keyname')
+    raw_id_fields = ('logo',)
+
+    fieldsets = (
+        ('Definition', {'fields': ('title','keyname')}),
+        ('Attributes', {'fields': ('browsable','excluded','active','collection')}),
+        ('Optional', {'fields': ('logo','description')})
+    )
+
 admin.site.register(Article, ArticleAdmin)
-admin.site.register(StoryCategory)
+admin.site.register(StoryCategory, StoryCategoryAdmin)
 admin.site.register(Story, StoryAdmin)
 admin.site.register(PublishCategory, PublishCategoryAdmin)
 admin.site.register(Publish, PublishStoryAdmin)

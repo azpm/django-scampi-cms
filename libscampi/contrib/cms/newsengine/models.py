@@ -81,12 +81,17 @@ class Article(MultilingualModel):
 class StoryCategory(models.Model):
     title = models.CharField(max_length = 100)
     keyname =  models.SlugField(max_length = 100, db_index = True)
-    
-    browsable = models.BooleanField(default=True)
-    excluded = models.BooleanField(default=False, help_text=_("Exclude from Story Listings"))
+
     seen = models.PositiveIntegerField(default = 0, editable = False)
     shared = models.PositiveIntegerField(default = 0, editable = False)
-    
+
+    # flags
+    browsable = models.BooleanField(default=True, help_text=_("Visible in category filters list on archive pages."), db_index=True)
+    excluded = models.BooleanField(default=False, help_text=_("Hide from Story Archives."), db_index=True)
+    active = models.BooleanField(default=True, help_text=_("Active in backend."), db_index=True)
+    collection = models.BooleanField(verbose_name=_("Collection"), default=False, help_text=_("Is a 'collection' Category"), db_index=True)
+    logo = models.ForeignKey(Image, null = True, blank = True)
+
     description = models.TextField(blank = True)
     
     objects = models.Manager()
@@ -98,6 +103,9 @@ class StoryCategory(models.Model):
         verbose_name_plural = "Story Categories"
     
     def __unicode__(self):
+        if self.collection:
+            return u"[collection] {0:>s}".format(self.title)
+
         return u"{0:>s}".format(self.title)
     
 class Story(models.Model):

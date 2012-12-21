@@ -76,7 +76,7 @@ class StoryPage(StoryMixin, PageNoView):
         #filter(story__publish__in=qs, browsable=True).annotate(occurances=Count('story')).values('id','title','keyname','occurances')
         if self.limits:
             limit_ids = list(self.limits.values_list('id', flat=True))
-            query = reduce(and_, [Q(categories=t) for t in limit_ids])
+            query = reduce(and_, [Q(categories__pk=t) for t in limit_ids])
             qs = qs.filter(query)
 
             self.available_categories = categories.exclude(pk__in=limit_ids)

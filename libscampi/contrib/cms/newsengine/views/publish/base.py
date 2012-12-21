@@ -84,11 +84,10 @@ class PublishArchivePage(PublishMixin, PickerMixin, CMSPageNoView):
         categories = StoryCategory.genera.for_cloud(qs).exclude(pk__in=list(self.base_categories.values_list('id', flat=True)))
 
         if self.limits:
-            limit_ids = list(self.limits.values_list('id', flat=True))
-            query = reduce(and_, [Q(story__categories__pk=t) for t in limit_ids])
-            qs = qs.filter(query)
-
-            self.available_categories = categories.exclude(pk__in=limit_ids)
+            filters = [Q(categories__pk=value[0]) for value in self.limits.values_list('id')]
+            for filter in filters:
+                qs = qs.filter(filter)
+            self.available_categories = categories.exclude(pk__in=list(self.limits.values_list('id', flat=True)))
         else:
             self.available_categories = categories
 

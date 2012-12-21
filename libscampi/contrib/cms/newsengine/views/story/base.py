@@ -81,8 +81,9 @@ class StoryPage(StoryMixin, PageNoView):
             self.available_categories = categories
 
         self.base_categories = StoryCategory.objects.none()
+        qs = qs.exclude(categories__excluded=True)
 
-        return qs.exclude(categories__excluded=True)
+        return qs
 
     def get_context_data(self, *args, **kwargs):
         context = super(StoryPage, self).get_context_data(*args, **kwargs)

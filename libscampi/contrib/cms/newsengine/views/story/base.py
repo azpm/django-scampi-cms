@@ -57,8 +57,7 @@ class StoryPage(StoryMixin, PageNoView):
         return super(StoryPage, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        #excluded_stories = self.model.objects.filter(categories__excluded=True).values_list('id',flat=True)
-        qs = self.model.objects.exclude(categories__excluded=True).distinct()
+        qs = self.model.objects.distinct()
 
         # limit to stories that are published, before right now, to the current site, or no specific site
         now = datetime.now()
@@ -71,9 +70,7 @@ class StoryPage(StoryMixin, PageNoView):
             )
 
         categories = StoryCategory.genera.for_cloud(qs)
-        #categories = StoryCategory.objects.filter(browsable=True,excluded=False).annotate(occurances=Count('story')).values('id','title','keyname','occurances')
 
-        #filter(story__publish__in=qs, browsable=True).annotate(occurances=Count('story')).values('id','title','keyname','occurances')
         if self.limits:
             limit_ids = list(self.limits.values_list('id', flat=True))
             query = reduce(and_, [Q(categories__pk=t) for t in limit_ids])
@@ -85,7 +82,7 @@ class StoryPage(StoryMixin, PageNoView):
 
         self.base_categories = StoryCategory.objects.none()
 
-        return qs
+        return qs.exclude(categories__excluded=True)
 
     def get_context_data(self, *args, **kwargs):
         context = super(StoryPage, self).get_context_data(*args, **kwargs)

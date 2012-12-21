@@ -71,7 +71,7 @@ class StoryPage(StoryMixin, PageNoView):
         """
 
         excluded_stories = self.model.objects.filter(categories__excluded=True).values_list('id',flat=True)
-        qs = self.model.objects.exclude(pk__in=excluded_stories).distinct()
+        qs = self.model.objects.exclude(pk__in=list(excluded_stories)).distinct()
 
         # limit to stories that are published, before right now, to the current site, or no specific site
         now = datetime.now()

@@ -57,7 +57,7 @@ class StoryPage(StoryMixin, PageNoView):
         return super(StoryPage, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = self.model.objects.distinct()
+        qs = self.model.objects.exclude(categories__excluded=True).distinct()
 
         # limit to stories that are published, before right now, to the current site, or no specific site
         now = datetime.now()
@@ -81,7 +81,6 @@ class StoryPage(StoryMixin, PageNoView):
             self.available_categories = categories
 
         self.base_categories = StoryCategory.objects.none()
-        qs = qs.exclude(categories__excluded=True)
 
         return qs
 

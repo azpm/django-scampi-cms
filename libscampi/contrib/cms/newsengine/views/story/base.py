@@ -57,7 +57,9 @@ class StoryPage(StoryMixin, PageNoView):
         return super(StoryPage, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = self.model.objects.exclude(categories__excluded=True).distinct()
+        # first: all stories that don't have an excluded category
+        excluded_stories = self.model.objects.filter(categories__excluded=True).values_list('id',flat=True)
+        qs = self.model.objects.exclude(pk__in=excluded_stories).distinct()
 
         # limit to stories that are published, before right now, to the current site, or no specific site
         now = datetime.now()

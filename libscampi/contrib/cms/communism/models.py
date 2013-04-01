@@ -367,6 +367,7 @@ class Slice(models.Model):
     
     class Meta:
         unique_together = ('commune', 'display_order')
+        ordering = ('display_order',)
     
     def __unicode__(self):
         return u"{0:>s} - {1:>s} #{2:d}".format(self.commune.realm.name, self.commune.keyname, self.display_order)

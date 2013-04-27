@@ -239,59 +239,13 @@ class PublishPicking(django_filters.FilterSet):
     class Meta:
         model = Publish
         fields = ['site','start','end','category','published','story__categories']
-        
-                
+
     @staticmethod
-    def static_chain(qs):
-        qs = qs.distinct()
+    def query_set(qs):
+        qs = qs.select_related('thumbnail', 'story_author').distinct()
+
         return qs
-        
-    @staticmethod
-    def static_select_related():
-        return (
-            'thumbnail',
-            'story__author',
-        )
-        
-    @staticmethod
-    def static_prefetch_related():
-        return (
-            'story__article',
-            'story__article__image_inlines',
-            'story__article__video_inlines',
-            'story__article__audio_inlines',
-            'story__article__document_inlines',
-            'story__article__object_inlines',
-        )
-        
-    @staticmethod
-    def static_defer():
-        return (
-            'end',
-            'approved_by',
-            'category',
-            'seen',
-            'published',
-            'thumbnail__author',
-            'thumbnail__creation_date',
-            'thumbnail__reproduction_allowed',
-            'thumbnail__modified',
-            'thumbnail__mime_type',
-            'story__author__email',
-            'story__author__password',
-            'story__author__is_staff',
-            'story__author__is_active',
-            'story__author__is_superuser',
-            'story__author__last_login',
-            'story__author__date_joined',
-            'story__creation_date',
-            'story__modified',
-            'story__image_playlist',
-            'story__video_playlist',
-            'story__audio_playlist',
-            'story__document_playlist',
-            'story__object_playlist',
-        )
+
 
 @receiver(post_save, sender=Publish)
 def slug_for_publish(sender, instance, created, raw, **kwargs):

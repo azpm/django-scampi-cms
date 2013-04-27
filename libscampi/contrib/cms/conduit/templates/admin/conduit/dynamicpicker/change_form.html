@@ -8,8 +8,8 @@
         var picker_id = "{{ object_id }}";
         var content_id = "{{ original.content.id }}";
     
-        var load_filters_url = "{% url admin:conduit-picking-filters-fields %}";
-        var preview_url = "{% url admin:conduit-picking-preview-picked %}";
+        var load_filters_url = "{% url 'admin:conduit-picking-filters-fields' %}";
+        var preview_url = "{% url 'admin:conduit-picking-preview-picked' %}";
         var get_args = {'content_id': content_id, 'picker_id': picker_id};
               
         var picker_form = new Pickers();        

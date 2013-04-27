@@ -35,7 +35,7 @@ def build_filters(fs):
     
     filters = {}
         
-    for name, filter in fs.filters.iteritems():
+    for name, _filter in fs.filters.iteritems():
         fs = None
         try:
             #get the data from the cleaned form
@@ -54,24 +54,24 @@ def build_filters(fs):
             elif isinstance(value, (list, tuple)) and len(value) == 0:
                 continue
             else:
-                lookup = filter.lookup_type
+                lookup = _filter.lookup_type
             
             
-            if type(filter) is ModelMultipleChoiceFilter:
+            if type(_filter) is ModelMultipleChoiceFilter:
                 # Handle model multiple choice fields -- because django explicitly says
                 # pickled query sets DO NOT work across django versions we need to pickle
                 # a FOO__id__in: [LIST OF IDS] for the pickler
                 value = value or ()
                 if not len(value) == len(list(picking_form.fields[name].choices)):
-                    fs = {"%s__id__in" % filter.name: [t.pk for t in value]}
-            elif type(filter) is ModelChoiceFilter:
+                    fs = {"%s__id__in" % _filter.name: [t.pk for t in value]}
+            elif type(_filter) is ModelChoiceFilter:
                 # handle single model choice fields, again because query sets are not likely
                 # to work across django versions we cannot pickle the QS we need to pickle
                 # proper qs lookup
                 if value is None:
                     continue
-                fs = {"%s__id__%s" % (filter.name, lookup): value.pk}
-            elif type(filter) is DateRangeFilter:
+                fs = {"%s__id__%s" % (_filter.name, lookup): value.pk}
+            elif type(_filter) is DateRangeFilter:
                 # Handle date range objects: django_filters says "today" is literally today,
                 # at initial execute.  We must pickle a coercible concept so that date ranges
                 # are always proper at all execute times
@@ -79,10 +79,10 @@ def build_filters(fs):
                     value = int(value)
                 except (ValueError, TypeError):
                     continue
-                fs = DATE_RANGE_PICKLE_MAPPING[value](filter.name, lookup)
+                fs = DATE_RANGE_PICKLE_MAPPING[value](_filter.name, lookup)
             elif value is not None:
                 # this is a non-relational, non-datetime lookup
-                fs = {"%s__%s" % (filter.name, lookup): value}
+                fs = {"%s__%s" % (_filter.name, lookup): value}
                 
             if fs:
                 filters.update(fs)

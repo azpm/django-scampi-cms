@@ -1,6 +1,9 @@
-include AUTHORS.txt
-include COPYRIGHT
-include README.txt
+include AUTHORS
+include CHANGES.rst
+include LICENSE
+include README.rst
+include runshell.py
+include runtests.py
 recursive-include docs *
-recursive-include django_filters/tests/fixtures *
-recursive-include django_filters/tests/templates/tests *
+recursive-include requirements *
+recursive-include tests *

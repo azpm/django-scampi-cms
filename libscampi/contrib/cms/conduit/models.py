@@ -82,92 +82,29 @@ class DynamicPicker(PickerBase):
         return None, self.keyname
 
     def picked(self):
-        """
-        returns a query set of picked objects using inclusion and exclusion filters
-        """
+        """returns a query set of picked objects using inclusion and exclusion filters"""
         try:
             model, fs = manifest.get_for_picking(self.content)
         except (NameError, TypeError):
             return {}
 
+        qs = model.objects
 
-        cache_key = "conduit:dp:ids:{0:d}".format(self.pk)
-        cached_ids = cache.get(cache_key, None)
-        if cached_ids:
-            qs = model.objects.filter(pk__in=cached_ids)
-        else:
-            logger.debug("cache miss on {0:>s}".format(cache_key))
-            qs = model.objects.all()
+        for f in self.include_filters:
+            coerce_filters(f)
+            qs = qs.filter(**f)
 
-        #first we handle any static defers - performance optimisation
-        if fs and hasattr(fs, 'static_defer') and callable(fs.static_defer):
-            defer = fs.static_defer()
-            qs = qs.defer(*defer)
-            
-        #second we handle any static select_related fields - performance optimisation    
-        if fs and hasattr(fs, 'static_select_related') and callable(fs.static_select_related):
-            select_related = fs.static_select_related()
-            qs = qs.select_related(*select_related)
-        
-        #third we handle any static prefetch_related fields - performance optimisation    
-        if fs and hasattr(fs, 'static_prefetch_related') and callable(fs.static_prefetch_related):
-            prefetch_related = fs.static_prefetch_related()
-            qs = qs.prefetch_related(*prefetch_related)
+        for f in self.exclude_filters:
+            coerce_filters(f)
+            qs = qs.exclude(**f)
 
-        # if we got our initial list from the cache, we can return it without running the expensive filters
-        if cached_ids:
-            return qs
+        qs = fs.query_set(qs)
 
-        #fourth we apply our inclusion filters
-        if self.include_filters:
-            try:
-                for f in self.include_filters:
-                    if not f:
-                        continue
-                    coerce_filters(f)
-                    qs = qs.filter(**f)
-            except ValueError, e:
-                logger.error("Value Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                return model.objects.None()
-            except FieldError, e:
-                logger.error("Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                return model.objects.None()
-            except Exception, e:
-                logger.error("failure to coerce include filters on [%d] %s. %s" % (self.pk, self.name, e))
-
-        #fifth we apply our exclusion filters
-        if self.exclude_filters:
-            try:
-                for f in self.exclude_filters:
-                    if not f:
-                        continue
-                    coerce_filters(f)
-                    qs = qs.exclude(**f)
-            except ValueError, e:
-                logger.error("Value Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                return model.objects.None()
-            except FieldError, e:
-                logger.error("Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                return model.objects.None()
-            except Exception, e:
-                logger.error("failure to coerce exclude filters on [%d] %s. %s" % (self.pk, self.name, e))
-    
-        #before we limit the qs we let the picking filterset apply any last minute operations
-        if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):
-            qs = fs.static_chain(qs)        
-            
-        #limit the qs if necessary
         if self.max_count > 0:
-            for_cache = qs.values_list('id', flat=True)[:self.max_count]
-            logger.debug("setting dynamic picker cache on {0:>s} - {1:>s}".format(cache_key, for_cache))
-            cache.set(cache_key, list(for_cache), 60*10)
             return qs[:self.max_count]
 
-
-        # doesn't seem to make sense caching a huge list
-        #cache.set(cache_key, list(qs.values_list('id', flat=True)), 60*10)
         return qs
-        
+
     def get_absolute_url(self):
         if self.commune:
             return "/p/{0:>s}/".format(self.keyname)

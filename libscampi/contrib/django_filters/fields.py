@@ -1,6 +1,10 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from django import forms
 
-from libscampi.contrib.django_filters.widgets import RangeWidget, LookupTypeWidget
+from .widgets import RangeWidget, LookupTypeWidget
+
 
 class RangeField(forms.MultiValueField):
     widget = RangeWidget
@@ -16,6 +20,7 @@ class RangeField(forms.MultiValueField):
         if data_list:
             return slice(*data_list)
         return None
+
 
 class LookupTypeField(forms.MultiValueField):
     def __init__(self, field, lookup_choices, *args, **kwargs):

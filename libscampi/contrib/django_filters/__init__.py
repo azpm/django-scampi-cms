@@ -1,2 +1,4 @@
-from libscampi.contrib.django_filters.filterset import FilterSet
-from libscampi.contrib.django_filters.filters import *
+# flake8: noqa
+from __future__ import absolute_import
+from .filterset import FilterSet
+from .filters import *

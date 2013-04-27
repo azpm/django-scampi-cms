@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from libscampi.contrib.cms.renaissance.models import *
 
-#individual media piece config
+
 class MediaAdmin(object):
     fieldsets = (
         ('Designation', {'fields': ('title','slug','caption','tags')}),
@@ -20,9 +20,10 @@ class MediaAdmin(object):
     search_fields = ['title', 'caption']
     save_on_top = True
 
+
 class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
-    fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file','type')}), )
-    list_filter = MediaAdmin.list_filter+['type']
+    fieldsets = MediaAdmin.fieldsets + (('Classification', {'fields': ('file', 'type')}), )
+    list_filter = MediaAdmin.list_filter + ['type']
     prepopulated_fields = {'slug': ('title',)}
 
     def get_list_display(self, request):
@@ -36,21 +37,23 @@ class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
 
     def popover(self, cls):
         args = {'url': cls.file.url, 'name': cls.title, 'preview': _("I")}
-        return mark_safe(u"<a class='popover web-symbol' href='%(url)s' target='_blank' rel='%(url)s' title='%(name)s'>%(preview)s</a>" % args)
+        return mark_safe(u"<a class='popover web-symbol' href='%(url)s' "
+                         u"target='_blank' rel='%(url)s' title='%(name)s'>%(preview)s</a>" % args)
     popover.short_description = u"Preview"
     popover.allow_tags = True
 
 
 class VideoMediaAdmin(MediaAdmin, admin.ModelAdmin):
-    fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file','thumbnail','type')}), )
-    list_filter = MediaAdmin.list_filter+['type']
+    fieldsets = MediaAdmin.fieldsets + (('Classification', {'fields': ('file', 'thumbnail', 'type')}), )
+    list_filter = MediaAdmin.list_filter + ['type']
     prepopulated_fields = {'slug': ('title',)}
     raw_id_fields = ['thumbnail']
 
+
 class ExternalAdmin(admin.ModelAdmin): pass
     
-#generic playlist admin
-class PlaylistAdmin(object):    
+
+class PlaylistAdmin(object):
     fieldsets = (
         ('Designation', {'fields': ('title','slug','caption','tags')}),
         ('Display', {'fields': ('template',)})
@@ -60,7 +63,8 @@ class PlaylistAdmin(object):
     prepopulated_fields = {'slug': ('title',)}
     search_fields = ['title', 'caption']
     save_on_top = True
-   
+
+
 #play list inline block
 class RankedItemInline(object): extra = 5
 class RankedImageInline(RankedItemInline, admin.TabularInline): model = RankedImage
@@ -76,6 +80,7 @@ class AudioPlaylistAdmin(PlaylistAdmin, admin.ModelAdmin): inlines = [RankedAudi
 class DocumentPlaylistAdmin(PlaylistAdmin, admin.ModelAdmin): inlines = [RankedDocumentInline,]
 class ObjectPlaylistAdmin(PlaylistAdmin, admin.ModelAdmin): inlines = [RankedObjectInline,]
 
+
 #media typing config
 class MediaTypeAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -85,11 +90,13 @@ class MediaTypeAdmin(admin.ModelAdmin):
     
     list_display = ('title', 'keyname', 'inline_template')
     save_on_top = True
-    
+
+
 class DimensionalMediaTypeAdmin(MediaTypeAdmin, admin.ModelAdmin):
     fieldsets = MediaTypeAdmin.fieldsets + ( ('Attributes', {'fields': ('width', 'height')}), )
-    list_display =  MediaTypeAdmin.list_display + ('width', 'height')
-    
+    list_display = MediaTypeAdmin.list_display + ('width', 'height')
+
+
 class InlineTemplateAdmin(admin.ModelAdmin):
     list_display = ('title',)
 

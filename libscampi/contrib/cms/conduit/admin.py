@@ -1,11 +1,10 @@
-import logging, re
+import logging, re, json
 
 from django.contrib import admin
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.utils.html import escape
 from django.http import Http404, HttpResponse
 from django.contrib.contenttypes.models import ContentType
-from django.utils import simplejson
 from django.contrib import messages
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
@@ -274,13 +273,12 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         ids = list(qs.values_list('id', flat=True)[:limit])
 
         picked = model.objects.filter(id__in=ids)
-        #picked = model.objects.order_by('pk').in_bulk(ids)
 
         for_json = []
         for item in picked:
             for_json.append((item.pk, escape(repr(item))))
 
-        response = HttpResponse(simplejson.dumps(for_json),content_type="application/json")
+        response = HttpResponse(json.dumps(for_json), content_type="application/json")
 
         return response
 

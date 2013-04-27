@@ -1,15 +1,13 @@
 import logging
-
+import json
 from datetime import datetime
 
-from django.core.mail import mail_admins
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_protect
 from django.db import IntegrityError, DatabaseError
 from django.db.models import Count
 from django.http import Http404, HttpResponse
 from django.forms.formsets import all_valid
-from django.utils import simplejson
 from django.template.response import TemplateResponse
 from django.template.defaultfilters import truncatewords
 from django.contrib import admin
@@ -17,12 +15,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 
-from libscampi.contrib.cms.newsengine.models import Article, ArticleTranslation, Story, StoryCategory, PublishCategory, Publish, PublishQueue
+from libscampi.contrib.cms.newsengine.models import Article, ArticleTranslation, Story, StoryCategory, \
+    PublishCategory, Publish, PublishQueue
 from libscampi.contrib.cms.newsengine.forms import StoryForm, ArticleTranslationForm, PublishForm
 from libscampi.contrib.cms.newsengine.filtering import PublishTypeListFilter, ArticleAuthorListFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.models')
 csrf_protect_m = method_decorator(csrf_protect)
+
 
 class ArticleTranslationInline(admin.StackedInline):
     model = ArticleTranslation
@@ -35,18 +35,22 @@ class ArticleTranslationInline(admin.StackedInline):
 
     form = ArticleTranslationForm
 
+
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
-    list_display = ['headline','sub_headline','languages','who_made_me','creation_date','modified']
-    search_fields = ['translations__headline','author__first_name','author__last_name','author__username']
+    list_display = ['headline', 'sub_headline', 'languages', 'who_made_me', 'creation_date', 'modified']
+    search_fields = ['translations__headline', 'author__first_name', 'author__last_name', 'author__username']
     fieldsets = (
         ('Authorship', {'fields': ('author', 'contributors')}),
         ('Media', {
-            'description': "Usage: <strong>{% inline [media-type] [media-slug]</strong> <em>[attr1=val1,attr2=val2]</em> <strong>%}</strong>",
-            'fields': (('image_inlines', 'video_inlines', 'audio_inlines'), ('document_inlines', 'object_inlines', 'external_inlines'))
+            'description': "Usage: <strong>{% inline [media-type] [media-slug]</strong> "
+                           "<em>[attr1=val1,attr2=val2]</em> <strong>%}</strong>",
+            'fields': (('image_inlines', 'video_inlines', 'audio_inlines'),
+                       ('document_inlines', 'object_inlines', 'external_inlines'))
         })
     )
-    raw_id_fields = ('contributors','image_inlines', 'video_inlines', 'audio_inlines', 'document_inlines', 'object_inlines', 'external_inlines')
+    raw_id_fields = ('contributors', 'image_inlines', 'video_inlines', 'audio_inlines', 'document_inlines',
+                     'object_inlines', 'external_inlines')
     readonly_fields = ('author',)
     inlines = [ArticleTranslationInline]
     save_on_top = True
@@ -80,13 +84,11 @@ class ArticleAdmin(admin.ModelAdmin):
             'admin/js/article.preview.js',
         )
 
-
     # show username w/ full name
     always_show_username = True  
     
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        field = super(ArticleAdmin, self).formfield_for_manytomany(
-                                                db_field, request, **kwargs)
+        field = super(ArticleAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
         if db_field.rel.to == User:
             field.label_from_instance = self.get_user_label
         return field
@@ -106,7 +108,8 @@ class ArticleAdmin(admin.ModelAdmin):
         
         my_urls = patterns('',
             url(r'^preview/$', self.admin_site.admin_view(self.preview), name="newsengine-article-preview"),
-            url(r'^inline-media-helper/', self.admin_site.admin_view(self.inline_media_helper), name="newsengine-article-media-helper")
+            url(r'^inline-media-helper/', self.admin_site.admin_view(self.inline_media_helper),
+                name="newsengine-article-media-helper")
         )
 
         return my_urls + urls
@@ -139,7 +142,7 @@ class ArticleAdmin(admin.ModelAdmin):
         if hasattr(media, "file"):
             returnable.update({'file': media.file.url})
 
-        response = HttpResponse(simplejson.dumps(returnable), content_type="application/json")
+        response = HttpResponse(json.dumps(returnable), content_type="application/json")
 
         return response
 
@@ -148,9 +151,6 @@ class ArticleAdmin(admin.ModelAdmin):
         """
         Preview an article
         """
-        # model = self.model TODO: Understand why these lines are here
-        # opts = model._meta
-
         if not self.has_add_permission(request):
             raise PermissionDenied
 
@@ -163,7 +163,7 @@ class ArticleAdmin(admin.ModelAdmin):
                 raise Http404("Invalid Article to Preview. Article Form.")
 
             article = {
-                'image_inines': form.cleaned_data['image_inlines'],
+                'image_inlines': form.cleaned_data['image_inlines'],
                 'video_inlines': form.cleaned_data['video_inlines'],
                 'audio_inlines': form.cleaned_data['audio_inlines'],
                 'document_inlines': form.cleaned_data['document_inlines'],
@@ -177,18 +177,15 @@ class ArticleAdmin(admin.ModelAdmin):
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
                 if prefixes[prefix] != 1 or not prefix:
                     prefix = "%s-%s" % (prefix, prefixes[prefix])
-                formset = FormSet(data=request.POST, files=request.FILES,
-                    instance=self.model(),
-                    save_as_new=True,
-                    prefix=prefix, queryset=inline.queryset(request))
+                formset = FormSet(data=request.POST, files=request.FILES, instance=self.model(),
+                                  save_as_new=True, prefix=prefix, queryset=inline.queryset(request))
                 formsets.append(formset)
             if all_valid(formsets):
                 translations = formsets[0].cleaned_data
 
-                return TemplateResponse(request,
-                    "admin/newsengine/article/preview.html",
-                    {'article': article, 'translations': translations},
-                    current_app=self.admin_site.name)
+                return TemplateResponse(request, "admin/newsengine/article/preview.html",
+                                        {'article': article, 'translations': translations},
+                                        current_app=self.admin_site.name)
             else:
                 raise Http404("Invalid Article to Preview. Translation Form")
         else:
@@ -198,21 +195,25 @@ class ArticleAdmin(admin.ModelAdmin):
 class StoryAdmin(admin.ModelAdmin):
     date_hierarchy = 'creation_date'
     list_display = ['headline', 'author_name', 'creation_date']
-    search_fields = ['article__translations__headline','author__first_name','author__last_name','author__username']
+    search_fields = ['article__translations__headline', 'author__first_name', 'author__last_name', 'author__username']
     fieldsets = (
-        ('Meta Data', {'fields': ('author','categories','article','tags')}),
-        ('Media Play Lists', {'fields': (('image_playlist', 'video_playlist', 'audio_playlist'),('document_playlist', 'object_playlist'))}),
-        ('Relationships', {'fields': ('peers','important')}),
+        ('Meta Data', {'fields': ('author', 'categories', 'article', 'tags')}),
+        ('Media Play Lists', {'fields': (
+            ('image_playlist', 'video_playlist', 'audio_playlist'),
+            ('document_playlist', 'object_playlist'))
+        }),
+        ('Relationships', {'fields': ('peers', 'important')}),
     )
     
-    raw_id_fields = ('article', 'image_playlist', 'video_playlist', 'audio_playlist', 'document_playlist', 'object_playlist','peers')
+    raw_id_fields = ('article', 'image_playlist', 'video_playlist', 'audio_playlist', 'document_playlist',
+                     'object_playlist', 'peers')
     filter_horizontal = ['categories']
 
     save_on_top = True
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == 'categories':
-            kwargs['queryset'] = StoryCategory.objects.filter(active=True).order_by("collection","title")
+            kwargs['queryset'] = StoryCategory.objects.filter(active=True).order_by("collection", "title")
 
         return super(StoryAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
@@ -221,12 +222,13 @@ class StoryAdmin(admin.ModelAdmin):
 
     def headline(self, cls):
         try:
-            val = ArticleTranslation.objects.get(language__code = 'en', model = cls.article_id)
+            val = ArticleTranslation.objects.get(language__code='en', model=cls.article_id)
         except ArticleTranslation.DoesNotExist:
             try:
-                val = ArticleTranslation.objects.filter(model = cls.article_id)[0]
+                val = ArticleTranslation.objects.filter(model=cls.article_id)[0]
             except IndexError:
-                logger.debug("Tried to get a story [%d] who's article [%d] had no available headlines" % (cls.id, cls.article_id))
+                logger.debug("Tried to get a story [%d] who's article [%d] had no available headlines" %
+                             (cls.id, cls.article_id))
                 return u""
         
         return u"%s" % truncatewords(val.headline, '10')
@@ -234,13 +236,13 @@ class StoryAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(StoryAdmin, self).queryset(request)
         
-        return qs.select_related('article','author')
+        return qs.select_related('article', 'author')
 
     def save_model(self, request, obj, form, change):
         obj.save()
         
         if not change:
-            publish_request = Publish(story=obj, published = False)
+            publish_request = Publish(story=obj, published=False)
             try:
                 publish_request.save()
             except (DatabaseError, IntegrityError):
@@ -248,50 +250,53 @@ class StoryAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.categories.filter(active=False).exists() and not request.user.is_superuser:
-            return ('categories',)
+            return 'categories',
 
         else:
 
             return super(StoryAdmin, self).get_readonly_fields(request, obj)
     
     form = StoryForm
-    
+
+
 class PublishCategoryAdmin(admin.ModelAdmin):
     save_on_top = True
     fieldsets = (
-        ('Information', {'fields': ('title','keyname')}),
+        ('Information', {'fields': ('title', 'keyname')}),
         ('Description', {'fields': ('description',), 'classes': ('collapse',)}),
     )
-    
+
+
 class PublishStoryAdmin(admin.ModelAdmin):
     save_on_top = True
-    list_display = ('headline','category','start','end','sticky','order_me','published','approved_by')
+    list_display = ('headline', 'category', 'start', 'end', 'sticky', 'order_me', 'published', 'approved_by')
     list_display_links = ('headline',)
-    list_editable = ('sticky','order_me')
-    list_filter = ('seen','published','sticky',PublishTypeListFilter)
+    list_editable = ('sticky', 'order_me')
+    list_filter = ('seen', 'published', 'sticky', PublishTypeListFilter)
     date_hierarchy = 'start'
-    raw_id_fields = ('story','thumbnail')
+    raw_id_fields = ('story', 'thumbnail')
     search_fields = ['story__article__translations__headline']
     fieldsets = (
-        ('Publish Target', {'fields': ('site','category', ('story', 'thumbnail', 'slug'))}),
-        ('Publish Configuration', {'fields': ('start','end','sticky','order_me')}),
+        ('Publish Target', {'fields': ('site', 'category', ('story', 'thumbnail', 'slug'))}),
+        ('Publish Configuration', {'fields': ('start', 'end', 'sticky', 'order_me')}),
         ('Publish Auditing', {'fields': ('approved_by', 'published')}),
     )
     
     list_select_related = True
     save_as = True
     
-    ordering = ('-start','sticky','order_me')
+    ordering = ('-start', 'sticky', 'order_me')
     form = PublishForm
 
     def headline(self, cls):
         try:
-            val = ArticleTranslation.objects.get(language__code = 'en', model = cls.story.article_id)
+            val = ArticleTranslation.objects.get(language__code='en', model=cls.story.article_id)
         except ArticleTranslation.DoesNotExist:
             try:
-                val = ArticleTranslation.objects.filter(model = cls.story.article_id)[0]
+                val = ArticleTranslation.objects.filter(model=cls.story.article_id)[0]
             except IndexError:
-                logger.debug("Tried to get a published story [%d] who's article [%d] had no available headlines" % (cls.id, cls.story.article_id))
+                logger.debug("Tried to get a published story [%d] who's article [%d] had no available headlines"
+                             % (cls.id, cls.story.article_id))
                 return u""
         
         return u"%s" % truncatewords(val.headline, 5)
@@ -299,7 +304,8 @@ class PublishStoryAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(PublishStoryAdmin, self).queryset(request)
         
-        return qs.select_related('site','approved_by__username','category__keyname','category__title', 'story__article_id')
+        return qs.select_related('site', 'approved_by__username', 'category__keyname', 'category__title',
+                                 'story__article_id')
                 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.start is not None and obj.start < datetime.now():
@@ -317,23 +323,25 @@ class PublishStoryAdmin(admin.ModelAdmin):
         except IntegrityError:
             logger.critical("couldn't publish a story", "%s" % locals())
 
+
 class PublishQueueAdmin(PublishStoryAdmin):
-    list_filter = (ArticleAuthorListFilter,PublishTypeListFilter)
+    list_filter = (ArticleAuthorListFilter, PublishTypeListFilter)
 
     def queryset(self, request):
         qs = super(PublishQueueAdmin, self).queryset(request)
-        return qs.filter(seen = False, published = False)
+        return qs.filter(seen=False, published=False)
+
 
 class StoryCategoryAdmin(admin.ModelAdmin):
-    list_display = ('title','keyname','browsable','excluded','active','collection')
-    list_filter = ('browsable','excluded','active','collection')
-    search_fields = ('title','keyname')
+    list_display = ('title', 'keyname', 'browsable', 'excluded', 'active', 'collection')
+    list_filter = ('browsable', 'excluded', 'active', 'collection')
+    search_fields = ('title', 'keyname')
     raw_id_fields = ('logo',)
 
     fieldsets = (
-        ('Definition', {'fields': ('title','keyname')}),
-        ('Attributes', {'fields': ('browsable','excluded','active','collection')}),
-        ('Optional', {'fields': ('logo','description')})
+        ('Definition', {'fields': ('title', 'keyname')}),
+        ('Attributes', {'fields': ('browsable', 'excluded', 'active', 'collection')}),
+        ('Optional', {'fields': ('logo', 'description')})
     )
 
 admin.site.register(Article, ArticleAdmin)

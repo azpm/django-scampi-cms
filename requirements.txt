@@ -8,3 +8,4 @@ django-templatetag-sugar==0.1
 django-nose
 python-faker
 factory-boy
+djangorestframework

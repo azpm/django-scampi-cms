@@ -134,6 +134,19 @@ class Story(models.Model):
     def __unicode__(self):
         return u"{0:>s}".format(self.article)
 
+    def api_peer_stories(self):
+        right_now = datetime.now()
+        return self.peers.filter(publish__published=True, publish__start__lte=right_now)
+
+    def api_related_stories(self):
+        cats = self.categories.exclude(excluded=True).values_list('id', flat=True)
+
+        qs = Story.objects.filter(publish__published=True, publish__start__lte=datetime.now())
+        qs = qs.filter(Q(categories__in=list(cats)))
+        qs = qs.exclude(pk=self.pk).annotate(rel_count=Count('categories')).order_by('-rel_count', 'important')
+
+        return qs[:10]
+
     def related(self):
         cats = self.categories.exclude(excluded=True).values_list('id', flat=True)
 
@@ -147,13 +160,14 @@ class Story(models.Model):
             publish__start__lte=right_now
         ).annotate(rel_count=Count('peers')).exclude(Q(pk=self.pk)).values('rel_count','id','slug','article')[:10]
 
-        # then the related by categories
         by_categories = Story.objects.filter(
-            Q(categories__in=list(cats)),
             publish__published=True,
-            publish__start__lte=right_now,
+            publish__start__lte=datetime.now(),
             publish__start__gte=long_ago
-        ).exclude(Q(pk=self.pk)).annotate(rel_count=Count('categories')).order_by('-rel_count','important').values('rel_count','id','slug','article')[:10]
+        )
+        by_categories = by_categories.filter(Q(categories__in=list(cats)))
+        by_categories = by_categories.exclude(pk=self.pk).annotate(rel_count=Count('categories')).order_by('-rel_count', 'important')
+        by_categories = by_categories[:10]
 
         combined = list(chain(peers, by_categories))
         return combined

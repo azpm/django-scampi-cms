@@ -19,6 +19,7 @@ logger = logging.getLogger('libscampi.contrib.cms.conduit.models')
 
 __all__ = ['PickerTemplate','DynamicPicker','StaticPicker']
 
+
 class PickerTemplate(models.Model):
     """
     A picker template for dynamic picker rendering.  Each template is given a RequestContext
@@ -43,6 +44,7 @@ class PickerTemplate(models.Model):
     def __unicode__(self):
         return u"{0:>s}".format(self.name)
 
+
 class PickerBase(models.Model):
     name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
     commune = models.ForeignKey(Commune, verbose_name= _('Primary Commune'), null = True, blank = True, related_name = "%(class)s_related")
@@ -53,6 +55,7 @@ class PickerBase(models.Model):
         permissions = (
             ('change_picker_commune', 'User can change commune association of DynamicPicker')
         )
+
 
 class DynamicPicker(PickerBase):
     # TODO display_name = models.CharField(verbose_name=_("Display Name"), max_length = 100, null=True, blank=True, help_text=_("Optional display name."))
@@ -108,7 +111,8 @@ class DynamicPicker(PickerBase):
             return "/p/{0:>s}/".format(self.keyname)
         
         return ""
-        
+
+
 class StaticPicker(PickerBase):
     content = models.TextField(_("Content"), help_text = _("Markdown friendly"))
     namedbox = models.OneToOneField("communism.NamedBox", null = True, blank = True)

@@ -6,6 +6,9 @@ django-taggit==0.9.3
 django-taggit-templatetags==0.4.6dev
 django-templatetag-sugar==0.1
 django-nose
+django-extensions
+pdbpp
+Werkzeug
 python-faker
 factory-boy
 djangorestframework

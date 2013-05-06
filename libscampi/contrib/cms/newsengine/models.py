@@ -167,6 +167,7 @@ class Story(models.Model):
         )
         by_categories = by_categories.filter(Q(categories__in=list(cats)))
         by_categories = by_categories.exclude(pk=self.pk).annotate(rel_count=Count('categories')).order_by('-rel_count', 'important')
+        by_categories = by_categories.values('rel_count','id','slug','article')
         by_categories = by_categories[:10]
 
         combined = list(chain(peers, by_categories))

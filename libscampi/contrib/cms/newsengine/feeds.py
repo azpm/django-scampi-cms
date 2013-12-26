@@ -7,6 +7,7 @@ from libscampi.contrib.cms.newsengine.models import Publish
 
 logger = logging.getLogger("libscampi.contrib.cms.newsengine.feeds")
 
+
 class PublishedStoryFeed(Feed):
     picker = None
 

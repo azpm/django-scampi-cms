@@ -1,1 +1,1 @@
-from libscampi.contrib.cms.sites import site
+from .sites import site

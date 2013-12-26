@@ -1,8 +1,7 @@
 from django.views.generic import TemplateView
-
 from libscampi.contrib.cms.communism.views.mixins import SectionMixin, ApplicationMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin
+from libscampi.contrib.cms.views.mixins import PageMixin
 
-from .mixins import PageMixin
 
 class Page(SectionMixin, ApplicationMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     """
@@ -11,17 +10,20 @@ class Page(SectionMixin, ApplicationMixin, ThemeMixin, CSSMixin, JScriptMixin, P
     """
     pass
 
+
 class PageNoView(SectionMixin, ApplicationMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
     """
     Implements an un-managed page that has no view, you must provide the proper response mixin
     """
     pass
 
+
 class CMSPage(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
     """
     Implements a canonical Commune based CMS Page
     """
     pass
+
 
 class CMSPageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
     """

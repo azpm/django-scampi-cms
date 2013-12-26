@@ -1,21 +1,19 @@
 import logging
-
 from django.shortcuts import get_object_or_404, redirect
 from django.http import Http404, HttpResponseServerError
 from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-
 from libscampi.contrib.cms.communism.models import *
-from libscampi.contrib.cms.views.func import static_script, static_style
-
+from libscampi.contrib.cms.views.mixins import static_script, static_style
 import collections
 
 logger = logging.getLogger('libscampi.contrib.cms.communism.views')
 
-class html_link_refs(collections.MutableSet):
-    def __init__(self, iterable = None):
+
+class HtmlLinkRefs(collections.MutableSet):
+    def __init__(self, iterable=None):
         self.elements = lst = []
         if not iterable:
             return
@@ -26,27 +24,28 @@ class html_link_refs(collections.MutableSet):
         except TypeError:
             if iterable not in lst:
                 lst.append(iterable)
-                
+
     def __iter__(self):
         return iter(self.elements)
-        
+
     def __contains__(self, element):
         return element.file.url in [link_ref.file.url for link_ref in self.elements]
-            
+
     def __len__(self):
         return len(self.elements)
-    
+
     def add(self, element):
         if not self.__contains__(element):
             self.elements.append(element)
 
     def discard(self, value):
         if self.__contains__(value):
-            del(self.elements[value])
+            del (self.elements[value])
 
     def reset(self):
         self.elements = []
-        
+
+
 class SectionMixin(object):
     section = None
     realm = None
@@ -69,32 +68,32 @@ class SectionMixin(object):
         #keyname specified in url
         if 'keyname' in kwargs:
             keyname = kwargs.pop('keyname')
-            actual = keyname.split('.') #get the actual last commune key: /<parent>.<child>.<desired>/
+            actual = keyname.split('.')  # get the actual last commune key: /<parent>.<child>.<desired>/
 
             if "__un_managed" in actual:
                 if "__un_managed" in request.path:
                     # always strip __un_managed from the URL if anyone manages to put it in
                     return redirect(self.realm.get_absolute_url())
                     # if the magic identifier __un_managed appears from the view object graph, we set view section to special "un-managed" section
-                self.section = MagicSection(id=0, realm=self.realm, display_order = 0, active = True, generates_navigation=False, extends=None)
+                self.section = MagicSection(id=0, realm=self.realm, display_order=0, active=True,
+                                            generates_navigation=False, extends=None)
             else:
-                self.section = get_object_or_404(Section.localised.prefetch_related('element'), keyname = actual[-1])
+                self.section = get_object_or_404(Section.localised.prefetch_related('element'), keyname=actual[-1])
         else:
             try:
                 # we'll see if the section is embedded in the url (it's always the first thing after the domain)
-                current_section = request.path.split('/',2)[1]
+                current_section = request.path.split('/', 2)[1]
             except IndexError:
                 logger.critical("something bad went wrong with the request, %s" % request.path)
                 raise HttpResponseServerError
 
             if current_section != '':
                 # section keyname is in the url but not in the view graph/passed args
-                # self.section = get_object_or_404(Section.localised.select_related(), keyname = current_section)
-                self.section = get_object_or_404(Section.localised.prefetch_related('element'), keyname = current_section)
+                self.section = get_object_or_404(Section.localised.prefetch_related('element'), keyname=current_section)
             else:
                 # no keyname specified, we need the "primary" section
                 try:
-                    self.section = self.realm.primary_section #get the primary section of this realm
+                    self.section = self.realm.primary_section  # get the primary section of this realm
                 except ObjectDoesNotExist:
                     raise Http404("No CMS Sections Active")
 
@@ -113,7 +112,7 @@ class SectionMixin(object):
 
         # finally return the parent get method
         return super(SectionMixin, self).get(request, *args, **kwargs)
-        
+
     def post(self, request, *args, **kwargs):
         self._process_request(request, *args, **kwargs)
 
@@ -130,9 +129,10 @@ class SectionMixin(object):
 
         return context
 
+
 class CommuneMixin(object):
     commune = None
-        
+
     def get(self, request, *args, **kwargs):
         self.commune = self.section.element
         if hasattr(request, 'toolbar'):
@@ -147,13 +147,14 @@ class CommuneMixin(object):
 
     def get_template_names(self):
         tpl_list = (
-            "{0:>s}/communism/{1:>s}/{2:>s}.html".format(self.commune.theme.keyname, self.realm.keyname, self.section.keyname),
+            "{0:>s}/communism/{1:>s}/{2:>s}.html".format(self.commune.theme.keyname, self.realm.keyname,
+                                                         self.section.keyname),
             "{0:>s}/communism/{1:>s}/commune.html".format(self.commune.theme.keyname, self.realm.keyname),
             "{0:>s}/communism/commune.html".format(self.commune.theme.keyname),
         )
-        
-        return tpl_list 
-    
+
+        return tpl_list
+
     def get_context_data(self, *args, **kwargs):
         context = super(CommuneMixin, self).get_context_data(*args, **kwargs)
         #set the context commune
@@ -161,6 +162,7 @@ class CommuneMixin(object):
             'cms_commune': self.commune,
         })
         return context
+
 
 class ApplicationMixin(object):
     """
@@ -182,10 +184,10 @@ class ApplicationMixin(object):
         if not styles:
             logger.debug("missed css cache on {0:>s}".format(self.cached_css_key))
             styles = StyleSheet.objects.filter(active=True, base=True, theme=self.get_theme()).order_by('precedence')
-            cache.set(self.cached_css_key, styles, 60*20)
+            cache.set(self.cached_css_key, styles, 60 * 20)
 
         #build a simple collection of styles
-        css_collection = html_link_refs()
+        css_collection = HtmlLinkRefs()
         for style in styles:
             css_collection.add(style)
 
@@ -210,12 +212,12 @@ class ApplicationMixin(object):
         if not script_ids:
             logger.debug("missed script cache on {0:>s}".format(self.cached_js_key))
             scripts = Javascript.objects.filter(active=True, base=True, theme=self.get_theme()).order_by('precedence')
-            cache.set(self.cached_js_key, list(scripts.values_list('id', flat=True)), 60*20)
+            cache.set(self.cached_js_key, list(scripts.values_list('id', flat=True)), 60 * 20)
         else:
             scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')
 
         #build a simple collection of styles
-        js_collection = html_link_refs()
+        js_collection = HtmlLinkRefs()
         for script in scripts:
             js_collection.add(script)
 
@@ -228,14 +230,15 @@ class ApplicationMixin(object):
         return js_collection
 
     def get_static_styles(self):
-        return None
+        return []
 
     def get_static_scripts(self):
-        return None
+        return []
 
     def get_theme(self):
         raise NotImplementedError("view using ApplicationMixin must provide get_theme method")
-    
+
+
 class CSSMixin(object):
     def get_stylesheets(self):
         theme = self.get_theme()
@@ -246,25 +249,25 @@ class CSSMixin(object):
             #invalidate on refresh_cache
             cache.delete(cached_css_key)
         styles = cache.get(cached_css_key, None)
-        
+
         #cache empty, get the styles and refill the cache
         if not styles:
             logger.debug("missed css cache on {0:>s}".format(cached_css_key))
             styles = StyleSheet.objects.filter(active=True).filter(
-                Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) & 
-                Q(pickertemplate__dynamicpicker__namedbox__active=True) | 
+                Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) &
+                Q(pickertemplate__dynamicpicker__namedbox__active=True) |
                 Q(staticpicker__namedbox__slice__commune=self.commune) &
                 Q(staticpicker__namedbox__active=True) |
                 Q(base=True),
                 Q(theme__pk=theme.id)
             ).order_by('precedence').distinct()
-            cache.set(cached_css_key, styles, 60*20)
-           
+            cache.set(cached_css_key, styles, 60 * 20)
+
         #build a simple collection of styles
-        css_collection = html_link_refs()
+        css_collection = HtmlLinkRefs()
         for style in styles:
             css_collection.add(style)
-            
+
         return css_collection
 
     def get_context_data(self, *args, **kwargs):
@@ -272,7 +275,7 @@ class CSSMixin(object):
         context = super(CSSMixin, self).get_context_data(*args, **kwargs)
 
         css = self.get_stylesheets()
-        
+
         #add the collection to the context
         if 'cms_page' in context:
             context['cms_page'].update({
@@ -286,11 +289,12 @@ class CSSMixin(object):
             })
 
         return context
-    
+
+
 class JScriptMixin(object):
     def get_javascripts(self):
         theme = self.get_theme()
-        
+
         #try to get the cached javascript for this commune
         cached_scripts_key = 'commune:scripts:{0:d}'.format(self.commune.pk)
         if self.refresh_caches:
@@ -299,20 +303,20 @@ class JScriptMixin(object):
         script_ids = cache.get(cached_scripts_key, None)
 
         #build a simple collection of styles
-        script_collection = html_link_refs()
+        script_collection = HtmlLinkRefs()
 
         #cache empty, get the scripts and refill the cache
         if not script_ids:
             logger.debug("missed js cache on {0:>s}".format(cached_scripts_key))
             scripts = Javascript.objects.filter(active=True).filter(
-                Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) & 
-                Q(pickertemplate__dynamicpicker__namedbox__active=True) | 
+                Q(pickertemplate__dynamicpicker__namedbox__slice__commune=self.commune) &
+                Q(pickertemplate__dynamicpicker__namedbox__active=True) |
                 Q(staticpicker__namedbox__slice__commune=self.commune) &
                 Q(staticpicker__namedbox__active=True) |
                 Q(base=True),
                 Q(theme__pk=theme.id)
             ).order_by('precedence').distinct()
-            cache.set(cached_scripts_key, list(scripts.values_list('id', flat = True)), 60*20)
+            cache.set(cached_scripts_key, list(scripts.values_list('id', flat=True)), 60 * 20)
         else:
             scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')
 
@@ -326,7 +330,7 @@ class JScriptMixin(object):
         context = super(JScriptMixin, self).get_context_data(*args, **kwargs)
 
         js = self.get_javascripts()
-        
+
         #add the collection to the context
         if 'cms_page' in context:
             context['cms_page'].update({
@@ -340,14 +344,20 @@ class JScriptMixin(object):
             })
 
         return context
-        
+
+
 class ThemeMixin(object):
     def get_theme(self):
-        return self.commune.theme
+        commune = getattr(self, 'commune', None)
+
+        if commune:
+            return commune.theme
+        else:
+            return Theme.objects.none()
 
     def get_context_data(self, *args, **kwargs):
         context = super(ThemeMixin, self).get_context_data(*args, **kwargs)
-        
+
         if 'cms_page' in context:
             context['cms_page'].update({
                 'theme': self.get_theme()

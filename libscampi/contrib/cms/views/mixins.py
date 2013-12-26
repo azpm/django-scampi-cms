@@ -2,6 +2,7 @@ import logging
 
 logger = logging.getLogger('libscampi.contrib.cms.views')
 
+
 class PageMixin(object):
     title = None
     onload = None
@@ -35,7 +36,8 @@ class PageMixin(object):
         
     def get_page_onload(self):
         return self.onload
-        
+
+
 def static_script(url):
     html_ref = type("legacy_script", (object,), {
         'file': type("legacy_file", (object, ), {'url': u""})()
@@ -45,7 +47,8 @@ def static_script(url):
     t.file.url = url
     
     return t
-    
+
+
 def static_style(url, media = "screen", for_ie = False):
     html_ref = type("legacy_style", (object,), {
         'for_ie': False,

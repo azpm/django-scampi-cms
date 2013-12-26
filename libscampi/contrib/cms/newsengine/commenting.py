@@ -1,10 +1,10 @@
 import akismet
 import unicodedata
 import urllib2
-
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.contrib.comments.moderation import CommentModerator
+
 
 class StoryModerator(CommentModerator):
     auto_close_field = 'start'

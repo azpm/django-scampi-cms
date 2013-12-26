@@ -1,8 +1,8 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
-
 from libscampi.contrib.cms.newsengine.models import PublishCategory
+
 
 class PublishTypeListFilter(SimpleListFilter):
     """
@@ -53,7 +53,7 @@ class ArticleAuthorListFilter(SimpleListFilter):
     def selected_filter(self, lookup):
         val = self.value()
 
-        if val is None and lookup =="me":
+        if val is None and lookup == "me":
             return True
         else:
             return val == lookup

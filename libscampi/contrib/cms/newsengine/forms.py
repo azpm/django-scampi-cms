@@ -1,9 +1,9 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-
 from libscampi.core.fields import UserModelChoiceField
 from libscampi.contrib.cms.newsengine.models import ArticleTranslation, Story, Publish
+
 
 class ArticleTranslationForm(forms.ModelForm):
     headline = forms.CharField(label = _('Headline'), widget = forms.TextInput(attrs={'size': 100}))
@@ -28,7 +28,8 @@ class StoryForm(forms.ModelForm):
     
     class Meta:
         model = Story
-        
+
+
 class PublishForm(forms.ModelForm):
     class Meta:
         model = Publish

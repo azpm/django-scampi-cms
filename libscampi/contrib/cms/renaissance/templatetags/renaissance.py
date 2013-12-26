@@ -2,13 +2,14 @@ from django import template
 from django.utils.safestring import mark_safe
 from classytags.core import Tag, Options
 from classytags.arguments import Argument
-
 from libscampi.contrib.cms.renaissance.models import Image, Video, Audio, Document, Object, External
 from libscampi.contrib.cms.newsengine.models import Article
 
-TYPE_MAP = {"image": Image, "video": Video, "audio": Audio, "document": Document, "object": Object, "external": External}
+TYPE_MAP = {"image": Image, "video": Video, "audio": Audio, "document": Document, "object": Object,
+            "external": External}
 
 register = template.Library()
+
 
 class InlinedMedia(Tag):
     name = "inline"
@@ -75,5 +76,6 @@ class InlinedMedia(Tag):
         c = template.Context({'media': media, 'inliner': context_inliner})
 
         return tpl.render(c)
+
 
 register.tag(InlinedMedia)

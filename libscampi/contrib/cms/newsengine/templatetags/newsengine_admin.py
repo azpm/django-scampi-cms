@@ -1,5 +1,5 @@
 from django import template
-from django.contrib.markup.templatetags.markup import markdown
+from markdown import markdown
 
 register = template.Library()
 

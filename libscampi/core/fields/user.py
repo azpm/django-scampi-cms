@@ -1,5 +1,6 @@
 from django.forms import ModelChoiceField, ModelMultipleChoiceField
 
+
 class UserModelChoiceField(ModelChoiceField):
     """
     A ModelChoiceField to represent User
@@ -7,6 +8,7 @@ class UserModelChoiceField(ModelChoiceField):
     """
     def label_from_instance(self, obj):
         return "%s (%s)"%(obj.get_full_name(), obj.username)
+
 
 class UserModelMultipleChoiceField(ModelMultipleChoiceField):
     """

@@ -3,10 +3,10 @@ from classytags.core import Tag, Options
 from classytags.arguments import Argument
 from classytags.helpers import InclusionTag
 from django.contrib.sites.models import Site
-
 from libscampi.contrib.cms.communism.models import Theme, Javascript, StyleSheet
 
 register = Library()
+
 
 class ThemeScripts(InclusionTag):
     name = "render_theme_scripts"
@@ -38,6 +38,7 @@ class ThemeScripts(InclusionTag):
 
         return {'scripts': scripts}
 
+
 class ThemeStyles(InclusionTag):
     name = "render_theme_styles"
     template = "communism/styles.html"
@@ -65,6 +66,7 @@ class ThemeStyles(InclusionTag):
         styles = StyleSheet.base_active.for_theme(theme)
 
         return {'styles': styles}
+
 
 class ThemePage(Tag):
     name = "get_themed_page"
@@ -94,11 +96,12 @@ class ThemePage(Tag):
 
         return u''
 
+
 class LocalRealm(Tag):
     name = "get_current_realm"
 
     def render_tag(self, context, **kwargs):
-        cms_realm = context.get('cms_realm',None)
+        cms_realm = context.get('cms_realm', None)
 
         if cms_realm is not None:
             return ''

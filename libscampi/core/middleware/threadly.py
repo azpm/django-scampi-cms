@@ -1,7 +1,9 @@
 import threading
 from django.core.urlresolvers import reverse
 
+
 scampi_locals = threading.local()
+
 
 class DjangoAdmin(object):
     def process_view(self, request, view_func, args, kwargs):

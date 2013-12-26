@@ -1,7 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin import SimpleListFilter
+from libscampi.contrib.cms.conduit.picker import manifest
 
-from libscampi.contrib.cms.conduit.picker import  manifest
 
 class ContentTypeListFilter(SimpleListFilter):
     """

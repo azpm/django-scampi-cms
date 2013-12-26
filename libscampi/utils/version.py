@@ -1,6 +1,7 @@
 import libscampi
 import re
 
+
 def get_svn_revision(path=None):
     """
     Returns the SVN revision in the form SVN-XXXX,

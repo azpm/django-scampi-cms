@@ -1,9 +1,6 @@
 import logging
-
-from operator import and_
 from django.views.generic.dates import *
 from django.db.models import Q
-
 from libscampi.contrib.cms.views.base import CMSPageNoView
 from libscampi.contrib.cms.conduit.views.mixins import PickerMixin
 from libscampi.contrib.cms.newsengine.models import StoryCategory
@@ -11,6 +8,7 @@ from libscampi.contrib.cms.newsengine.views.helpers import story_javascripts, st
 from libscampi.contrib.cms.newsengine.views.publish.mixins import PublishMixin
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.views.publish')
+
 
 class PublishArchivePage(PublishMixin, PickerMixin, CMSPageNoView):
     """
@@ -109,12 +107,14 @@ class PublishArchivePage(PublishMixin, PickerMixin, CMSPageNoView):
     def get_page_title(self):
         return "more %s" % self.picker.name
 
+
 class PublishArchiveIndex(PublishArchivePage, ArchiveIndexView):
     """
     Archive index view for :model:`newsengine.Publish`, populated by a :model:`conduit.DynamicPicker`
     """
     def get_page_title(self):
         return "%s, Archive - %s" % (self.picker.name, self.picker.commune.name)
+
     def get_template_names(self):
         tpl_list = (
             "{0:>s}/newsengine/archive/{1:>s}/{2:>s}/{3:>s}/index.html".format(self.commune.theme.keyname, self.realm.keyname, self.commune.keyname, self.picker.keyname),
@@ -124,6 +124,7 @@ class PublishArchiveIndex(PublishArchivePage, ArchiveIndexView):
             )
 
         return tpl_list
+
 
 class PublishArchiveYear(PublishArchivePage, YearArchiveView):
     """
@@ -144,6 +145,7 @@ class PublishArchiveYear(PublishArchivePage, YearArchiveView):
 
         return tpl_list
 
+
 class PublishArchiveMonth(PublishArchivePage, MonthArchiveView):
     """
     Archive Month view for :model:`newsengine.Publish`, populated by a :model:`conduit.DynamicPicker`
@@ -161,6 +163,7 @@ class PublishArchiveMonth(PublishArchivePage, MonthArchiveView):
 
         return tpl_list
 
+
 class PublishArchiveDay(PublishArchivePage, DayArchiveView):
     """
     Archive Day view for :model:`newsengine.Publish`, populated by a :model:`conduit.DynamicPicker`
@@ -177,6 +180,7 @@ class PublishArchiveDay(PublishArchivePage, DayArchiveView):
             )
 
         return tpl_list
+
 
 class PublishArchiveDetail(PublishArchivePage, DateDetailView):
     """

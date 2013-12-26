@@ -1,5 +1,6 @@
 from libscampi.contrib.cms.views.base import CMSPage
 
+
 class Index(CMSPage):
     """
     Index/Commune landing page for Scampi CMSPage

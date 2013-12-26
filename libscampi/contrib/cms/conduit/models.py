@@ -1,17 +1,8 @@
 import logging
-
 from django.db import models
-from django.core.cache import cache
-from django.core.exceptions import FieldError
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
-
-#scampi stuff
-from libscampi.core.fields import PickledObjectField 
-from libscampi.contrib.cms.communism.models import Commune
-from libscampi.contrib.cms.newsengine.utils import cache_publishpicker_base_cats
-
-#local imports
+from libscampi.core.fields import PickledObjectField
 from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template
 from libscampi.contrib.cms.conduit.picker import manifest
 from libscampi.contrib.cms.conduit.managers import DynamicPickerManager, StaticPickerManager
@@ -19,7 +10,8 @@ from libscampi.contrib.cms.conduit.validators import magic_keyname
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.models')
 
-__all__ = ['PickerTemplate','DynamicPicker','StaticPicker']
+__all__ = ['PickerTemplate', 'DynamicPicker', 'StaticPicker']
+
 
 class PickerTemplate(models.Model):
     """
@@ -33,22 +25,24 @@ class PickerTemplate(models.Model):
     - request: from RequestContext 
     - perms: from RequestContext
     """
-    name =  models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
+    name = models.CharField(help_text=_("Name for easier reference"), max_length=100, unique=True)
     content = models.TextField(_("django template"))
-    stylesheet = models.ManyToManyField('communism.StyleSheet', blank = True)
-    javascript = models.ManyToManyField('communism.Javascript', blank = True)
-    
+    stylesheet = models.ManyToManyField('communism.StyleSheet', blank=True)
+    javascript = models.ManyToManyField('communism.Javascript', blank=True)
+
     class Meta:
         verbose_name = "Picker Template"
         verbose_name_plural = "Picker Templates"
-        
+
     def __unicode__(self):
         return u"{0:>s}".format(self.name)
 
+
 class PickerBase(models.Model):
-    name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
-    commune = models.ForeignKey(Commune, verbose_name= _('Primary Commune'), null = True, blank = True, related_name = "%(class)s_related")
-    
+    name = models.CharField(help_text=_("Name for easier reference"), max_length=100, unique=True)
+    commune = models.ForeignKey('communism.Commune', verbose_name=_('Primary Commune'), null=True, blank=True,
+                                related_name="%(class)s_related")
+
     class Meta:
         abstract = True
         ordering = ['precedence']
@@ -56,18 +50,20 @@ class PickerBase(models.Model):
             ('change_picker_commune', 'User can change commune association of DynamicPicker')
         )
 
+
 class DynamicPicker(PickerBase):
     # TODO display_name = models.CharField(verbose_name=_("Display Name"), max_length = 100, null=True, blank=True, help_text=_("Optional display name."))
-    active = models.BooleanField(default = False)
-    keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"), validators=[magic_keyname])
+    active = models.BooleanField(default=False)
+    keyname = models.SlugField(max_length=100, help_text=_("URL Keyname for permalinks"), validators=[magic_keyname])
     template = models.ForeignKey(PickerTemplate)
-    max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time. A 0 indicates unlimited."), default = 0)
-    content = models.ForeignKey(ContentType, verbose_name = _("Content Source"))
-    include_filters = PickledObjectField(editable = False, compress = True)
-    exclude_filters = PickledObjectField(editable = False, compress = True)
+    max_count = models.PositiveSmallIntegerField(
+        help_text=_("Max items to be picked at a time. A 0 indicates unlimited."), default=0)
+    content = models.ForeignKey(ContentType, verbose_name=_("Content Source"))
+    include_filters = PickledObjectField(editable=False, compress=True)
+    exclude_filters = PickledObjectField(editable=False, compress=True)
 
     objects = DynamicPickerManager()
-    
+
     class Meta:
         unique_together = ('keyname',)
         verbose_name = "Dynamic Content Picker"
@@ -75,7 +71,7 @@ class DynamicPicker(PickerBase):
 
     def __unicode__(self):
         return u"{0:>s}".format(self.name)
-        
+
     def natural_key(self):
         if self.commune:
             return self.commune.keyname, self.keyname
@@ -90,13 +86,13 @@ class DynamicPicker(PickerBase):
 
         qs = model.objects
 
-        for f in self.include_filters:
-            coerce_filters(f)
-            qs = qs.filter(**f)
+        for i, filters in enumerate(self.include_filters):
+            coerce_filters(filters)
+            qs = qs.filter(**filters)
 
-        for f in self.exclude_filters:
-            coerce_filters(f)
-            qs = qs.exclude(**f)
+        for i, filters in enumerate(self.exclude_filters):
+            coerce_filters(filters)
+            qs = qs.exclude(**filters)
 
         qs = fs.query_set(qs)
 
@@ -108,26 +104,27 @@ class DynamicPicker(PickerBase):
     def get_absolute_url(self):
         if self.commune:
             return "/p/{0:>s}/".format(self.keyname)
-        
+
         return ""
-        
+
+
 class StaticPicker(PickerBase):
-    content = models.TextField(_("Content"), help_text = _("Markdown friendly"))
-    namedbox = models.OneToOneField("communism.NamedBox", null = True, blank = True)
-    stylesheet = models.ManyToManyField('communism.StyleSheet', blank = True)
-    javascript = models.ManyToManyField('communism.Javascript', blank = True)
-    
+    content = models.TextField(_("Content"), help_text=_("Markdown friendly"))
+    namedbox = models.OneToOneField("communism.NamedBox", null=True, blank=True)
+    stylesheet = models.ManyToManyField('communism.StyleSheet', blank=True)
+    javascript = models.ManyToManyField('communism.Javascript', blank=True)
+
     objects = StaticPickerManager()
-    
+
     class Meta:
         verbose_name = "Static Content Picker"
         verbose_name_plural = "Static Content Pickers"
 
     def __unicode__(self):
         return u"{0:>s}".format(self.name)
-        
+
     def natural_key(self):
         return self.commune.keyname, self.commune.section.display_order, self.namedbox.gridy, self.namedbox.gridx, self.namedbox.display_order, self.namedbox.keyname
-        
-models.signals.post_save.connect(cache_publishpicker_base_cats, sender=DynamicPicker)
+
+
 models.signals.post_save.connect(cache_picker_template, sender=PickerTemplate)

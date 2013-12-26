@@ -6,7 +6,8 @@ class PickerError(Exception):
     """
     model cannot be picked
     """
-    
+
+
 class PickerManager(object):
     """ Manages what can and cannot be picked """
     

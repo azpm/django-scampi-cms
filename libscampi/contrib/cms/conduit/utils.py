@@ -1,10 +1,8 @@
 import logging
 from datetime import datetime, timedelta
-
 from django.core.cache import cache
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
-
 from libscampi.contrib.django_filters.filters import ModelMultipleChoiceFilter, ModelChoiceFilter, DateRangeFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.utils')
@@ -29,6 +27,7 @@ DATE_RANGE_UNCOERCE = {
     '-thismonth': 3,
     '-thisyear': 4,
 }
+
 
 def build_filters(fs):
     picking_form = fs.form
@@ -94,7 +93,8 @@ def build_filters(fs):
         raise ValueError("No valid filters")
     
     return filters
-    
+
+
 def coerce_filters(filters):
     for key, value in filters.iteritems():
         if isinstance(value, tuple) and value[0] == 'coerce-datetime':
@@ -104,7 +104,8 @@ def coerce_filters(filters):
                 filters.update(new_filter)
             except (ValueError, KeyError, TypeError):
                 continue
-                
+
+
 def uncoerce_pickled_value(value):
     if type(value) is tuple and value[0] == "coerce-datetime":
         return DATE_RANGE_UNCOERCE[value[2]], value[1]
@@ -134,13 +135,15 @@ def map_picker_to_commune(sender, instance, **kwargs):
     else:
         picker.commune = commune
         picker.save()
-                
+
+
 def unmap_orphan_picker(sender, instance, **kwargs):  
     """ give no fucks, unset the commune """
     if instance.content:
         instance.content.commune = None
         instance.content.save()
-        
+
+
 def cache_picker_template(sender, instance, **kwargs):
     cache_key = "conduit:dp:tpl:{0:d}".format(instance.pk)
     tpl = instance.content

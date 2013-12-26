@@ -1,5 +1,5 @@
-from libscampi.contrib.cms.newsengine.views.story.base import StoryList, StoryDetail
-from libscampi.contrib.cms.newsengine.views.publish.base import PublishArchiveIndex, PublishArchiveYear, PublishArchiveMonth, PublishArchiveDay, PublishArchiveDetail
+from libscampi.contrib.cms.newsengine.views.story import base as story
+from libscampi.contrib.cms.newsengine.views.publish import base as publish
 
 __all__ = [
     'pub_archive_index','pub_archive_year','pub_archive_month',
@@ -7,12 +7,12 @@ __all__ = [
 ]
 
 # publish archives
-pub_archive_index = PublishArchiveIndex.as_view()
-pub_archive_year = PublishArchiveYear.as_view()
-pub_archive_month =  PublishArchiveMonth.as_view()
-pub_archive_day = PublishArchiveDay.as_view()
-pub_archive_detail = PublishArchiveDetail.as_view()
+pub_archive_index = publish.PublishArchiveIndex.as_view()
+pub_archive_year = publish.PublishArchiveYear.as_view()
+pub_archive_month = publish.PublishArchiveMonth.as_view()
+pub_archive_day = publish.PublishArchiveDay.as_view()
+pub_archive_detail = publish.PublishArchiveDetail.as_view()
 
 # story perma-links
-story_list = StoryList.as_view()
-story_detail = StoryDetail.as_view()
+story_list = story.StoryList.as_view()
+story_detail = story.StoryDetail.as_view()

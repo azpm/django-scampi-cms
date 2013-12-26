@@ -3,7 +3,7 @@ import logging
 from django.core.cache import cache
 from django.db.models import Q
 from libscampi.contrib.cms.communism.models import Javascript, StyleSheet
-from libscampi.contrib.cms.communism.views.mixins import html_link_refs
+from libscampi.contrib.cms.communism.views.mixins import HtmlLinkRefs
 
 logger = logging.getLogger("libscampi.contrib.cms.newsengine.views")
 
@@ -47,7 +47,7 @@ def story_stylesheets(story, theme, refresh_cache = False):
         cache.set(cached_css_key, styles, 60*10)
 
     #build a simple collection of styles
-    css_collection = html_link_refs()
+    css_collection = HtmlLinkRefs()
     for style in styles:
         css_collection.add(style)
 
@@ -98,7 +98,7 @@ def story_javascripts(story, theme, refresh_cache = False):
         scripts = Javascript.objects.filter(id__in=script_ids).order_by('precedence')
 
     #build a simple collection of styles
-    script_collection = html_link_refs()
+    script_collection = HtmlLinkRefs()
     for script in scripts:
         script_collection.add(script)
 

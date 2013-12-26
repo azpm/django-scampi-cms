@@ -1,17 +1,19 @@
 import datetime
 from django.db import models
 
+
 def date_from_string(year, year_format, month, month_format, day='', day_format='', delim='__'):
     """
     Helper: get a datetime.date object given a format string and a year,
     month, and possibly day; raise a 404 for an invalid date.
     """
-    format = delim.join((year_format, month_format, day_format))
-    datestr = delim.join((year, month, day))
+    date_format = delim.join((year_format, month_format, day_format))
+    date_strine = delim.join((year, month, day))
     try:
-        return datetime.datetime.strptime(datestr, format).date()
+        return datetime.datetime.strptime(date_strine, date_format).date()
     except ValueError:
-        raise ValueError("Invalid date string '{datestr:>s}' given format '{format:>s}'".format(datestr=datestr, format=format))
+        raise ValueError("Invalid date string '{datestr:>s}' given format '{format:>s}'".format(datestr=date_strine, format=date_format))
+
 
 def date_lookup_for_field(field, date):
     """

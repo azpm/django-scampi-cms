@@ -63,7 +63,6 @@ class Article(MultilingualModel):
 
     def who_made_me(self):
         return u"%s" % self.author.get_full_name()
-
     who_made_me.short_description = "Creating Editor"
 
     def __unicode__(self):
@@ -111,13 +110,13 @@ class Story(models.Model):
     important = models.BooleanField(default=False)
     slug = models.SlugField(max_length=250, null=True, unique=True, editable=False)
 
-    tags = TaggableManager(blank=True)
-
     image_playlist = models.ForeignKey('renaissance.ImagePlaylist', null=True, blank=True)
     video_playlist = models.ForeignKey('renaissance.VideoPlaylist', null=True, blank=True)
     audio_playlist = models.ForeignKey('renaissance.AudioPlaylist', null=True, blank=True)
     document_playlist = models.ForeignKey('renaissance.DocumentPlaylist', null=True, blank=True)
     object_playlist = models.ForeignKey('renaissance.ObjectPlaylist', null=True, blank=True)
+
+    tags = TaggableManager(blank=True)
 
     class Meta:
         ordering = ('-creation_date',)
@@ -164,9 +163,9 @@ class Story(models.Model):
 
     @property
     def comments_enabled(self):
-        lastest_pub = self.latest_publish
+        latest_publish = self.latest_publish
 
-        delta = datetime.now() - lastest_pub.start
+        delta = datetime.now() - latest_publish.start
         return delta.days < 30
 
 

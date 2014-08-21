@@ -1,4 +1,5 @@
 import logging
+from collections import OrderedDict
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
@@ -7,10 +8,19 @@ from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_tem
 from libscampi.contrib.cms.conduit.picker import manifest
 from libscampi.contrib.cms.conduit.managers import DynamicPickerManager, StaticPickerManager
 from libscampi.contrib.cms.conduit.validators import magic_keyname
-
+import cProfile
 logger = logging.getLogger('libscampi.contrib.cms.conduit.models')
 
 __all__ = ['PickerTemplate', 'DynamicPicker', 'StaticPicker']
+
+def profile_this(fn):
+    def profiled_fn(*arg, **kwarg):
+        fpath = fn.__name__ + '.profile'
+        prof = cProfile.Profile()
+        ret = prof.runcall(fn, *arg, **kwarg)
+        prof.dump_stats(fpath)
+        return ret
+    return profiled_fn
 
 
 class PickerTemplate(models.Model):
@@ -50,7 +60,6 @@ class PickerBase(models.Model):
             ('change_picker_commune', 'User can change commune association of DynamicPicker')
         )
 
-
 class DynamicPicker(PickerBase):
     # TODO display_name = models.CharField(verbose_name=_("Display Name"), max_length = 100, null=True, blank=True, help_text=_("Optional display name."))
     active = models.BooleanField(default=False)
@@ -76,7 +85,7 @@ class DynamicPicker(PickerBase):
         if self.commune:
             return self.commune.keyname, self.keyname
         return None, self.keyname
-
+    @profile_this
     def picked(self):
         """returns a query set of picked objects using inclusion and exclusion filters"""
         try:
@@ -84,15 +93,51 @@ class DynamicPicker(PickerBase):
         except (NameError, TypeError):
             return {}
 
-        qs = model.objects
+        def sort_filters(x, y):
+            if '__exact' in x:
+                xlow = -1
+            elif '__in' in x:
+                xlow = 0
+            else:
+                xlow = 1
 
-        for i, filters in enumerate(self.include_filters):
+            if '__exact' in y:
+                ylow = -1
+            elif '__in' in y:
+                ylow = 0
+            else:
+                ylow = 1
+
+            return cmp(xlow, ylow)
+
+        ordered_include_filters = []
+        for filter in self.include_filters:
+            ordered_include_filters.append(OrderedDict(sorted(filter.items(), key=lambda x: x[0], cmp=sort_filters)))
+
+        ordered_exclude_filters = []
+        for filter in self.exclude_filters:
+            ordered_exclude_filters.append(OrderedDict(sorted(filter.items(), key=lambda x: x[0], cmp=sort_filters)))
+
+        qs = model.objects
+        # # print "picker: {}, include filters: {}".format(self.name, self.include_filters)
+        for filters in ordered_include_filters:
             coerce_filters(filters)
             qs = qs.filter(**filters)
-
-        for i, filters in enumerate(self.exclude_filters):
+        #
+        # # print "picker: {}, exclude filters: {}".format(self.name, self.exclude_filters)
+        for filters in ordered_exclude_filters:
             coerce_filters(filters)
             qs = qs.exclude(**filters)
+        #
+        # print "picker: {}, include filters: {}".format(self.name, self.include_filters)
+        # for filters in self.include_filters:
+        #     coerce_filters(filters)
+        #     qs = qs.filter(**filters)
+        #
+        # # print "picker: {}, exclude filters: {}".format(self.name, self.exclude_filters)
+        # for filters in self.exclude_filters:
+        #     coerce_filters(filters)
+        #     qs = qs.exclude(**filters)
 
         qs = fs.query_set(qs)
 

@@ -63,7 +63,6 @@ class PickerNode(template.Node):
 
         return u""
 
-
 @register.tag('render_picker')
 def render_picker(parser, token):
     """

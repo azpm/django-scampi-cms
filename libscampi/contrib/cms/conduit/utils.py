@@ -95,13 +95,13 @@ def build_filters(fs):
     return filters
 
 
-def coerce_filters(filters):
-    for key, value in filters.iteritems():
+def coerce_filters(incoming_filters):
+    for key, value in incoming_filters.iteritems():
         if isinstance(value, tuple) and value[0] == 'coerce-datetime':
             try:
                 new_filter = DATE_RANGE_COERCION[value[2]](key, value[1])
-                del(filters[key])
-                filters.update(new_filter)
+                del(incoming_filters[key])
+                incoming_filters.update(new_filter)
             except (ValueError, KeyError, TypeError):
                 continue
 

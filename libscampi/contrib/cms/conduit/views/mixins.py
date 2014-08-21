@@ -1,5 +1,4 @@
 import logging
-from django.core.cache import cache
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.contenttypes.models import ContentType

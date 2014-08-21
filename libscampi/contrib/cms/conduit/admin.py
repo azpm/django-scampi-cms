@@ -26,6 +26,7 @@ class PickerTemplateAdmin(admin.ModelAdmin):
         ('HTML Links', {'fields': ('stylesheet', 'javascript')}),
         (None, {'fields': ['content']}),
     )
+    search_fields = ['dynamicpicker__name', ]
     save_as = True
     save_on_top = True
 
@@ -34,7 +35,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count', 'template')
     list_editable = ('max_count', 'template')
     list_filter = (ContentTypeListFilter, 'commune', 'active')
-    search_fields = ('commune__name',)
+    search_fields = ('commune__name', 'name', 'keyname')
 
     fieldsets = (
         #('Designation', {'fields': ('name', 'display_name', 'active', ('keyname', 'commune'))}), # TO DO enable display_name

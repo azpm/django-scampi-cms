@@ -96,7 +96,7 @@ class PublishArchivePage(PublishMixin, PickerMixin, CMSPageNoView):
         context = super(PublishArchivePage, self).get_context_data(*args, **kwargs)
 
         if self.limits:
-            get_args = u"c=%s" % "+".join([t.keyname for t in self.limits])
+            get_args = u"c={0:s}".format("+".join([t.keyname for t in self.limits]))
         else:
             get_args = None
 
@@ -113,7 +113,7 @@ class PublishArchiveIndex(PublishArchivePage, ArchiveIndexView):
     Archive index view for :model:`newsengine.Publish`, populated by a :model:`conduit.DynamicPicker`
     """
     def get_page_title(self):
-        return "%s, Archive - %s" % (self.picker.name, self.picker.commune.name)
+        return "{0:s}, Archive - {1:s}".format(self.picker.name, self.picker.commune.name)
 
     def get_template_names(self):
         tpl_list = (
@@ -121,7 +121,7 @@ class PublishArchiveIndex(PublishArchivePage, ArchiveIndexView):
             "{0:>s}/newsengine/archive/{1:>s}/{2:>s}/index.html".format(self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
             "{0:>s}/newsengine/archive/{1:>s}/index.html".format(self.commune.theme.keyname, self.realm.keyname),
             "{0:>s}/newsengine/archive/index.html".format(self.commune.theme.keyname),
-            )
+        )
 
         return tpl_list
 
@@ -141,7 +141,7 @@ class PublishArchiveYear(PublishArchivePage, YearArchiveView):
             "{0:>s}/newsengine/archive/{1:>s}/{2:>s}/year.html".format(self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
             "{0:>s}/newsengine/archive/{1:>s}/year.html".format(self.commune.theme.keyname, self.realm.keyname),
             "{0:>s}/newsengine/archive/year.html".format(self.commune.theme.keyname),
-            )
+        )
 
         return tpl_list
 
@@ -159,7 +159,7 @@ class PublishArchiveMonth(PublishArchivePage, MonthArchiveView):
             "{0:>s}/newsengine/archive/{1:>s}/{2:>s}/month.html".format(self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
             "{0:>s}/newsengine/archive/{1:>s}/month.html".format(self.commune.theme.keyname, self.realm.keyname),
             "{0:>s}/newsengine/archive/month.html".format(self.commune.theme.keyname),
-            )
+        )
 
         return tpl_list
 
@@ -177,7 +177,7 @@ class PublishArchiveDay(PublishArchivePage, DayArchiveView):
             "{0:>s}/newsengine/archive/{1:>s}/{2:>s}/day.html".format(self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
             "{0:>s}/newsengine/archive/{1:>s}/day.html".format(self.commune.theme.keyname, self.realm.keyname),
             "{0:>s}/newsengine/archive/day.html".format(self.commune.theme.keyname),
-            )
+        )
 
         return tpl_list
 
@@ -208,6 +208,6 @@ class PublishArchiveDetail(PublishArchivePage, DateDetailView):
             "{0:>s}/newsengine/archive/{1:>s}/{2:>s}/detail.html".format(self.commune.theme.keyname, self.realm.keyname, self.commune.keyname),
             "{0:>s}/newsengine/archive/{1:>s}/detail.html".format(self.commune.theme.keyname, self.realm.keyname),
             "{0:>s}/newsengine/archive/detail.html".format(self.commune.theme.keyname),
-            )
+        )
 
         return tpl_list

@@ -22,7 +22,7 @@ class MediaAdmin(object):
 
 
 class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
-    fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file', 'type')}), )
+    fieldsets = MediaAdmin.fieldsets + (('Classification', {'fields': ('file', 'type')}), )
     list_filter = MediaAdmin.list_filter + ['type']
     prepopulated_fields = {'slug': ('title',)}
 
@@ -37,14 +37,16 @@ class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
 
     def popover(self, cls):
         args = {'url': cls.file.url, 'name': cls.title, 'preview': _("I")}
-        return mark_safe(u"<a class='popover web-symbol' href='%(url)s' target='_blank' rel='%(url)s' title='%(name)s'>%(preview)s</a>" % args)
+        return mark_safe(
+            u"<a class='popover web-symbol' href='{url:s}' target='_blank' rel='{url:s}' title='{name:s}'>{preview:s}</a>".format(
+                args))
 
     popover.short_description = u"Preview"
     popover.allow_tags = True
 
 
 class VideoMediaAdmin(MediaAdmin, admin.ModelAdmin):
-    fieldsets = MediaAdmin.fieldsets + ( ('Classification', {'fields': ('file', 'thumbnail', 'type')}), )
+    fieldsets = MediaAdmin.fieldsets + (('Classification', {'fields': ('file', 'thumbnail', 'type')}), )
     list_filter = MediaAdmin.list_filter + ['type']
     prepopulated_fields = {'slug': ('title',)}
     raw_id_fields = ['thumbnail']
@@ -125,7 +127,7 @@ class MediaTypeAdmin(admin.ModelAdmin):
 
 
 class DimensionalMediaTypeAdmin(MediaTypeAdmin, admin.ModelAdmin):
-    fieldsets = MediaTypeAdmin.fieldsets + ( ('Attributes', {'fields': ('width', 'height')}), )
+    fieldsets = MediaTypeAdmin.fieldsets + (('Attributes', {'fields': ('width', 'height')}), )
     list_display = MediaTypeAdmin.list_display + ('width', 'height')
 
 

@@ -1,7 +1,6 @@
 import math
 import logging
 from django.core.cache import cache
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from libscampi.contrib.cms.newsengine.models import StoryCategory
 
@@ -27,7 +26,7 @@ def _calculate_weight(weight, max_weight, distribution):
         return weight
     elif distribution == LOGARITHMIC:
         return math.log(weight) * max_weight / math.log(max_weight)
-    raise ValueError(_('Invalid distribution algorithm specified: %s.') % distribution)
+    raise ValueError(u'Invalid distribution algorithm specified: {0:s}.'.format(distribution))
 
 
 def calculate_cloud(categories, steps=4, distribution=LOGARITHMIC):
@@ -75,7 +74,8 @@ def cache_publishpicker_base_cats(sender, instance, **kwargs):
                         categories |= set(f[k]) #build a set of our base categories
         else:
             logger.critical(
-                "invalid picker: cannot build archives from picker %s [id: %d]" % (instance.name, instance.id))
+                "invalid picker: cannot build archives from picker {0:s} [id: {1:d}]".format(instance.name,
+                                                                                             instance.id))
 
         base_cats = StoryCategory.objects.filter(pk__in=categories, browsable=True)
         cache.set(cat_cache_key, base_cats, 60 * 60)

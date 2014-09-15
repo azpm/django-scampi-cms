@@ -1,16 +1,25 @@
 from django.contrib import admin
 from django.contrib.contenttypes import generic
-# from libscampi.contrib.cms.conduit.admin import StaticPickerInlineAdmin
 from libscampi.contrib.cms.communism.models import *
 from libscampi.contrib.cms.communism.utils import section_path_up
 
-__all__ = ['RealmAdmin', 'RealmNotificationAdmin', 'SectionAdmin', 'SliceAdmin', 'SliceInline', 'NamedBoxTemplateAdmin', 'BoxAdmin', 'CommuneAdmin', 'ApplicationAdmin', 'GenericDOMElementAdmin']
+__all__ = ['RealmAdmin', 'RealmNotificationAdmin', 'SectionAdmin', 'SliceAdmin', 'SliceInline', 'NamedBoxTemplateAdmin',
+           'BoxAdmin', 'CommuneAdmin', 'ApplicationAdmin', 'GenericDOMElementAdmin']
 
 
 class RealmAdmin(admin.ModelAdmin):
     list_display = (
-    'site', 'name', 'keyname', 'theme', 'display_order', 'active', 'generates_navigation', 'secure', 'searchable',
-    'search_collection')
+        'site',
+        'name',
+        'keyname',
+        'theme',
+        'display_order',
+        'active',
+        'generates_navigation',
+        'secure',
+        'searchable',
+        'search_collection',
+    )
     list_editable = ('display_order', 'active', 'secure', 'searchable', 'search_collection')
     fieldsets = (
         ('Domain & Configuration', {'fields': ('site', 'name', 'keyname', 'description', 'theme')}),
@@ -86,7 +95,7 @@ class NamedBoxTemplateAdmin(admin.ModelAdmin):
 
 
 class BoxAdmin(admin.ModelAdmin):
-    #list_display = ('name', 'keyname', 'display_name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
+    # list_display = ('name', 'keyname', 'display_name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
     list_display_links = ('name',)
     #list_editable = ('display_name', 'template', 'gridx', 'gridy', 'display_order')
     list_display = ('name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
@@ -99,7 +108,6 @@ class BoxAdmin(admin.ModelAdmin):
         ('Arrangement', {'fields': ('gridx', 'gridy', 'display_order')}),
         ('Dynamic Content', {'fields': ('content',), 'description': "Dynamic Content takes precedence over static!"})
     )
-    # inlines = [StaticPickerInlineAdmin]
     search_fields = ('name', 'keyname')
     list_per_page = 20
     save_on_top = True

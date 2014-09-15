@@ -31,4 +31,3 @@ class CMSPageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMix
     e.g. you must provide an alternative View mixin
     """    
     pass
-    

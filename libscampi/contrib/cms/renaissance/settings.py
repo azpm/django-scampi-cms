@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 from django.conf import settings
 
 # Valid media extensions, edit at your own risk
@@ -18,9 +17,8 @@ THUMB_SIZE = getattr(settings, 'THUMB_SIZE', (100,80))
 
 # Extra mime types to monkey patch to mimetypes.types_map
 EXTRA_MIME_TYPES = getattr(settings, 'EXTRA_MIME_TYPES', {
-    '.flv':'video/x-flv',
-    '.7z':'application/x-7z-compressed',
+    '.flv': 'video/x-flv',
+    '.7z': 'application/x-7z-compressed',
     '.m4v': 'video/mp4',
     '.mp4': 'video/mp4',
-    
 })

@@ -19,7 +19,7 @@ class PublishTypeListFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() is not None:
-            return queryset.filter(category__keyname = self.value())
+            return queryset.filter(category__keyname=self.value())
 
 
 class ArticleAuthorListFilter(SimpleListFilter):
@@ -40,7 +40,7 @@ class ArticleAuthorListFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'me' or self.value() is None:
-            return queryset.filter(Q(story__article__author = request.user) | Q(story__author = request.user))
+            return queryset.filter(Q(story__article__author=request.user) | Q(story__author=request.user))
 
     def choices(self, cl):
         for lookup, title in self.lookup_choices:

@@ -97,7 +97,7 @@ class RenderArticle(Tag):
             lang = "en"
 
         # try to get the article in the correct language, default to RANDOM language if not available
-        body = getattr(article, "body_%s" % lang, None)
+        body = getattr(article, u"body_{0:s}".format(lang), None)
         if not body:
             body = article.body
 
@@ -109,7 +109,7 @@ class RenderArticle(Tag):
         # second pass, scampi 1.0 style media
         inlined_images = article.image_inlines.all()
         if inlined_images.count() > 0:
-            md_friendly = "\n".join([u"[%s]: %s" % (t.slug, t.file.url) for t in inlined_images])
+            md_friendly = "\n".join([u"[{0:s}]: {1:s}".format(t.slug, t.file.url) for t in inlined_images])
             second_pass = "\n".join([first_pass, md_friendly])
         else:
             second_pass = first_pass
@@ -245,9 +245,10 @@ def category_cloud(parser, token):
     bits = token.contents.split()
     len_bits = len(bits)
     if len_bits != 4 and len_bits not in range(6, 9):
-        raise template.TemplateSyntaxError(_('%s tag requires either three or between five and seven arguments') % bits[0])
+        raise template.TemplateSyntaxError(_(
+            u"{0:s} tag requires either three or between five and seven arguments".format(bits[0])))
     if bits[2] != 'as':
-        raise template.TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
+        raise template.TemplateSyntaxError(_(u"second argument to {0:s} tag must be 'as'".format(bits[0])))
     kwargs = {}
     if len_bits > 5:
         if bits[4] != 'with':
@@ -259,30 +260,34 @@ def category_cloud(parser, token):
                     try:
                         kwargs[str(name)] = int(value)
                     except ValueError:
-                        raise template.TemplateSyntaxError(_("%(tag)s tag's '%(option)s' option was not a valid integer: '%(value)s'") % {
-                            'tag': bits[0],
-                            'option': name,
-                            'value': value,
-                        })
+                        raise template.TemplateSyntaxError(_(
+                            "{tag:s} tag's '{option:s}' option was not a valid integer: '{value:s}'".format(**{
+                                'tag': bits[0],
+                                'option': name,
+                                'value': value,
+                            })))
                 elif name == 'distribution':
                     if value in ['linear', 'log']:
                         kwargs[str(name)] = {'linear': LINEAR, 'log': LOGARITHMIC}[value]
                     else:
-                        raise template.TemplateSyntaxError(_("%(tag)s tag's '%(option)s' option was not a valid choice: '%(value)s'") % {
+                        raise template.TemplateSyntaxError(_(
+                            "{tag:s} tag's '{option:s}' option was not a valid choice: '{value:s}'".format(**{
+                                'tag': bits[0],
+                                'option': name,
+                                'value': value,
+                            })))
+                else:
+                    raise template.TemplateSyntaxError(_(
+                        "{tag:s} tag was given an invalid option: '{option:s}'".format(**{
                             'tag': bits[0],
                             'option': name,
-                            'value': value,
-                        })
-                else:
-                    raise template.TemplateSyntaxError(_("%(tag)s tag was given an invalid option: '%(option)s'") % {
-                        'tag': bits[0],
-                        'option': name,
-                    })
+                        })))
             except ValueError:
-                raise template.TemplateSyntaxError(_("%(tag)s tag was given a badly formatted option: '%(option)s'") % {
-                    'tag': bits[0],
-                    'option': bits[i],
-                })
+                raise template.TemplateSyntaxError(_(
+                    "{tag:s} tag was given a badly formatted option: '{option:s}'".format(**{
+                        'tag': bits[0],
+                        'option': bits[i],
+                    })))
     return cloud_node(bits[1], bits[3], **kwargs)
 
 
@@ -360,7 +365,7 @@ def dechain_archival_categories(needle, haystack):
 
     returns: strips needle from current ?c=updated or ./ if current is empty
     """
-    category_path= "{0:>s}".format("+".join([t.keyname for t in haystack if t.id != needle.id]))
+    category_path = "{0:>s}".format("+".join([t.keyname for t in haystack if t.id != needle.id]))
     
     if category_path == '':
         url = "./"

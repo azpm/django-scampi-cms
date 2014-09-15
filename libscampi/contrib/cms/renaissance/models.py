@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*
 import mimetypes
 import os
 import datetime
@@ -30,7 +29,7 @@ class MediaInlineTemplate(models.Model):
     javascript = models.ManyToManyField('communism.Javascript', blank=True)
 
     def __unicode__(self):
-        return u"%s" % self.title
+        return u"{0:s}".format(self.title)
 
     class Meta:
         verbose_name = 'Template (Inline)'
@@ -47,7 +46,7 @@ class MediaPlaylistTemplate(models.Model):
     content = models.TextField()
 
     def __unicode__(self):
-        return u"%s" % self.title
+        return u"{0:s}".format(self.title)
 
     class Meta:
         verbose_name = 'Template (Playlist)'
@@ -58,8 +57,7 @@ class MediaType(models.Model):
     title = models.CharField(max_length=255)
     keyname = models.SlugField(max_length=20, unique=True)
     description = models.TextField(null=True, blank=True)
-    inline_template = models.ForeignKey(MediaInlineTemplate, verbose_name="Media Inline-Template",
-                                        db_column="template_id")  # this is a bit of a fuckup because we added the other template
+    inline_template = models.ForeignKey(MediaInlineTemplate, verbose_name="Media Inline-Template", db_column="template_id")
 
     class Meta:
         abstract = True
@@ -72,7 +70,7 @@ class MediaType(models.Model):
             if width & height:
                 return u"{0:>s} [{1:d} x {2:d}]".format(self.title, width, height)
 
-        return u"%s" % self.title
+        return u"{0:s}".format(self.title)
 
 
 class ImageType(MediaType):

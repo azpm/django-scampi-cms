@@ -4,27 +4,29 @@ from django.db.models import Max
 
 register = template.Library()
 
-class layout_node(template.Node):
-    def __init__(self, slice):
-        self.slice = template.Variable(slice)
+
+class LayoutNode(template.Node):
+    def __init__(self, html_slice):
+        self.html_slice = template.Variable(html_slice)
     
     def render(self, context):
-        slice = self.slice.resolve(context)
+        html_slice = self.html_slice.resolve(context)
         
         #get all boxes for this slice        
-        box_collection = slice.namedbox_set.select_related(
+        box_collection = html_slice.namedbox_set.select_related(
             'template__id',
             'template__content',
             'content',
             'content__template',
             'staticpicker__content'
         ).filter(active=True)
-        maximum_y = box_collection.aggregate(max_y = Max('gridy'))['max_y']
+
+        maximum_y = box_collection.aggregate(max_y=Max('gridy'))['max_y']
         grid = []
         
         if maximum_y is not None:
             for i in range(0, maximum_y):
-                grid.append([ [],[],[] ])
+                grid.append([[], [], []])
 
             for box in box_collection:
                 grid[box.gridy-1][box.gridx-1].append(box)
@@ -34,16 +36,16 @@ class layout_node(template.Node):
         except (KeyError, ValueError):
             return ""
         else:
-            template = "%s/layout/boxgrid.html" % theme.keyname
+            tpl = "{}/layout/boxgrid.html".format(theme.keyname)
         
-        return render_to_string(template, {'grid': grid}, context)
-        
+        return render_to_string(tpl, {'grid': grid}, context)
+
+
+@register.tag
 def generate_layout(parser, token):
     try:
-        tag_name, slice = token.contents.split(None, 1)
+        tag_name, html_slice = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
-    
-    return layout_node(slice)
+        raise template.TemplateSyntaxError, "{0!r:s} tag requires arguments".format(token.contents.split()[0])
 
-register.tag('generate_layout', generate_layout)
+    return LayoutNode(html_slice)

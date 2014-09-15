@@ -1,21 +1,18 @@
 import logging
 from datetime import datetime
-from operator import and_
-
 from django.views.generic import DetailView, ListView
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.cache import cache
 from django.contrib.sites.models import Site
-
 from libscampi.contrib.cms.views.base import PageNoView
-
 from libscampi.contrib.cms.newsengine.models import StoryCategory
 from libscampi.contrib.cms.newsengine.views.helpers import story_javascripts, story_stylesheets
 from libscampi.contrib.cms.newsengine.views.story.mixins import StoryMixin
 
+
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.views.story')
+
 
 class StoryPage(StoryMixin, PageNoView):
     theme = None
@@ -40,7 +37,7 @@ class StoryPage(StoryMixin, PageNoView):
 
         #category filtering specified in url
         if 'c' in request.GET:
-            limits = request.GET.get('c','').split(' ')
+            limits = request.GET.get('c', '').split(' ')
 
             filters = [Q(keyname=value) for value in limits]
             query = filters.pop()
@@ -88,7 +85,7 @@ class StoryPage(StoryMixin, PageNoView):
         context = super(StoryPage, self).get_context_data(*args, **kwargs)
 
         if self.limits:
-            get_args = u"c=%s" % "+".join([t.keyname for t in self.limits])
+            get_args = u"c={0:s}".format("+".join([t.keyname for t in self.limits]))
         else:
             get_args = None
 
@@ -102,9 +99,9 @@ class StoryPage(StoryMixin, PageNoView):
 
         return context
 
-
     def get_theme(self):
         return self.theme
+
 
 class StoryList(StoryPage, ListView):
     def get_page_title(self):
@@ -117,6 +114,7 @@ class StoryList(StoryPage, ListView):
         )
 
         return tpl_list
+
 
 class StoryDetail(StoryPage, DetailView):
     def get_page_title(self):

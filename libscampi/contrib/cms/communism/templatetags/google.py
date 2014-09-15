@@ -5,6 +5,7 @@ from classytags.arguments import Argument
 
 register = template.Library()
 
+
 class Urchin(Tag):
     name = "urchin"
 

@@ -8,7 +8,7 @@ __all__ = ['ValidImgExtension', 'ValidVidExtension', 'ValidDocExtension', 'Valid
 
 class ExtValidator(object):
     extension = None
-    message = _("Uploaded file must have valid extension: %(exts)s")
+    message = _(u"Uploaded file must have valid extension: {exts:s}")
     valid_key = None
 
     def get_extension(self, fname):
@@ -27,7 +27,7 @@ class ExtValidator(object):
         params = {'exts': ", ".join(valid_extensions[self.valid_key])}
 
         if self.extension not in valid_extensions[self.valid_key]:
-            raise ValidationError(self.message % params)
+            raise ValidationError(self.message.format(params))
 
 
 class ValidImgExtension(ExtValidator):

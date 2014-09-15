@@ -1,3 +1,7 @@
+from django.template import Library
+
+register = Library()
+
 """
 Template filters to partition lists into columns or columns.
 
@@ -15,11 +19,8 @@ A common use-case is for splitting a list into a table with columns::
     </table>
 """
 
-from django.template import Library
 
-register = Library()
-
-def columns(thelist, n):
+def columns(the_list, n):
     """
     Break a list into ``n`` columns, filling up each column to the maximum equal
     length possible. For example::
@@ -47,17 +48,18 @@ def columns(thelist, n):
     """
     try:
         n = int(n)
-        thelist = list(thelist)
+        the_list = list(the_list)
     except (ValueError, TypeError):
-        return [thelist]
-    list_len = len(thelist)
+        return [the_list]
+    list_len = len(the_list)
     split = list_len // n
 
     if list_len % n != 0:
         split += 1
-    return [thelist[split*i:split*(i+1)] for i in range(n)]
+    return [the_list[split*i:split*(i+1)] for i in range(n)]
 
-def columns_distributed(thelist, n):
+
+def columns_distributed(the_list, n):
     """
     Break a list into ``n`` columns, distributing columns as evenly as possible
     across the columns. For example::
@@ -85,10 +87,10 @@ def columns_distributed(thelist, n):
     """
     try:
         n = int(n)
-        thelist = list(thelist)
+        the_list = list(the_list)
     except (ValueError, TypeError):
-        return [thelist]
-    list_len = len(thelist)
+        return [the_list]
+    list_len = len(the_list)
     split = list_len // n
 
     remainder = list_len % n
@@ -99,7 +101,7 @@ def columns_distributed(thelist, n):
             start, end = (split+1)*i, (split+1)*(i+1)
         else:
             start, end = split*i+offset, split*(i+1)+offset
-        columns.append(thelist[start:end])
+        columns.append(the_list[start:end])
         if remainder:
             remainder -= 1
             offset += 1
@@ -107,10 +109,3 @@ def columns_distributed(thelist, n):
 
 register.filter(columns)
 register.filter(columns_distributed)
-
-def _test():
-    import doctest
-    doctest.testmod()
-
-if __name__ == "__main__":
-    _test()

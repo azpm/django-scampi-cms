@@ -8,17 +8,18 @@ from libscampi.contrib.django_filters.filters import ModelMultipleChoiceFilter, 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.utils')
 
 DATE_RANGE_COERCION = {
-    '-today': lambda name, lookup: {'%s__%s' % (name, lookup): datetime.now()},
-    '-past7days': lambda name, lookup: {'%s__%s' % (name, lookup): datetime.now() - timedelta(days=7)},
-    '-thismonth': lambda name, lookup: {'%s__year' % name: datetime.today().year, '%s__month__%s' % (name, lookup): datetime.now().month},
-    '-thisyear': lambda name, lookup: {'%s__year__%s' % (name,lookup): datetime.now().year},
+    '-today': lambda name, lookup: {'{0:s}__{1:s}'.format(name, lookup): datetime.now()},
+    '-past7days': lambda name, lookup: {'{0:s}__{1:s}'.format(name, lookup): datetime.now() - timedelta(days=7)},
+    '-thismonth': lambda name, lookup: {u'{0:s}__year'.format(name): datetime.today().year, '{0:s}__month__{1:s}'.format(
+        name, lookup): datetime.now().month},
+    '-thisyear': lambda name, lookup: {'{0:s}__year__{1:s}'.format(name, lookup): datetime.now().year},
 }
 
 DATE_RANGE_PICKLE_MAPPING = {
-    1: lambda name, lookup: {'%s' % name: ('coerce-datetime', lookup, '-today')},
-    2: lambda name, lookup: {'%s' % name: ('coerce-datetime', lookup, '-past7days')},
-    3: lambda name, lookup: {'%s' % name: ('coerce-datetime', lookup, '-thismonth')},
-    4: lambda name, lookup: {'%s' % name: ('coerce-datetime', lookup, '-thisyear')},
+    1: lambda name, lookup: {u'{0:s}'.format(name): ('coerce-datetime', lookup, '-today')},
+    2: lambda name, lookup: {u'{0:s}'.format(name): ('coerce-datetime', lookup, '-past7days')},
+    3: lambda name, lookup: {u'{0:s}'.format(name): ('coerce-datetime', lookup, '-thismonth')},
+    4: lambda name, lookup: {u'{0:s}'.format(name): ('coerce-datetime', lookup, '-thisyear')},
 }
 
 DATE_RANGE_UNCOERCE = {
@@ -62,14 +63,14 @@ def build_filters(fs):
                 # a FOO__id__in: [LIST OF IDS] for the pickler
                 value = value or ()
                 if not len(value) == len(list(picking_form.fields[name].choices)):
-                    fs = {"%s__id__in" % _filter.name: [t.pk for t in value]}
+                    fs = {u"{0:s}__id__in".format(_filter.name): [t.pk for t in value]}
             elif type(_filter) is ModelChoiceFilter:
                 # handle single model choice fields, again because query sets are not likely
                 # to work across django versions we cannot pickle the QS we need to pickle
                 # proper qs lookup
                 if value is None:
                     continue
-                fs = {"%s__id__%s" % (_filter.name, lookup): value.pk}
+                fs = {"{0:s}__id__{1:s}".format(_filter.name, lookup): value.pk}
             elif type(_filter) is DateRangeFilter:
                 # Handle date range objects: django_filters says "today" is literally today,
                 # at initial execute.  We must pickle a coercible concept so that date ranges
@@ -81,7 +82,7 @@ def build_filters(fs):
                 fs = DATE_RANGE_PICKLE_MAPPING[value](_filter.name, lookup)
             elif value is not None:
                 # this is a non-relational, non-datetime lookup
-                fs = {"%s__%s" % (_filter.name, lookup): value}
+                fs = {"{0:s}__{1:s}".format(_filter.name, lookup): value}
                 
             if fs:
                 filters.update(fs)

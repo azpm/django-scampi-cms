@@ -62,7 +62,7 @@ class Article(MultilingualModel):
         verbose_name_plural = "Articles"
 
     def who_made_me(self):
-        return u"%s" % self.author.get_full_name()
+        return u"{0:s}".format(self.author.get_full_name())
     who_made_me.short_description = "Creating Editor"
 
     def __unicode__(self):
@@ -249,7 +249,7 @@ def slug_for_publish(sender, instance, created, raw, **kwargs):
     if instance.slug == '' or not instance.slug and None != instance.story:
         # this publish needs a slug
         slugged_headline = slugify(instance.story.article.headline)
-        slug = "%d-%s" % (instance.pk, slugged_headline)
+        slug = "{0:d}-{1:s}".format(instance.pk, slugged_headline)
         instance.slug = slug[:255]
         instance.save()
 
@@ -259,7 +259,7 @@ def slug_for_publish_queue(sender, instance, created, raw, **kwargs):
     if instance.slug == '' or not instance.slug and None != instance.story:
         # this publish needs a slug
         slugged_headline = slugify(instance.story.article.headline)
-        slug = "%d-%s" % (instance.pk, slugged_headline)
+        slug = "{0:d}-{1:s}".format(instance.pk, slugged_headline)
         instance.slug = slug[:255]
         instance.save()
 
@@ -269,7 +269,7 @@ def slug_for_story(sender, instance, created, raw, **kwargs):
     if instance.slug == '' or not instance.slug and None != instance.article:
         # this story needs a slug
         slugged_headline = slugify(instance.article.headline)
-        slug = "%d-%s" % (instance.pk, slugged_headline)
+        slug = "{0:d}-{1:s}".format(instance.pk, slugged_headline)
         instance.slug = slug[:255]
         instance.save()
 

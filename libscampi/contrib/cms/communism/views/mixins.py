@@ -74,7 +74,8 @@ class SectionMixin(object):
                 if "__un_managed" in request.path:
                     # always strip __un_managed from the URL if anyone manages to put it in
                     return redirect(self.realm.get_absolute_url())
-                    # if the magic identifier __un_managed appears from the view object graph, we set view section to special "un-managed" section
+                    # if the magic identifier __un_managed appears from the view object,
+                    # we set view section to special "un-managed" section
                 self.section = MagicSection(id=0, realm=self.realm, display_order=0, active=True,
                                             generates_navigation=False, extends=None)
             else:
@@ -84,7 +85,7 @@ class SectionMixin(object):
                 # we'll see if the section is embedded in the url (it's always the first thing after the domain)
                 current_section = request.path.split('/', 2)[1]
             except IndexError:
-                logger.critical("something bad went wrong with the request, %s" % request.path)
+                logger.critical(u"something bad went wrong with the request, {0:s}".format(request.path))
                 raise HttpResponseServerError
 
             if current_section != '':

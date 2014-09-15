@@ -1,12 +1,12 @@
 import logging
-
 from django import template
 from django.core.cache import cache
 
 logger = logging.getLogger('libscampi.contrib.cms.communism.templatetags')
 register = template.Library()
 
-class namedbox_node(template.Node):
+
+class NamedBox(template.Node):
     def __init__(self, namedbox):
         self.namedbox = template.Variable(namedbox)
     
@@ -19,11 +19,11 @@ class namedbox_node(template.Node):
         
         #grab the template from the database and then cache it
         if not cached_tpl:
-            logger.debug("cache miss on %s trying to get cached template" % cached_tpl_key)
+            logger.debug("cache miss on {} trying to get cached template".format(cached_tpl_key))
             cached_tpl = namedbox.template.content
             cache.set(cached_tpl_key, cached_tpl)
         
-        tpl = template.Template(cached_tpl, name = "communism.NamedBoxTemplate [%s]" % namedbox.template_id)
+        tpl = template.Template(cached_tpl, name="communism.NamedBoxTemplate [{}]".format(namedbox.template_id))
         request = context.get('request', None)
             
         if not request:
@@ -36,10 +36,10 @@ class namedbox_node(template.Node):
             'cms_page': context.get('cms_page', None),
         }
         
-        new_context = template.RequestContext(request, c, current_app = context.current_app)
+        new_context = template.RequestContext(request, c, current_app=context.current_app)
         return tpl.render(new_context)
 
-        
+@register.tag
 def render_namedbox(parser, token):
     """
     Renders a :model:`communism.NamedBox` according to it's :model:`communism.NamedBoxTemplate`
@@ -60,6 +60,4 @@ def render_namedbox(parser, token):
         raise template.TemplateSyntaxError, "{0!r:s} tag requires 1 argument, a namedbox".format(
             token.contents.split()[0])
     
-    return namedbox_node(namedbox)
-
-register.tag('render_namedbox', render_namedbox)
+    return NamedBox(namedbox)

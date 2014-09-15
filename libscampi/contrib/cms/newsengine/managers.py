@@ -16,12 +16,20 @@ class PublishedManager(models.Manager):
         qs = self.get_query_set().filter(
             Q(story__peers__in=[story]) | Q(story__categories__keyname__in=cats),
             start__lte=right_now, start__gte=long_ago
-        ).exclude(story__id = story.pk)
+        ).exclude(story__id=story.pk)
         qs = qs.annotate(rel_count=Count('story__categories'))
+        qs = qs.order_by('-rel_count')
+        qs = qs.values('rel_count', 'story', 'story__slug', 'story__article', 'start', 'slug')
 
-        return qs.order_by('-rel_count').values('rel_count','story','story__slug','story__article','start','slug').distinct()
+        return qs.distinct()
 
 
 class CategoryGenera(models.Manager):
     def for_cloud(self, qs):
-        return super(CategoryGenera, self).get_query_set().distinct().filter(story__publish__in=qs, browsable=True).annotate(occurances=Count('story')).values('id','title','keyname','occurances')
+        base_qs = self.get_queryset()
+        base_qs = base_qs.distinct()
+        base_qs = base_qs.filter(story__publish__in=qs, browsable=True)
+        base_qs = base_qs.annotate(occurances=Count('story'))
+        base_qs = base_qs.values('id','title','keyname','occurances')
+
+        return base_qs

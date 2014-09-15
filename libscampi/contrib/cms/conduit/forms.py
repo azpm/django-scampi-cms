@@ -8,7 +8,7 @@ logger = logging.getLogger('libscampi.contrib.cms.conduit.forms')
 
 
 class DynamicPickerInitialForm(forms.ModelForm):
-    content = forms.ModelChoiceField(queryset = manifest.contenttypes_for_available(), help_text = _("What model will populate this picker?"))
+    content = forms.ModelChoiceField(queryset=manifest.contenttypes_for_available(), help_text=_("What model will populate this picker?"))
 
     class Meta:
         model = DynamicPicker

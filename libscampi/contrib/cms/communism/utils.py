@@ -1,5 +1,4 @@
 import logging
-
 from django.core.cache import cache
 from django.contrib.sites.models import Site
 from libscampi.core.files.storage import OverwriteStorage
@@ -14,16 +13,16 @@ __all__ = ['theme_style_decorator', 'theme_script_decorator', 'theme_banner_deco
 
 def theme_style_decorator(cls, f):
     """ put theme stylesheets in the right spot """
-    return "%s/css/%s" % (cls.theme.keyname, f)
+    return "{0:s}/css/{1:s}".format(cls.theme.keyname, f)
 
 
 def theme_script_decorator(cls, f):
     """ put theme javascripts in the right spot """
-    return "%s/js/%s" % (cls.theme.keyname, f)
+    return "{0:s}/js/{1:s}".format(cls.theme.keyname, f)
     
 
 def theme_banner_decorator(cls, f):
-    return "%s/img/banner/%s" % (cls.keyname, f)
+    return "{0:s}/img/banner/{1:s}".format(cls.keyname, f)
 
 
 def swap_storage_engines(sender, instance, **kwargs):
@@ -66,4 +65,4 @@ def cache_namedbox_template(sender, instance, **kwargs):
     tpl = instance.content
     cache.set(cache_key, tpl)
     
-    logger.info("updating cached template %s [NamedBoxTemplate]" % cache_key)
+    logger.info(u"updating cached template {0:s} [NamedBoxTemplate]".format(cache_key))

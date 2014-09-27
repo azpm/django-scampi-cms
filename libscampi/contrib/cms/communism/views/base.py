@@ -1,4 +1,35 @@
-from libscampi.contrib.cms.views.base import CMSPage
+from django.views.generic import TemplateView
+from . import mixins
+
+
+class Page(mixins.SectionMixin, mixins.ApplicationMixin, mixins.ThemeMixin, mixins.CSSMixin, mixins.JScriptMixin, mixins.PageMixin, TemplateView):
+    """
+    Implements an un-managed page with a  templateview that integrates with the CMS without having a commune, e.g.
+    if you are using a custom django application and want to integrate it with scampi cms
+    """
+    pass
+
+
+class PageNoView(mixins.SectionMixin, mixins.ApplicationMixin, mixins.ThemeMixin, mixins.CSSMixin, mixins.JScriptMixin, mixins.PageMixin):
+    """
+    Implements an un-managed page that has no view, you must provide the proper response mixin
+    """
+    pass
+
+
+class CMSPage(mixins.SectionMixin, mixins.CommuneMixin, mixins.ThemeMixin, mixins.CSSMixin, mixins.JScriptMixin, mixins.PageMixin, TemplateView):
+    """
+    Implements a canonical Commune based CMS Page
+    """
+    pass
+
+
+class CMSPageNoView(mixins.SectionMixin, mixins.CommuneMixin, mixins.ThemeMixin, mixins.CSSMixin, mixins.JScriptMixin, mixins.PageMixin):
+    """
+    Implements a CMS page that has no view
+    e.g. you must provide an alternative View mixin
+    """
+    pass
 
 
 class Index(CMSPage):

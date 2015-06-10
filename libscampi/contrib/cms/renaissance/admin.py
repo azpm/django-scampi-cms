@@ -63,7 +63,10 @@ class PlaylistAdmin(object):
    
 #play list inline block
 class RankedItemInline(object): extra = 5
-class RankedImageInline(RankedItemInline, admin.TabularInline): model = RankedImage
+class RankedImageInline(RankedItemInline, admin.TabularInline):
+    model = RankedImage
+    raw_id_fields= ['image']
+
 class RankedVideoInline(RankedItemInline, admin.TabularInline): model = RankedVideo
 class RankedAudioInline(RankedItemInline, admin.TabularInline): model = RankedAudio
 class RankedDocumentInline(RankedItemInline, admin.TabularInline): model = RankedDocument

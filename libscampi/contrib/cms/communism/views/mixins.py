@@ -155,7 +155,7 @@ class CommuneMixin(object):
         return tpl_list
 
     def get_page_description(self):
-        return self.description
+        return self.commune.description
 
     
     def get_context_data(self, *args, **kwargs):

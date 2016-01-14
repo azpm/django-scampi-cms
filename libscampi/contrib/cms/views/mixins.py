@@ -14,12 +14,14 @@ class PageMixin(object):
             context['cms_page'].update({
                 'title': self.get_page_title(),
                 'onload': self.get_page_onload(),
+                'description':self.get_page_description(),
             })
         else:
             context.update({
                 'cms_page': {
                     'title': self.get_page_title(),
                     'onload': self.get_page_onload(),
+                    'description':self.get_page_description(),
                 }
             })
         logger.debug("PageMixin.get_context_data ended")

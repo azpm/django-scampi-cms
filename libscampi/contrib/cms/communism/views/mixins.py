@@ -152,7 +152,11 @@ class CommuneMixin(object):
             "{0:>s}/communism/commune.html".format(self.commune.theme.keyname),
         )
         
-        return tpl_list 
+        return tpl_list
+
+    def get_page_description(self):
+        return self.description
+
     
     def get_context_data(self, *args, **kwargs):
         context = super(CommuneMixin, self).get_context_data(*args, **kwargs)

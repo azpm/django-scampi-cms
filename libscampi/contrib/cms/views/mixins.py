@@ -17,7 +17,7 @@ class PageMixin(object):
                 'description':self.get_page_description(),
             })
         else:
-            if not self.get_page_description:
+            try:
                 context.update({
                     'cms_page': {
                     'title': self.get_page_title(),
@@ -25,7 +25,7 @@ class PageMixin(object):
                     'description':self.get_page_description(),
                 }
             })
-            else:
+            except AttributeError:
                 context.update({
                     'cms_page': {
                         'title': self.get_page_title(),

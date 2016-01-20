@@ -21,6 +21,7 @@ class PageMixin(object):
                 'cms_page': {
                     'title': self.get_page_title(),
                     'onload': self.get_page_onload(),
+                    'description':self.get_page_description(),
                 }
             })
         logger.debug("PageMixin.get_context_data ended")

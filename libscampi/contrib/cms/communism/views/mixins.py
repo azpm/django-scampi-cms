@@ -155,7 +155,11 @@ class CommuneMixin(object):
         return tpl_list
 
     def get_page_description(self):
-        return self.commune.description
+        if self.commune.description:
+            return self.commune.description
+
+        else:
+            return "scampi-generated page"
 
     
     def get_context_data(self, *args, **kwargs):

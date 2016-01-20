@@ -17,7 +17,7 @@ class PageMixin(object):
                 'description':self.get_page_description(),
             })
         else:
-            if self.get_page_description:
+            if not self.get_page_description:
                 context.update({
                     'cms_page': {
                     'title': self.get_page_title(),

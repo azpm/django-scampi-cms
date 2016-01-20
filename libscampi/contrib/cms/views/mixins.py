@@ -17,13 +17,21 @@ class PageMixin(object):
                 'description':self.get_page_description(),
             })
         else:
-            context.update({
-                'cms_page': {
+            if self.get_page_description():
+                context.update({
+                    'cms_page': {
                     'title': self.get_page_title(),
                     'onload': self.get_page_onload(),
                     'description':self.get_page_description(),
                 }
             })
+            else:
+                context.update({
+                    'cms_page': {
+                        'title': self.get_page_title(),
+                        'onload': self.get_page_onload(),
+                    }
+                })
         logger.debug("PageMixin.get_context_data ended")
         return context
         

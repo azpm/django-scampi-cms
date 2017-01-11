@@ -200,7 +200,7 @@ class StoryAdmin(admin.ModelAdmin):
     list_display = ['headline', 'author_name', 'creation_date']
     search_fields = ['article__translations__headline','author__first_name','author__last_name','author__username']
     fieldsets = (
-        ('Meta Data', {'fields': ('author','categories','article','tags')}),
+        ('Meta Data', {'fields': ('author','alternate_byline','categories','article','tags')}),
         ('Media Play Lists', {'fields': (('image_playlist', 'video_playlist', 'audio_playlist'),('document_playlist', 'object_playlist'))}),
         ('Relationships', {'fields': ('peers','important')}),
     )

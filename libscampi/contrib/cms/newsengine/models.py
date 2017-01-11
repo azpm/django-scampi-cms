@@ -112,6 +112,7 @@ class Story(models.Model):
     article = models.ForeignKey(Article)
     categories = models.ManyToManyField(StoryCategory)
     author = models.ForeignKey(User)
+    alternate_byline = models.CharField(max_length = 250, verbose_name = "Alternate Byline", help_text = "You can specify a different byline than the one automatically created from choosing an author", null = True, blank = True)
     creation_date = models.DateTimeField(verbose_name = "Creation Date", auto_now_add=True)    
     modified = models.DateTimeField(auto_now=True)
     peers = models.ManyToManyField('self', related_name='related_stories', null = True, blank = True)

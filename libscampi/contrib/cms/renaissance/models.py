@@ -159,7 +159,8 @@ class Image(Media):
     base_type = "image"
                 
 class Video(Media):
-    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidVidExtension()])
+    file = models.FileField(upload_to=_file_upload_pathing, validators=[ValidVidExtension()], blank=True)
+    url = models.CharField(max_length=255, blank=True, null=True)
     type = models.ForeignKey(VideoType)
     thumbnail = models.ForeignKey(Image, null = True)
         

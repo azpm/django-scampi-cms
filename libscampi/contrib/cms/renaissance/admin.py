@@ -17,7 +17,7 @@ class MediaAdmin(object):
     ordering = ['-creation_date']
     date_hierarchy = 'creation_date'
     prepopulated_fields = {'slug': ('title',)}
-    search_fields = ['title', 'caption']
+    search_fields = ['title', 'caption',tags.all()]
     save_on_top = True
 
 class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):

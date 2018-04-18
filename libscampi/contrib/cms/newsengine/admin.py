@@ -132,9 +132,10 @@ class ArticleAdmin(admin.ModelAdmin):
             'pk': media.pk,
             'title': media.title,
             'slug': media.slug,
-            'type': {'name': media.type.title, 'keyname': media.type.keyname},
             'form_of': media_type
         }
+        if hasattr(media, "type"):
+            returnable.update({'type': {'name': media.type.title, 'keyname': media.type.keyname}})
 
         if hasattr(media, "file"):
             returnable.update({'file': media.file.url})

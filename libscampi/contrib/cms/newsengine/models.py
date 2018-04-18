@@ -37,9 +37,9 @@ class ArticleTranslation(models.Model):
     sub_headline = models.CharField(_('Article Tag line'), max_length = 255,
             help_text = _("Will be truncated to 30 words when viewed as a spotlight.  No markup allowed."))
     synopsis = models.TextField(blank = True,
-            help_text = _("Article Synopsis, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"))
+            help_text = _("Usually left blank. Article Synopsis, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax' target='_blank'>Markdown Syntax</a> for help"))
     body = models.TextField(blank = True,
-            help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax'>Markdown Syntax</a> for help"),
+            help_text = _("Article body, markup(down) allowed: see <a href='http://daringfireball.net/projects/markdown/syntax' target='_blank'>Markdown Syntax</a> for help"),
             validators=[validate_article]
     )
             
@@ -262,7 +262,8 @@ class PublishPicking(django_filters.FilterSet):
             'story__article__video_inlines',
             'story__article__audio_inlines',
             'story__article__document_inlines',
-            'story__article__object_inlines',
+            'story__article__object_inlines',			
+            'story__article__external_inlines',
         )
         
     @staticmethod

@@ -29,7 +29,7 @@
             var elem = $(this);
             var text = elem.attr("title");
             var total_width = $(window).width();
-            $("body").append("<p id='img_preview_popover'><img src='"+ elem.attr('rel') +"' alt='url preview' /><br/>&nbsp;&nbsp;"+ text +"</p>");
+            $("body").append("<p id='img_preview_popover'><img src='"+ elem.attr('rel') +"' alt='url preview' style='max-width:800px' /><br/>&nbsp;&nbsp;"+ text +"</p>");
             $("#img_preview_popover")
                    //.css("top",(elem.offset().top - settings.xOffset) + "px")
                    //.css("right",(elem.offset().left + settings.yOffset) + "px")

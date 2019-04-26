@@ -1,5 +1,6 @@
 from libscampi.contrib.cms.newsengine.models import Publish
 
+
 class PublishMixin(object):
     """
     Published Story Mixin for archives/pages

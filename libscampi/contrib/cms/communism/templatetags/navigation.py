@@ -4,9 +4,10 @@ from django.core.cache import cache
 from django import template
 from django.template.loader import get_template
 
-from libscampi.contrib.cms.communism.models import *
+from libscampi.contrib.cms.communism import models
 
 register = template.Library()
+
 
 class SiteMapNode(template.Node):
     def render(self, context):
@@ -14,24 +15,30 @@ class SiteMapNode(template.Node):
         realm = context.get('cms_realm', None)
         section = context.get('cms_section', None)
         page = context.get('cms_page', None)
-        
+
         if not request or not realm or not section:
             return ''
-                
+
         realms_qs_key = "cms:realms:all"
         realms = cache.get(realms_qs_key, None)
-        
+
         if not realms:
-            realms = Realm.objects.select_related('site').prefetch_related('sections').filter(active = True, generates_navigation = True).extra(select={'tls_count': 'select count(*) from communism_section where extends_id is null and realm_id = communism_realm.id'}).order_by('display_order')
-            cache.set(realms_qs_key, realms, 60*20)
-            
+            realms = models.Realm.objects.select_related('site').prefetch_related('sections').filter(active=True,
+                                                                                              generates_navigation=True).extra(
+                select={
+                    'tls_count': 'select count(*) from communism_section where extends_id is null and realm_id = communism_realm.id'}).order_by(
+                'display_order')
+            cache.set(realms_qs_key, realms, 60 * 20)
+
         tla_sections_qs_key = "cms:sections:toplevel"
         sections = cache.get(tla_sections_qs_key, None)
-        
+
         if not sections:
-            sections = Section.objects.select_related('realm').prefetch_related('element').filter(active = True, generates_navigation = True, extends__isnull=True)
-            cache.set(tla_sections_qs_key, sections, 60*20)
-            
+            sections = models.Section.objects.select_related('realm').prefetch_related('element').filter(active=True,
+                                                                                                  generates_navigation=True,
+                                                                                                  extends__isnull=True)
+            cache.set(tla_sections_qs_key, sections, 60 * 20)
+
         c = {
             'sections': sections,
             'realms': realms,
@@ -39,12 +46,13 @@ class SiteMapNode(template.Node):
             'cms_section': section,
             'cms_page': page,
         }
-        
+
         new_context = template.RequestContext(request, c, context.current_app)
         tpl = get_template("%s/navigation/sitemap.html" % page['theme'].keyname)
-        
+
         return tpl.render(new_context)
-        
+
+
 @register.tag
 def render_sitemap(parser, token):
     """
@@ -56,24 +64,28 @@ def render_sitemap(parser, token):
     """
     if len(token.contents.split()) > 1:
         raise template.TemplateSyntaxError, "render_sitemap does not take arguments"
-        
+
     return SiteMapNode()
+
 
 class RealmsNode(template.Node):
     def __init__(self, varname):
         self.varname = varname
-    
+
     def render(self, context):
         realms_qs_key = "cms:realms:all"
         realms = cache.get(realms_qs_key, None)
-        
+
         if not realms:
-            realms = Realm.objects.select_related('site').filter(active = True, generates_navigation = True).extra(select={'tls_count': 'select count(*) from communism_section where extends_id is null and realm_id = communism_realm.id'}).order_by('display_order')
-            cache.set(realms_qs_key, realms, 60*20)
-        
+            realms = models.Realm.objects.select_related('site').filter(active=True, generates_navigation=True).extra(select={
+                'tls_count': 'select count(*) from communism_section where extends_id is null and realm_id = communism_realm.id'}).order_by(
+                'display_order')
+            cache.set(realms_qs_key, realms, 60 * 20)
+
         context[self.varname] = realms
-        
+
         return ''
+
 
 @register.tag
 def get_realms(parser, token):
@@ -88,7 +100,7 @@ def get_realms(parser, token):
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
         raise template.TemplateSyntaxError, "{0!r:s} tag requires arguments".format(token.contents.split()[0])
-    
+
     m = re.search(r'as (\w+)', arg)
     if not m:
         raise template.TemplateSyntaxError, "{0!r:s} tag had invalid arguments".format(tag_name)
@@ -96,33 +108,32 @@ def get_realms(parser, token):
         varname = m.groups()[0]
     except IndexError:
         varname = "realms"
-        
+
     return RealmsNode(varname)
-    
+
+
 class SectionsNode(template.Node):
     def __init__(self, pointer, varname):
         self.pointer = template.Variable(pointer)
         self.varname = varname
-        
+
     def render(self, context):
         pointer = self.pointer.resolve(context)
-        
-        if type(pointer) == Realm:
-            #sections = pointer.section_set.select_related(depth=1).filter(active = True, generates_navigation = True, extends__isnull=True)
-            sections = pointer.section_set.filter(active = True, generates_navigation = True, extends__isnull=True)
-        elif type(pointer) == Section:
-            #sections = Section.objects.select_related(depth=1).filter(active = True, generates_navigation = True, extends = pointer)
-            sections = Section.objects.filter(active = True, generates_navigation = True, extends__pk = pointer.id)
-        elif type(pointer) == Commune:
-            #sections = Section.objects.select_related(depth=1).filter(active = True, generates_navigation = True, extends = pointer.section)
-            sections = Section.objects.filter(active = True, generates_navigation = True, extends__pk = pointer.section_id)
+
+        if isinstance(pointer, models.Realm):
+            sections = pointer.section_set.filter(active=True, generates_navigation=True, extends__isnull=True)
+        elif isinstance(pointer, models.Section):
+            sections = models.Section.objects.filter(active=True, generates_navigation=True, extends__pk=pointer.id)
+        elif isinstance(pointer, models.Commune):
+            sections = models.Section.objects.filter(active=True, generates_navigation=True, extends__pk=pointer.section_id)
         else:
-            sections = Section.objects.none()
-        
+            sections = models.Section.objects.none()
+
         context[self.varname] = sections
-            
+
         return ''
-    
+
+
 @register.tag
 def get_sections(parser, token):
     """
@@ -137,7 +148,7 @@ def get_sections(parser, token):
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
         raise template.TemplateSyntaxError, "{0!r:s} tag requires arguments".format(token.contents.split()[0])
-    
+
     m = re.search(r'(\w+) as (\w+)', arg)
     if not m:
         raise template.TemplateSyntaxError, "{0!r:s} tag had invalid arguments".format(tag_name)
@@ -146,5 +157,5 @@ def get_sections(parser, token):
         pointer = m.groups()[0]
     except:
         raise template.TemplateSyntaxError, "{0!r:s} tag had invalid arguments".format(tag_name)
-        
+
     return SectionsNode(pointer, varname)

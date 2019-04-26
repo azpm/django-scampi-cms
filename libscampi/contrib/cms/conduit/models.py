@@ -6,20 +6,14 @@ from django.core.exceptions import FieldError
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
-#scampi stuff
-from libscampi.core.fields import PickledObjectField 
-from libscampi.contrib.cms.communism.models import Commune
-from libscampi.contrib.cms.newsengine.utils import cache_publishpicker_base_cats
-
-#local imports
+from libscampi.core.fields import PickledObjectField
+from libscampi.contrib.cms.validators import magic_keyname
 from libscampi.contrib.cms.conduit.utils import coerce_filters, cache_picker_template
 from libscampi.contrib.cms.conduit.picker import manifest
 from libscampi.contrib.cms.conduit.managers import DynamicPickerManager, StaticPickerManager
-from libscampi.contrib.cms.conduit.validators import magic_keyname
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.models')
 
-__all__ = ['PickerTemplate','DynamicPicker','StaticPicker']
 
 class PickerTemplate(models.Model):
     """
@@ -33,22 +27,24 @@ class PickerTemplate(models.Model):
     - request: from RequestContext 
     - perms: from RequestContext
     """
-    name =  models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
+    name = models.CharField(help_text=_("Name for easier reference"), max_length=100, unique=True)
     content = models.TextField(_("django template"))
-    stylesheet = models.ManyToManyField('communism.StyleSheet', blank = True)
-    javascript = models.ManyToManyField('communism.Javascript', blank = True)
-    
+    stylesheet = models.ManyToManyField('communism.StyleSheet', blank=True)
+    javascript = models.ManyToManyField('communism.Javascript', blank=True)
+
     class Meta:
         verbose_name = "Picker Template"
         verbose_name_plural = "Picker Templates"
-        
+
     def __unicode__(self):
         return u"{0:>s}".format(self.name)
 
+
 class PickerBase(models.Model):
-    name = models.CharField(help_text = _("Name for easier reference"), max_length = 100, unique = True)
-    commune = models.ForeignKey(Commune, verbose_name= _('Primary Commune'), null = True, blank = True, related_name = "%(class)s_related")
-    
+    name = models.CharField(help_text=_("Name for easier reference"), max_length=100, unique=True)
+    commune = models.ForeignKey('communism.Commune', verbose_name=_('Primary Commune'), null=True, blank=True,
+                                related_name="%(class)s_related")
+
     class Meta:
         abstract = True
         ordering = ['precedence']
@@ -56,18 +52,26 @@ class PickerBase(models.Model):
             ('change_picker_commune', 'User can change commune association of DynamicPicker')
         )
 
+
 class DynamicPicker(PickerBase):
-    # TODO display_name = models.CharField(verbose_name=_("Display Name"), max_length = 100, null=True, blank=True, help_text=_("Optional display name."))
-    active = models.BooleanField(default = False)
-    keyname = models.SlugField(max_length = 100, help_text = _("URL Keyname for permalinks"), validators=[magic_keyname])
+    # TODO add the following field
+    #  display_name = models.CharField(
+    #  verbose_name=_("Display Name"),
+    #  max_length = 100,
+    #  null=True,
+    #  blank=True,
+    #  help_text=_("Optional display name."))
+    active = models.BooleanField(default=False)
+    keyname = models.SlugField(max_length=100, help_text=_("URL Keyname for permalinks"), validators=[magic_keyname])
     template = models.ForeignKey(PickerTemplate)
-    max_count = models.PositiveSmallIntegerField(help_text = _("Max items to be picked at a time. A 0 indicates unlimited."), default = 0)
-    content = models.ForeignKey(ContentType, verbose_name = _("Content Source"))
-    include_filters = PickledObjectField(editable = False, compress = True)
-    exclude_filters = PickledObjectField(editable = False, compress = True)
+    max_count = models.PositiveSmallIntegerField(
+        help_text=_("Max items to be picked at a time. A 0 indicates unlimited."), default=0)
+    content = models.ForeignKey(ContentType, verbose_name=_("Content Source"))
+    include_filters = PickledObjectField(editable=False, compress=True)
+    exclude_filters = PickledObjectField(editable=False, compress=True)
 
     objects = DynamicPickerManager()
-    
+
     class Meta:
         unique_together = ('keyname',)
         verbose_name = "Dynamic Content Picker"
@@ -75,7 +79,7 @@ class DynamicPicker(PickerBase):
 
     def __unicode__(self):
         return u"{0:>s}".format(self.name)
-        
+
     def natural_key(self):
         if self.commune:
             return self.commune.keyname, self.keyname
@@ -90,7 +94,6 @@ class DynamicPicker(PickerBase):
         except (NameError, TypeError):
             return {}
 
-
         cache_key = "conduit:dp:ids:{0:d}".format(self.pk)
         cached_ids = cache.get(cache_key, None)
         if cached_ids:
@@ -99,17 +102,17 @@ class DynamicPicker(PickerBase):
             logger.debug("cache miss on {0:>s}".format(cache_key))
             qs = model.objects.all()
 
-        #first we handle any static defers - performance optimisation
+        # first we handle any static defers - performance optimisation
         if fs and hasattr(fs, 'static_defer') and callable(fs.static_defer):
             defer = fs.static_defer()
             qs = qs.defer(*defer)
-            
-        #second we handle any static select_related fields - performance optimisation    
+
+        # second we handle any static select_related fields - performance optimisation
         if fs and hasattr(fs, 'static_select_related') and callable(fs.static_select_related):
             select_related = fs.static_select_related()
             qs = qs.select_related(*select_related)
-        
-        #third we handle any static prefetch_related fields - performance optimisation    
+
+        # third we handle any static prefetch_related fields - performance optimisation
         if fs and hasattr(fs, 'static_prefetch_related') and callable(fs.static_prefetch_related):
             prefetch_related = fs.static_prefetch_related()
             qs = qs.prefetch_related(*prefetch_related)
@@ -118,7 +121,7 @@ class DynamicPicker(PickerBase):
         if cached_ids:
             return qs
 
-        #fourth we apply our inclusion filters
+        # fourth we apply our inclusion filters
         if self.include_filters:
             try:
                 for f in self.include_filters:
@@ -127,15 +130,17 @@ class DynamicPicker(PickerBase):
                     coerce_filters(f)
                     qs = qs.filter(**f)
             except ValueError, e:
-                logger.error("Value Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                logger.error(
+                    "Value Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
             except FieldError, e:
-                logger.error("Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                logger.error(
+                    "Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
             except Exception, e:
                 logger.error("failure to coerce include filters on [%d] %s. %s" % (self.pk, self.name, e))
 
-        #fifth we apply our exclusion filters
+        # fifth we apply our exclusion filters
         if self.exclude_filters:
             try:
                 for f in self.exclude_filters:
@@ -144,53 +149,54 @@ class DynamicPicker(PickerBase):
                     coerce_filters(f)
                     qs = qs.exclude(**f)
             except ValueError, e:
-                logger.error("Value Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                logger.error(
+                    "Value Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
             except FieldError, e:
-                logger.error("Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
+                logger.error(
+                    "Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
             except Exception, e:
                 logger.error("failure to coerce exclude filters on [%d] %s. %s" % (self.pk, self.name, e))
-    
-        #before we limit the qs we let the picking filterset apply any last minute operations
+
+        # before we limit the qs we let the picking filterset apply any last minute operations
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):
-            qs = fs.static_chain(qs)        
-            
-        #limit the qs if necessary
+            qs = fs.static_chain(qs)
+
+        # limit the qs if necessary
         if self.max_count > 0:
             for_cache = qs.values_list('id', flat=True)[:self.max_count]
             logger.debug("setting dynamic picker cache on {0:>s} - {1:>s}".format(cache_key, for_cache))
-            cache.set(cache_key, list(for_cache), 60*10)
+            cache.set(cache_key, list(for_cache), 60 * 10)
             return qs[:self.max_count]
 
-
-        # doesn't seem to make sense caching a huge list
-        #cache.set(cache_key, list(qs.values_list('id', flat=True)), 60*10)
         return qs
-        
+
     def get_absolute_url(self):
         if self.commune:
             return "/p/{0:>s}/".format(self.keyname)
-        
+
         return ""
-        
+
+
 class StaticPicker(PickerBase):
-    content = models.TextField(_("Content"), help_text = _("Markdown friendly"))
-    namedbox = models.OneToOneField("communism.NamedBox", null = True, blank = True)
-    stylesheet = models.ManyToManyField('communism.StyleSheet', blank = True)
-    javascript = models.ManyToManyField('communism.Javascript', blank = True)
-    
+    content = models.TextField(_("Content"), help_text=_("Markdown friendly"))
+    namedbox = models.OneToOneField("communism.NamedBox", null=True, blank=True)
+    stylesheet = models.ManyToManyField('communism.StyleSheet', blank=True)
+    javascript = models.ManyToManyField('communism.Javascript', blank=True)
+
     objects = StaticPickerManager()
-    
+
     class Meta:
         verbose_name = "Static Content Picker"
         verbose_name_plural = "Static Content Pickers"
 
     def __unicode__(self):
         return u"{0:>s}".format(self.name)
-        
+
     def natural_key(self):
-        return self.commune.keyname, self.commune.section.display_order, self.namedbox.gridy, self.namedbox.gridx, self.namedbox.display_order, self.namedbox.keyname
-        
-models.signals.post_save.connect(cache_publishpicker_base_cats, sender=DynamicPicker)
+        return (self.commune.keyname, self.commune.section.display_order, self.namedbox.gridy, self.namedbox.gridx,
+                self.namedbox.display_order, self.namedbox.keyname)
+
+
 models.signals.post_save.connect(cache_picker_template, sender=PickerTemplate)

@@ -26,6 +26,7 @@
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from zlib import compress, decompress
+
 try:
     from cPickle import loads, dumps
 except ImportError:
@@ -35,6 +36,7 @@ from django.db import models
 from django.utils.encoding import force_unicode
 
 DEFAULT_PROTOCOL = 2
+
 
 class PickledObject(str):
     """
@@ -85,8 +87,6 @@ class PickledObjectField(models.Field):
     can still do lookups using None). This way, it is still possible to
     use the ``isnull`` lookup type correctly.
     """
-
-    __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         self.compress = kwargs.pop('compress', False)
@@ -166,4 +166,4 @@ class PickledObjectField(models.Field):
             raise TypeError('Lookup type %s is not supported.' % lookup_type)
         # The Field model already calls get_db_prep_value before doing the
         # actual lookup, so all we need to do is limit the lookup types.
-        return super(PickledObjectField, self).get_db_prep_lookup(lookup_type, value, connection, prepared=False)
+        return super(PickledObjectField, self).get_db_prep_lookup(lookup_type, value)

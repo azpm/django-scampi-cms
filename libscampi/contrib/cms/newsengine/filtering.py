@@ -4,6 +4,7 @@ from django.db.models import Q
 
 from libscampi.contrib.cms.newsengine.models import PublishCategory
 
+
 class PublishTypeListFilter(SimpleListFilter):
     """
     Filter published list be things that have been seen
@@ -15,11 +16,11 @@ class PublishTypeListFilter(SimpleListFilter):
     parameter_name = 'publish_kind'
 
     def lookups(self, request, model_admin):
-        return PublishCategory.objects.values_list('keyname','title')
+        return PublishCategory.objects.values_list('keyname', 'title')
 
     def queryset(self, request, queryset):
         if self.value() is not None:
-            return queryset.filter(category__keyname = self.value())
+            return queryset.filter(category__keyname=self.value())
 
 
 class ArticleAuthorListFilter(SimpleListFilter):
@@ -40,7 +41,7 @@ class ArticleAuthorListFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'me' or self.value() is None:
-            return queryset.filter(Q(story__article__author = request.user) | Q(story__author = request.user))
+            return queryset.filter(Q(story__article__author=request.user) | Q(story__author=request.user))
 
     def choices(self, cl):
         for lookup, title in self.lookup_choices:
@@ -48,12 +49,12 @@ class ArticleAuthorListFilter(SimpleListFilter):
                 'selected': self.selected_filter(lookup),
                 'query_string': cl.get_query_string({self.parameter_name: lookup}, []),
                 'display': title,
-                }
+            }
 
     def selected_filter(self, lookup):
         val = self.value()
 
-        if val is None and lookup =="me":
+        if val is None and lookup == "me":
             return True
         else:
             return val == lookup

@@ -1,15 +1,15 @@
 import django_filters
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
-from libscampi.contrib.cms.conduit.widgets import PickerFilterSelectMultiple
 from libscampi.contrib.cms.newsengine.models import Publish, StoryCategory
 
 
 class PublishPicking(django_filters.FilterSet):
-    start = django_filters.filters.DateRangeFilter(lookup_type=('lt', 'gt', 'lte', 'gte'))
-    end = django_filters.filters.DateRangeFilter(name="end", lookup_type=('lt', 'gt', 'lte', 'gte'))
+    start = django_filters.filters.DateRangeFilter(lookup_expr=('lt', 'gt', 'lte', 'gte'))
+    end = django_filters.filters.DateRangeFilter(name="end", lookup_expr=('lt', 'gt', 'lte', 'gte'))
     story__categories = django_filters.filters.ModelMultipleChoiceFilter(queryset=StoryCategory.objects.all(),
-                                                                         widget=PickerFilterSelectMultiple(
-                                                                             "Story Categories", False))
+                                                                         widget=FilteredSelectMultiple(
+                                                                             "Story Categories", False, {'class': 'selectfilter'}))
 
     class Meta:
         model = Publish

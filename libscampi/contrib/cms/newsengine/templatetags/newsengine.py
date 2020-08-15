@@ -27,7 +27,7 @@ class PublishedByAuthor(Tag):
     example:
         {% recent_stories_by pub.story.author as author_stories 6 %}
         {% for story in author_stories %}
-            <a data-story-id="{{ story.id }}" href="{% url cms:story:story-detail story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
+            <a data-story-id="{{ story.id }}" href="{% url 'cms:story:story-detail' story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
         {% endfor %}
 
     """
@@ -130,7 +130,7 @@ class RelatedStories(Tag):
     example:
         {% related_stories pub.story as rel_stories 6 %}
         {% for story in rel_stories %}
-            <a data-story-id="{{ story.id }}" href="{% url cms:story:story-detail story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
+            <a data-story-id="{{ story.id }}" href="{% url 'cms:story:story-detail' story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
         {% endfor %}
 
     """

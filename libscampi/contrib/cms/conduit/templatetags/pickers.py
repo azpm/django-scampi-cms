@@ -10,8 +10,6 @@ logger = logging.getLogger('libscampi.contrib.cms.conduit.templatetags')
 register = template.Library()
 
 
-# TODO convert to classy tag
-
 class PickerNode(template.Node):
     def __init__(self, picker):
         self.picker = template.Variable(picker)
@@ -36,7 +34,9 @@ class PickerNode(template.Node):
                 cached_tpl = picker.template.content
                 cache.set(cached_tpl_key, cached_tpl)
 
-            tpl = template.Template(cached_tpl, name="conduit.PickerTemplate [{0:d}]".format(picker.template_id))
+            tpl_name = "conduit.PickerTemplate.objects.get(pk={0})".format(picker.template_id)
+            origin = template.Origin(name=tpl_name)
+            tpl = template.Template(cached_tpl, name=tpl_name, origin=origin)
 
             cache_control = request.META.get('HTTP_CACHE_CONTROL', None)
             if cache_control and cache_control == "max-age=0":
@@ -70,32 +70,32 @@ class PickerNode(template.Node):
 def render_picker(parser, token):
     """
     Renders a Picker
-    
+
     {% render_picker picker_variable %}
-    
+
     Most often used as:
-    
+
     {% render_picker box.picker %}
-    
+
     Will correctly determine if dynamic or static content needs to be rendered.
-    
+
     Dynamic Pickers
     ===============
-    
+
     Pickers will be rendered according to the template given in :model:`conduit.PickerTemplate`
 
     render_picker provides the following context to :model:`conduit.PickerTemplate`
-    
+
     - picker: the :model:`conduit.DynamicPicker` being rendered
     - cms_realm: the current realm :model:`communism.Realm`
     - cms_section: the current section :model:`communism.Section`
     - page: the current Page instance
-    - request: from RequestContext 
+    - request: from RequestContext
     - perms: from RequestContext
-    
+
     Static Pickers
     ==============
-    
+
     Content will be rendered as markdown
     """
 

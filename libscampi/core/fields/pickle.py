@@ -113,6 +113,12 @@ class PickledObjectField(models.Field):
         # If the field doesn't have a default, then we punt to models.Field.
         return super(PickledObjectField, self).get_default()
 
+    def from_db_value(self, value, expression, connection, context):
+        if value is None:
+            return value
+
+        return dbsafe_decode(value, self.compress)
+
     def to_python(self, value):
         """
         B64decode and unpickle the object, optionally decompressing it.

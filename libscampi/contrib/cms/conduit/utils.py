@@ -9,12 +9,68 @@ from django_filters.filters import ModelMultipleChoiceFilter, ModelChoiceFilter,
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.utils')
 
+
+def hydrate_today(name, lookup):
+    return {
+        '{}__{}'.format(name, lookup): datetime.now(),
+    }
+
+
+def serialize_today(name, lookup):
+    return {
+        '{}'.format(name): ('coerce-datetime', lookup, '-today'),
+    }
+
+
+def hydrate_last_week(name, lookup):
+    return {
+        '{}__{}'.format(name, lookup): datetime.now() - timedelta(days=7),
+    }
+
+
+def serialize_last_week(name, lookup):
+    return {
+        '%{}'.format(name): ('coerce-datetime', lookup, '-past7days')
+    }
+
+
+def hydrate_last_month(name, lookup):
+    return {
+        '{}__year'.format(name): datetime.today().year,
+        '{}__month__{}'.format(name, lookup): datetime.now().month
+    }
+
+
+def serialize_last_month(name, lookup):
+    return {
+        '{}'.format(name): ('coerce-datetime', lookup, '-thismonth'),
+    }
+
+
+def hydrate_last_year(name, lookup):
+    return {
+        '{}__year__{}'.format(name, lookup): datetime.now().year
+    }
+
+
+def serialize_last_year(name, lookup):
+    return {
+        '{}'.format(name): ('coerce-datetime', lookup, '-thisyear'),
+    }
+
+
 DATE_RANGE_COERCION = {
-    '-today': lambda name, lookup: {'%s__%s' % (name, lookup): datetime.now()},
-    '-past7days': lambda name, lookup: {'%s__%s' % (name, lookup): datetime.now() - timedelta(days=7)},
-    '-thismonth': lambda name, lookup: {'%s__year' % name: datetime.today().year,
-                                        '%s__month__%s' % (name, lookup): datetime.now().month},
-    '-thisyear': lambda name, lookup: {'%s__year__%s' % (name, lookup): datetime.now().year},
+    '-today': hydrate_today,
+    '-past7days': hydrate_last_week,
+    '-thismonth': hydrate_last_month,
+    '-thisyear': hydrate_last_year,
+}
+
+DATE_RANGE_SERIALIZE = {
+    '-today': serialize_today,
+    '-past7days': serialize_last_week,
+    '-thismonth': serialize_last_month,
+    '-thisyear': serialize_last_year,
 }
 
 DATE_RANGE_PICKLE_MAPPING = {
@@ -56,7 +112,7 @@ def build_filters(fs):
             elif isinstance(value, (list, tuple)) and len(value) == 0:
                 continue
             else:
-                lookup = filter_.lookup_type
+                lookup = filter_.lookup_expr
 
             if type(filter_) is ModelMultipleChoiceFilter:
                 # Handle model multiple choice fields -- because django explicitly says

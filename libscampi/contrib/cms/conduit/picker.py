@@ -51,12 +51,8 @@ class PickerManager(object):
     def contenttypes_for_available(self):
         """ Returns list of valid ContentTypes for picking """
         models = self._registry.keys()
-
-        ids = []
-        for model in models:
-            ids.append(ContentType.objects.get_by_natural_key(model._meta.app_label, model._meta.module_name).id)
-
-        return ContentType.objects.filter(id__in=list(ids))
+        ctypes = ContentType.objects.get_for_models(*models).values()
+        return ContentType.objects.filter(id__in=[ctype.id for ctype in ctypes])
 
     def get_for_picking(self, ct):
         """ Returns class instance of a given model ContentType"""

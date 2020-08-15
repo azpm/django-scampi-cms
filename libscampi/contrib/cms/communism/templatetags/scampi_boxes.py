@@ -24,7 +24,9 @@ class NamedBoxNode(template.Node):
             cached_tpl = namedbox.template.content
             cache.set(cached_tpl_key, cached_tpl)
 
-        tpl = template.Template(cached_tpl, name="communism.NamedBoxTemplate [%s]" % namedbox.template_id)
+        tpl_name = "communism.NamedBoxTemplate.objects.get(pk={})".format(namedbox.template_id)
+        origin = template.Origin(name=tpl_name)
+        tpl = template.Template(cached_tpl, name=tpl_name, origin=origin)
         request = context.get('request', None)
 
         if not request:
@@ -44,11 +46,11 @@ class NamedBoxNode(template.Node):
 def render_namedbox(parser, token):
     """
     Renders a :model:`communism.NamedBox` according to it's :model:`communism.NamedBoxTemplate`
-    
+
     {% render_namedbox box %}  Where box is a :model:`communism.NamedBox`
-    
+
     Provides the following context to the :model:`communism.NamedBoxTemplate`:
-    
+
     - box: the namedbox being rendered :model:`communism.NamedBox`, use as {{ box.field_name }}
     - request: django request, use as {{ request.field_name }} comes from RequestContext
     - cms_section: :model:`communism.Section`, use as {{ cms_section.field_name }}

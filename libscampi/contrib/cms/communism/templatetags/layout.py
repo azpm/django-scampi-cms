@@ -14,11 +14,8 @@ class LayoutNode(template.Node):
 
         # get all boxes for this slice
         box_collection = page_slice.namedbox_set.select_related(
-            'template__id',
-            'template__content',
+            'template',
             'content',
-            'content__template',
-            'staticpicker__content'
         ).filter(active=True)
         maximum_y = box_collection.aggregate(max_y=Max('gridy'))['max_y']
         grid = []
@@ -37,7 +34,7 @@ class LayoutNode(template.Node):
         else:
             tpl = "%s/layout/boxgrid.html" % theme.keyname
 
-        return render_to_string(tpl, {'grid': grid}, context)
+        return render_to_string(tpl, {'grid': grid}, request=context['request'])
 
 
 def generate_layout(parser, token):

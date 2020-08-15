@@ -12,7 +12,7 @@ class ContentTypeListFilter(SimpleListFilter):
     parameter_name = 'cs'
 
     def lookups(self, request, model_admin):
-        return manifest.contenttypes_for_available().values_list('id', 'name')
+        return [(ct.id, ct.name) for ct in manifest.contenttypes_for_available()]
 
     def queryset(self, request, queryset):
         if self.value() is not None:

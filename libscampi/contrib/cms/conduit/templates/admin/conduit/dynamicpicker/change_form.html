@@ -4,30 +4,30 @@
 {{ block.super }}
 {% if object_id and original %}
 <script type="text/javascript">
-    jQuery(document).ready(function() {
-        var picker_id = "{{ object_id }}";
-        var content_id = "{{ original.content.id }}";
-    
-        var load_filters_url = "{% url admin:conduit-picking-filters-fields %}";
-        var preview_url = "{% url admin:conduit-picking-preview-picked %}";
-        var get_args = {'content_id': content_id, 'picker_id': picker_id};
-              
-        var picker_form = new Pickers();        
-        
-        //load the appropriate filter sets
-        jQuery.getJSON(load_filters_url, get_args, function(data) { picker_form.process_available(data); });
-        jQuery("form#dynamicpicker_form").bind("submit", function(e) { picker_form.bundle_filters(); });
+    django.jQuery(document).ready(function() {
+        const picker_id = "{{ object_id }}";
+        const content_id = "{{ original.content.id }}";
 
-        jQuery(document).bind('filter_id_update', function (e, id, formrow) {
+        const load_filters_url = "{% url 'admin:conduit-picking-filters-fields' %}";
+        const preview_url = "{% url 'admin:conduit-picking-preview-picked' %}";
+        const get_args = {'content_id': content_id, 'picker_id': picker_id};
+
+        const picker_form = new Pickers();
+
+        //load the appropriate filter sets
+        django.jQuery.getJSON(load_filters_url, get_args, (data) => { picker_form.process_available(data); });
+        django.jQuery("form#dynamicpicker_form").bind("submit", () => { picker_form.bundle_filters(); });
+
+        django.jQuery(document).bind('filter_id_update', (e, id, formrow) => {
             "use strict";
-            var form_field = jQuery("#"+id);
-            if (form_field.is('select') && form_field.attr('multiple') == 'multiple' && form_field.attr('class') == 'selectfilter') 
+            const form_field = django.jQuery("#" + id);
+            if (form_field.is('select') && form_field.attr('multiple') === 'multiple' && form_field.attr('class') === 'selectfilter')
             {
                 SelectFilter.init(id, form_field.attr('name') , 0, "{{ STATIC_URL}}admin/");
 
                 //clean up labels
-                var proper_label = formrow.find("label").html();
-                var replace_me = new RegExp("("+id.replace('id_','')+")+");
+                const proper_label = formrow.find("label").html();
+                const replace_me = new RegExp("(" + id.replace('id_', '') + ")+");
 
                 formrow.find("h2").html(function(index, oldHtml){
                     return oldHtml.replace(replace_me, proper_label);
@@ -36,27 +36,27 @@
             }
         });
 
-        jQuery(document).on("click", "#refresh-picked", function(e){
+        django.jQuery(document).on("click", "#refresh-picked", function(e){
             "use strict";
             picker_form.bundle_filters();
-            var div = jQuery("div#picked-objects").empty();
+            const div = django.jQuery("div#picked-objects").empty();
 
-            jQuery("form#dynamicpicker_form select[multiple='multiple'][class='filtered']:not([id$='_from'])").each(function(elem,val){
-                var target = jQuery(val).attr('id');
+            django.jQuery("form#dynamicpicker_form select[multiple='multiple'][class='filtered']:not([id$='_from'])").each(function(elem,val){
+                const target = django.jQuery(val).attr('id');
 
                 SelectBox.select_all(target);
             });
 
-            jQuery.getJSON(preview_url + "?" + jQuery("form#dynamicpicker_form").serialize(), get_args, function(data){
-                jQuery.each(data, function(index, value){
+            django.jQuery.getJSON(preview_url + "?" + django.jQuery("form#dynamicpicker_form").serialize(), get_args, function(data){
+                django.jQuery.each(data, function(index, value){
 
-                    var html = jQuery("<div><label>pk: "+value[0]+"</label><p>" + value[1] + "</p></div>");
+                    const html = django.jQuery("<div><label>pk: " + value[0] + "</label><p>" + value[1] + "</p></div>");
                     div.append(html);
                 });
             });
         });
     });
-    
+
 </script>
 {% endif %}
 {% endblock %}

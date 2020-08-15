@@ -19,12 +19,12 @@ class PickerTemplate(models.Model):
     """
     A picker template for dynamic picker rendering.  Each template is given a RequestContext
     containing the following variables:
-    
+
     - picker: the picker being render
     - cms_realm: the current realm :model:`communism.Realm`
     - cms_section: the current section :model:`communism.Section`
     - page: the current Page instance
-    - request: from RequestContext 
+    - request: from RequestContext
     - perms: from RequestContext
     """
     name = models.CharField(help_text=_("Name for easier reference"), max_length=100, unique=True)
@@ -129,15 +129,15 @@ class DynamicPicker(PickerBase):
                         continue
                     coerce_filters(f)
                     qs = qs.filter(**f)
-            except ValueError, e:
+            except ValueError as e:
                 logger.error(
                     "Value Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
-            except FieldError, e:
+            except FieldError as e:
                 logger.error(
                     "Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
-            except Exception, e:
+            except Exception as e:
                 logger.error("failure to coerce include filters on [%d] %s. %s" % (self.pk, self.name, e))
 
         # fifth we apply our exclusion filters
@@ -148,15 +148,15 @@ class DynamicPicker(PickerBase):
                         continue
                     coerce_filters(f)
                     qs = qs.exclude(**f)
-            except ValueError, e:
+            except ValueError as e:
                 logger.error(
                     "Value Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
-            except FieldError, e:
+            except FieldError as e:
                 logger.error(
                     "Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
                 return model.objects.None()
-            except Exception, e:
+            except Exception as e:
                 logger.error("failure to coerce exclude filters on [%d] %s. %s" % (self.pk, self.name, e))
 
         # before we limit the qs we let the picking filterset apply any last minute operations

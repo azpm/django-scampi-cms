@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from collections import namedtuple
 
 from django.conf.urls import url
 from django.contrib import admin
@@ -21,6 +22,9 @@ from .filtering import ContentTypeListFilter
 logger = logging.getLogger('libscampi.contrib.cms.conduit.admin')
 
 
+Pickable = namedtuple('Pickable', ('model', 'picker', 'filterset', 'factory'))
+
+
 class PickerTemplateAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Designation', {'fields': ['name']}),
@@ -35,6 +39,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
     list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count', 'template')
     list_editable = ('max_count', 'template')
     list_filter = (ContentTypeListFilter, 'commune', 'active')
+    list_select_related = ('commune', 'template', 'content')
     search_fields = ('commune__name',)
 
     fieldsets = (
@@ -58,11 +63,6 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             kwargs["widget"] = ForeignKeyRawIdWidget(db_field.rel, admin_site=self.admin_site, using=db)
         return super(DynamicPickerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def queryset(self, request):
-        qs = super(DynamicPickerAdmin, self).queryset(request)
-
-        return qs.prefetch_related('template', 'commune')
-
     def get_readonly_fields(self, request, obj=None):
         """
         commune can only be edited by super users
@@ -85,7 +85,6 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             "admin/js/core.js",
             "admin/js/SelectBox.js",
             "admin/js/SelectFilter2.js",
-            'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js',
             'admin/js/conduit.pickers.js',
         )
 
@@ -181,9 +180,10 @@ class DynamicPickerAdmin(admin.ModelAdmin):
 
         return my_urls + urls
 
-    def preview_picked_objects(self, request, *args, **kwargs):
-        content_id = request.REQUEST.get('content_id', None)
-        picker_id = request.REQUEST.get('picker_id', None)
+    @staticmethod
+    def get_pickable(request):
+        content_id = request.GET.get('content_id', None)
+        picker_id = request.GET.get('picker_id', None)
 
         try:
             content_model = ContentType.objects.get(pk=content_id)
@@ -205,6 +205,12 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             raise Http404("Picking Filterset not found")
 
         factory = formset_factory(picking_filterset.form.__class__)
+
+        return Pickable(model, picker, picking_filterset, factory)
+
+    def preview_picked_objects(self, request, *args, **kwargs):
+        model, picker, picking_filterset, factory = self.get_pickable(request)
+
         inclusion = factory(request.GET, prefix="incl")
         exclusion = factory(request.GET, prefix="excl")
 
@@ -288,77 +294,47 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         return response
 
     def picking_filters_fields(self, request, *args, **kwargs):
-        content_id = request.REQUEST.get('content_id', None)
-        picker_id = request.REQUEST.get('picker_id', None)
+        model, picker, picking_filterset, factory = self.get_pickable(request)
 
-        try:
-            content_model = ContentType.objects.get(pk=content_id)
-        except ContentType.DoesNotExist:
-            raise Http404
-
-        try:
-            picker = DynamicPicker.objects.get(pk=picker_id)
-        except DynamicPicker.DoesNotExist:
-            raise Http404
-
-        if not manifest.is_registered(content_model.model_class()):
-            raise Http404
-
-        picking_filterset = manifest.get_registration_info(content_model.model_class())()
-
-        factory = formset_factory(picking_filterset.form.__class__)
         clean_produced = factory()
         clean_form = clean_produced[0]
 
-        returns = {'existing': {}, 'filters': []}
-
-        base_fields = []
-        for field in clean_form:
-            base_fields.append(field.name)
-            returns['filters'].append((field.name, field.label, field.__unicode__()))
+        returns = {
+            'existing': {},
+            'filters': [(f.name, f.label, f.as_widget()) for f in clean_form],
+        }
+        base_fields = [f.name for f in clean_form]
 
         field_matcher = re.compile("^(%s)?" % "|".join(base_fields))
         incl = picker.include_filters
         excl = picker.exclude_filters
 
-        incl_picking_fields = []
-        if incl:
-            incl_sets = len(incl)
-            for i in range(0, incl_sets):
-                incl_picking_fields.append({})
-                for key, val in incl[i].iteritems():
-                    m = field_matcher.match(key)
-                    if m is not None:
-                        incl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
+        def build_picking_fields(haystack):
+            picking_fields = []
+            for i, items in enumerate(haystack):
+                picking_fields.append({})
+                for key, val in items.iteritems():
+                    match = field_matcher.match(key)
+                    if match is not None:
+                        picking_fields[i].update({match.group(): uncoerce_pickled_value(val)})
+            return picking_fields
 
-        excl_picking_fields = []
-        if excl:
-            excl_sets = len(excl)
-            for i in range(0, excl_sets):
-                excl_picking_fields.append({})
-                for key, val in excl[i].iteritems():
-                    m = field_matcher.match(key)
-                    if m is not None:
-                        excl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
+        incl_picking_fields = build_picking_fields(incl or [])
+        excl_picking_fields = build_picking_fields(excl or [])
 
-        saved_inclusion = []
-        saved_exclusion = []
+        def serialize_picking_fields(haystack):
+            produced = factory(initial=haystack)
+            serialized = []
+            for i in range(len(produced) - 1):
+                form = produced[i]
+                serialized.append([])
+                for field in form:
+                    if field.name in haystack[i]:
+                        serialized[i].append((field.name, field.label, field.__unicode__()))
+            return serialized
 
-        produced = factory(initial=incl_picking_fields)
-        for i in range(0, len(produced) - 1):
-            form = produced[i]
-            saved_inclusion.append([])
-            for field in form:
-                if field.name in incl_picking_fields[i]:
-                    saved_inclusion[i].append((field.name, field.label, field.__unicode__()))
-
-        produced = factory(initial=excl_picking_fields)
-        for i in range(0, len(produced) - 1):
-            form = produced[i]
-            saved_exclusion.append([])
-            for field in form:
-                if field.name in excl_picking_fields[i]:
-                    saved_exclusion[i].append((field.name, field.label, field.__unicode__()))
+        saved_inclusion = serialize_picking_fields(incl_picking_fields)
+        saved_exclusion = serialize_picking_fields(excl_picking_fields)
 
         returns['existing'] = {'incl': saved_inclusion, 'excl': saved_exclusion}
 

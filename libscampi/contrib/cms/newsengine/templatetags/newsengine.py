@@ -3,22 +3,20 @@ from datetime import datetime
 
 from django import template
 from django.db.models import Q
-from django.conf import settings
 from django.core.cache import cache
 from django.contrib.sites.models import Site
-from django.contrib.markup.templatetags.markup import markdown
-from django.utils.encoding import smart_unicode
 from django.utils.translation import ugettext_lazy as _, get_language_from_request
-from django.contrib.comments.templatetags.comments import BaseCommentNode
 from classytags.core import Tag, Options
 from classytags.arguments import Argument, IntegerArgument
 
+from libscampi.contrib.cms.communism.templatetags.markup import markdown
 from libscampi.contrib.cms.newsengine.models import Article, Story
 from libscampi.contrib.cms.newsengine.utils import calculate_cloud
 
 register = template.Library()
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.templatetags')
+
 
 class PublishedByAuthor(Tag):
     """
@@ -29,7 +27,7 @@ class PublishedByAuthor(Tag):
     example:
         {% recent_stories_by pub.story.author as author_stories 6 %}
         {% for story in author_stories %}
-            <a data-story-id="{{ story.id }}" href="{% url cms:story:story-detail story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
+            <a data-story-id="{{ story.id }}" href="{% url 'cms:story:story-detail' story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
         {% endfor %}
 
     """
@@ -58,18 +56,20 @@ class PublishedByAuthor(Tag):
                 publish__published=True,
                 publish__start__lte=right_now,
                 author=author
-            ).values('id','slug','article')[:limit]
+            ).values('id', 'slug', 'article')[:limit]
 
             for item in related:
                 item['article'] = Article.objects.get(pk=item['article'])
 
-            cache.set(cache_key, list(related), 60*20)
+            cache.set(cache_key, list(related), 60 * 20)
 
         context[varname] = related
 
         return u""
 
+
 register.tag(PublishedByAuthor)
+
 
 class RenderArticle(Tag):
     """
@@ -117,7 +117,9 @@ class RenderArticle(Tag):
         final = markdown(second_pass)
         return final
 
+
 register.tag(RenderArticle)
+
 
 class RelatedStories(Tag):
     """
@@ -128,7 +130,7 @@ class RelatedStories(Tag):
     example:
         {% related_stories pub.story as rel_stories 6 %}
         {% for story in rel_stories %}
-            <a data-story-id="{{ story.id }}" href="{% url cms:story:story-detail story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
+            <a data-story-id="{{ story.id }}" href="{% url 'cms:story:story-detail' story.slug %}" title="{{ story.article.headline }}">{{ story.article.headline }}</a><br/>
         {% endfor %}
 
     """
@@ -159,13 +161,15 @@ class RelatedStories(Tag):
             for item in related:
                 item['article'] = Article.objects.get(pk=item['article'])
 
-            cache.set(cache_key, list(related), 60*20)
+            cache.set(cache_key, list(related), 60 * 20)
 
         context[varname] = related
 
         return u""
 
+
 register.tag(RelatedStories)
+
 
 class StoryPermaLink(Tag):
     """
@@ -186,28 +190,32 @@ class StoryPermaLink(Tag):
         story = kwargs.pop('story')
         site = Site.objects.get_current()
 
-        if story.publish_set.filter(Q(site__id = site.pk)|Q(site__isnull=True)).exists():
+        if story.publish_set.filter(Q(site__id=site.pk) | Q(site__isnull=True)).exists():
             return "{0:>2}{1:>s}".format(site.realm.get_base_url(), story.get_absolute_url())
         else:
             try:
-                first_pub = story.publish_set.select_related('site__domain','realm__secure','site__realm').filter(site__isnull=False)[0]
+                first_pub = story.publish_set.select_related('site__domain', 'realm__secure', 'site__realm').filter(
+                    site__isnull=False)[0]
             except IndexError:
                 return ""
             else:
                 return "{0:>2}{1:>s}".format(first_pub.site.realm.get_base_url(), story.get_absolute_url())
 
+
 register.tag(StoryPermaLink)
 
-class cloud_node(template.Node):
+
+class CloudNode(template.Node):
     def __init__(self, categories, context_var, **kwargs):
         self.categories = template.Variable(categories)
-        self.context_var = context_var            
+        self.context_var = context_var
         self.kwargs = kwargs
 
     def render(self, context):
         context[self.context_var] = calculate_cloud(self.categories.resolve(context), **self.kwargs)
         return ''
-    
+
+
 @register.tag('category_cloud')
 def category_cloud(parser, token):
     """
@@ -241,7 +249,8 @@ def category_cloud(parser, token):
     bits = token.contents.split()
     len_bits = len(bits)
     if len_bits != 4 and len_bits not in range(6, 9):
-        raise template.TemplateSyntaxError(_('%s tag requires either three or between five and seven arguments') % bits[0])
+        raise template.TemplateSyntaxError(
+            _('%s tag requires either three or between five and seven arguments') % bits[0])
     if bits[2] != 'as':
         raise template.TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
     kwargs = {}
@@ -255,20 +264,22 @@ def category_cloud(parser, token):
                     try:
                         kwargs[str(name)] = int(value)
                     except ValueError:
-                        raise template.TemplateSyntaxError(_("%(tag)s tag's '%(option)s' option was not a valid integer: '%(value)s'") % {
-                            'tag': bits[0],
-                            'option': name,
-                            'value': value,
-                        })
+                        raise template.TemplateSyntaxError(
+                            _("%(tag)s tag's '%(option)s' option was not a valid integer: '%(value)s'") % {
+                                'tag': bits[0],
+                                'option': name,
+                                'value': value,
+                            })
                 elif name == 'distribution':
                     if value in ['linear', 'log']:
                         kwargs[str(name)] = {'linear': LINEAR, 'log': LOGARITHMIC}[value]
                     else:
-                        raise template.TemplateSyntaxError(_("%(tag)s tag's '%(option)s' option was not a valid choice: '%(value)s'") % {
-                            'tag': bits[0],
-                            'option': name,
-                            'value': value,
-                        })
+                        raise template.TemplateSyntaxError(
+                            _("%(tag)s tag's '%(option)s' option was not a valid choice: '%(value)s'") % {
+                                'tag': bits[0],
+                                'option': name,
+                                'value': value,
+                            })
                 else:
                     raise template.TemplateSyntaxError(_("%(tag)s tag was given an invalid option: '%(option)s'") % {
                         'tag': bits[0],
@@ -279,10 +290,11 @@ def category_cloud(parser, token):
                     'tag': bits[0],
                     'option': bits[i],
                 })
-    return cloud_node(bits[1], bits[3], **kwargs)
-    
+    return CloudNode(bits[1], bits[3], **kwargs)
+
+
 @register.simple_tag
-def build_pagelist(pages, current_page, get_args = None):
+def build_pagelist(pages, current_page, get_args=None):
     """
     {% build_pagelist [pages int] [current_page int] <get_args optional string> %}
 
@@ -297,39 +309,40 @@ def build_pagelist(pages, current_page, get_args = None):
     if current_page > pages[-1]:
         return u""
 
-    list = []
+    filtered_pages = []
     if current_page < 8:
-        if current_page-4 > pages[0]:
-            list = pages[current_page-4:current_page+4:1]
+        if current_page - 4 > pages[0]:
+            filtered_pages = pages[current_page - 4:current_page + 4:1]
         else:
-            max = 8-current_page
-            list = pages[0:current_page+max:1]
+            end = 8 - current_page
+            filtered_pages = pages[0:current_page + end:1]
     elif current_page >= 8:
-        if current_page+4 < pages[-1]:
-            list = pages[current_page-4:current_page+4:1]
+        if current_page + 4 < pages[-1]:
+            filtered_pages = pages[current_page - 4:current_page + 4:1]
         else:
-            max = pages[-1] - current_page
-            list = pages[current_page-4:current_page+max:1]
-    
+            end = pages[-1] - current_page
+            filtered_pages = pages[current_page - 4:current_page + end:1]
+
     if get_args:
         li = """<li {class:>s}><a href="?page={page:d}&{get_args:>s}">{page:d}</a></li>"""
     else:
         li = """<li {class:>s}><a href="?page={page:d}">{page:d}</a></li>"""
     html = []
-    
-    for page in list:
+
+    for page in filtered_pages:
         if page == current_page:
             css = 'class="active"'
         else:
             css = ""
-        
+
         if get_args:
             html.append(li.format(**{'class': css, 'page': page, 'get_args': get_args}))
         else:
             html.append(li.format(**{'class': css, 'page': page}))
-            
+
     return "".join(html)
-    
+
+
 @register.simple_tag()
 def chain_archival_categories(needle, haystack):
     """
@@ -341,11 +354,12 @@ def chain_archival_categories(needle, haystack):
         category_path = "{0:>s}+{1:>s}".format("+".join([t.keyname for t in haystack]), needle['keyname'])
     else:
         category_path = "{0:>s}".format(needle['keyname'])
-        
+
     url = "?c={0:>s}".format(category_path)
-    
+
     return url
-    
+
+
 @register.simple_tag()
 def dechain_archival_categories(needle, haystack):
     """
@@ -353,61 +367,11 @@ def dechain_archival_categories(needle, haystack):
 
     returns: strips needle from current ?c=updated or ./ if current is empty
     """
-    category_path= "{0:>s}".format("+".join([t.keyname for t in haystack if t.id != needle.id]))
-    
+    category_path = "{0:>s}".format("+".join([t.keyname for t in haystack if t.id != needle.id]))
+
     if category_path == '':
         url = "./"
     else:
         url = "?c={0:>s}".format(category_path)
-    
+
     return url
-
-# Some helpers for our ridiculously large website configuration & commenting
-
-class xsite_BaseCommentNode(BaseCommentNode):
-    """fetch comments without respect to a site"""
-    def get_query_set(self, context):
-        c_type, object_pk = self.get_target_ctype_pk(context)
-        if not object_pk:
-            return self.comment_model.objects.none()
-
-        qs = self.comment_model.objects.filter(
-            content_type = c_type,
-            object_pk    = smart_unicode(object_pk),
-        )
-
-        # The is_public and is_removed fields are implementation details of the
-        # built-in comment model's spam filtering system, so they might not
-        # be present on a custom comment model subclass. If they exist, we
-        # should filter on them.
-        field_names = [f.name for f in self.comment_model._meta.fields]
-        if 'is_public' in field_names:
-            qs = qs.filter(is_public=True)
-        if getattr(settings, 'COMMENTS_HIDE_REMOVED', True) and 'is_removed' in field_names:
-            qs = qs.filter(is_removed=False)
-
-        return qs
-        
-class xsite_CommentListNode(xsite_BaseCommentNode):
-    """Insert a list of comments into the context."""
-    def get_context_value_from_queryset(self, context, qs):
-        return list(qs)
-
-class xsite_CommentCountNode(xsite_BaseCommentNode):
-    """Insert a count of comments into the context."""
-    def get_context_value_from_queryset(self, context, qs):
-        return qs.count()
-        
-@register.tag
-def get_xsite_comment_count(parser, token):
-    """
-    see django.contrib.comments.templatetags.comments.get_comment_count
-    """
-    return xsite_CommentCountNode.handle_token(parser, token)
-    
-@register.tag
-def get_xsite_comment_list(parser, token):
-    """
-    see django.contrib.comments.templatetags.comments.get_comment_list
-    """
-    return xsite_CommentListNode.handle_token(parser, token)

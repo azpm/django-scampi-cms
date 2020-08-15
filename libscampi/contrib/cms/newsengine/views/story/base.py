@@ -1,64 +1,54 @@
 import logging
 from datetime import datetime
-from operator import and_
 
 from django.views.generic import DetailView, ListView
-from django.db.models import Q, Count
-from django.http import Http404
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.cache import cache
-from django.contrib.sites.models import Site
+from django.db.models import Q
 
 from libscampi.contrib.cms.views.base import PageNoView
-
 from libscampi.contrib.cms.newsengine.models import StoryCategory
 from libscampi.contrib.cms.newsengine.views.helpers import story_javascripts, story_stylesheets
 from libscampi.contrib.cms.newsengine.views.story.mixins import StoryMixin
 
 logger = logging.getLogger('libscampi.contrib.cms.newsengine.views.story')
 
+
 class StoryPage(StoryMixin, PageNoView):
-    theme = None
     limits = None
     available_categories = None
     base_categories = None
     restrict = True
 
-    def get(self, request, *args, **kwargs):
-        try:
-            realm = Site.objects.get_current().realm
-        except (AttributeError, ObjectDoesNotExist):
-            raise Http404("SCAMPI Improperly Configured, no Realm available.")
-        else:
-            self.theme = realm.theme
+    def get_cached_css_key(self):
+        return "story:list:css:{0:d}".format(self.realm.id)
+
+    def get_cached_js_key(self):
+        return "story:list:js:{0:d}".format(self.realm.id)
+
+    def dispatch(self, request, *args, **kwargs):
+        # add section to the graph by way of the picker
+        kwargs.update(dict(keyname="__un_managed"))
 
         if request.user.has_perm('newsengine.can_preview_story'):
             self.restrict = False
 
-        self.cached_css_key = "story:list:css:{0:d}".format(realm.id)
-        self.cached_js_key = "story:list:js:{0:d}".format(realm.id)
-
-        #category filtering specified in url
+        # category filtering specified in url
         if 'c' in request.GET:
-            limits = request.GET.get('c','').split(' ')
+            limits = request.GET.get('c', '').split(' ')
 
             filters = [Q(keyname=value) for value in limits]
             query = filters.pop()
             # Or the Q object with the ones remaining in the list
-            for filter in filters:
-                query |= filter
+            for filter_ in filters:
+                query |= filter_
 
             self.limits = StoryCategory.objects.filter(Q(browsable=True) & query)
 
-        #add section to the graph by way of the picker
-        kwargs.update(dict(keyname="__un_managed"))
-
-        #finally return the parent get method
-        return super(StoryPage, self).get(request, *args, **kwargs)
+        # finally return the parent get method
+        return super(StoryPage, self).request(request, *args, **kwargs)
 
     def get_queryset(self):
         # first: all stories that don't have an excluded category
-        excluded_stories = self.model.objects.filter(categories__excluded=True).values_list('id',flat=True)
+        excluded_stories = self.model.objects.filter(categories__excluded=True).values_list('id', flat=True)
         qs = self.model.objects.exclude(pk__in=excluded_stories).distinct()
 
         # limit to stories that are published, before right now, to the current site, or no specific site
@@ -74,8 +64,8 @@ class StoryPage(StoryMixin, PageNoView):
         categories = StoryCategory.genera.for_cloud(qs)
         if self.limits:
             filters = [Q(categories__pk=value[0]) for value in self.limits.values_list('id')]
-            for filter in filters:
-                qs = qs.filter(filter)
+            for filter_ in filters:
+                qs = qs.filter(filter_)
             self.available_categories = categories.exclude(pk__in=list(self.limits.values_list('id', flat=True)))
         else:
             self.available_categories = categories
@@ -92,7 +82,7 @@ class StoryPage(StoryMixin, PageNoView):
         else:
             get_args = None
 
-        #give the template the current picker
+        # give the template the current picker
         context.update({
             'categories': self.available_categories,
             'limits': self.limits,
@@ -102,35 +92,39 @@ class StoryPage(StoryMixin, PageNoView):
 
         return context
 
+    @property
+    def base_template_path_arguments(self):
+        theme = self.get_theme()
+        return (
+            "{0:>s}/newsengine/story".format(theme.keyname),
+            self.realm.keyname,
+        )
 
-    def get_theme(self):
-        return self.theme
 
 class StoryList(StoryPage, ListView):
     def get_page_title(self):
         return "Stories"
 
     def get_template_names(self):
-        tpl_list = (
-            "{0:>s}/newsengine/story/{1:>s}/index.html".format(self.theme.keyname, self.realm.keyname),
-            "{0:>s}/newsengine/story/index.html".format(self.theme.keyname)
+        theme, realm = self.base_template_path_arguments
+        return (
+            "{0:>s}/{1:>s}/index.html".format(theme, realm),
+            "{0:>s}/index.html".format(theme)
         )
 
-        return tpl_list
 
 class StoryDetail(StoryPage, DetailView):
     def get_page_title(self):
         return self.object.article.headline
 
     def get_template_names(self):
-        tpl_list = (
-            "{0:>s}/newsengine/story/{1:>s}/{2:>s}.html".format(self.theme.keyname, self.realm.keyname, self.object.slug),
-            "{0:>s}/newsengine/story/{1:>s}.html".format(self.theme.keyname, self.object.slug),
-            "{0:>s}/newsengine/story/{1:>s}/detail.html".format(self.theme.keyname, self.realm.keyname),
-            "{0:>s}/newsengine/story/detail.html".format(self.theme.keyname),
+        theme, realm = self.base_template_path_arguments
+        return (
+            "{0:>s}/{1:>s}/{2:>s}.html".format(theme, realm, self.object.slug),
+            "{0:>s}/{1:>s}.html".format(theme, self.object.slug),
+            "{0:>s}/{1:>s}/detail.html".format(theme, realm),
+            "{0:>s}/detail.html".format(theme),
         )
-
-        return tpl_list
 
     def get_javascripts(self):
         story = self.object

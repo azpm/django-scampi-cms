@@ -1,11 +1,12 @@
 from django import template
-from django.contrib.markup.templatetags.markup import markdown
+
+from libscampi.contrib.cms.communism.templatetags.markup import markdown
 
 register = template.Library()
 
+
 @register.simple_tag(takes_context=True)
 def render_article_translation(context, article, translation):
-
     article_template = u"{0:>s} {1:>s}".format("{% load renaissance %}", translation['body'])
     c = template.Context({'article': article})
 

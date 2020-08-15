@@ -11,16 +11,19 @@ MULTILINGUAL_FAIL_SILENTLY = not settings.DEBUG
 MULTILINGUAL_DEFAULT = "en"
 MULTILINGUAL_FALL_BACK_TO_DEFAULT = True
 
-class Language(models.Model):  
-    code = models.CharField(max_length = 5)
-    name = models.CharField(max_length = 16)
-    
+
+class Language(models.Model):
+    code = models.CharField(max_length=5)
+    name = models.CharField(max_length=16)
+
     class Meta:
-        unique_together = ('code','name')
+        unique_together = ('code', 'name')
         ordering = ('id',)
+
     def __unicode__(self):
         return self.name
-        
+
+
 class MultilingualModel(models.Model):
     """Provides support for multilingual fields.
     
@@ -67,25 +70,26 @@ class MultilingualModel(models.Model):
     
     shameless stolen from http://django-multilingual-model.googlecode.com/
     """
+
     class Meta:
         abstract = True
-        
+
     def __init__(self, *args, **kwargs):
         super(MultilingualModel, self).__init__(*args, **kwargs)
         self._language = get_language()[:2]
-    
+
     def __getattr__(self, attr):
         if attr in self.__dict__:
-            #this returns the value of anything not handled by multilingual
+            # this returns the value of anything not handled by multilingual
             return self.__dict__[attr]
-        
+
         for field in self._meta.multilingual:
-            #loop through and find the fields and codes for multilingual support
+            # loop through and find the fields and codes for multilingual support
             code = None
             match = re.match(r'^%s_(?P<code>[a-z_]{2,5})$' % field, str(attr))
             if match:
                 code = match.groups('code')
-                code = code[0][:2] # let's limit it to two letter
+                code = code[0][:2]  # let's limit it to two letter
             elif attr in self._meta.multilingual:
                 code = self._language
                 field = attr
@@ -94,27 +98,27 @@ class MultilingualModel(models.Model):
                 translation = self.__dict__.get(translation_key, None)
                 if not translation:
                     try:
-                        translation = self._meta.translation.objects.using(self._state.db).get(model=self, language__code=code)
+                        translation = self._meta.translation.objects.using(self._state.db).get(model=self,
+                                                                                               language__code=code)
                     except ObjectDoesNotExist:
                         if MULTILINGUAL_FALL_BACK_TO_DEFAULT and MULTILINGUAL_DEFAULT and code != MULTILINGUAL_DEFAULT:
                             try:
-                                translation = self._meta.translation.objects.get(model=self, language__code=MULTILINGUAL_DEFAULT)
+                                translation = self._meta.translation.objects.get(model=self,
+                                                                                 language__code=MULTILINGUAL_DEFAULT)
                             except ObjectDoesNotExist:
                                 if not MULTILINGUAL_FAIL_SILENTLY:
-                                    raise ValueError, "'%s' has no translation in '%s'"%(self, code)
+                                    raise ValueError("'%s' has no translation in '%s'" % (self, code))
                                 return u""
                         elif not MULTILINGUAL_FAIL_SILENTLY:
-                            raise ValueError, "'%s' has no translation in '%s'"%(self, code)
+                            raise ValueError("'%s' has no translation in '%s'" % (self, code))
                     else:
                         self.__dict__[translation_key] = translation
-                
+
                 return translation.__dict__[field]
-                
-        raise AttributeError, "'%s' object has no attribute '%s'"%(self.__class__.__name__, str(attr))
-    
+
+        raise AttributeError("'%s' object has no attribute '%s'" % (self.__class__.__name__, str(attr)))
+
     def for_language(self, code):
         """Sets the language for the translation fields of this object"""
         if code is not None and len(code) == 2:
             self._language = code
-        
-    

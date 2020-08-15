@@ -1,5 +1,6 @@
 from django.core.files.storage import Storage
 
+
 class URLStorage(Storage):
     def delete(self, name):
         raise NotImplementedError()

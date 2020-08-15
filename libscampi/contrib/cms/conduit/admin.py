@@ -1,11 +1,14 @@
-import logging, re
+import json
+import logging
+import re
+from collections import namedtuple
 
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.utils.html import escape
 from django.http import Http404, HttpResponse
 from django.contrib.contenttypes.models import ContentType
-from django.utils import simplejson
 from django.contrib import messages
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
@@ -18,34 +21,39 @@ from .filtering import ContentTypeListFilter
 
 logger = logging.getLogger('libscampi.contrib.cms.conduit.admin')
 
+
+Pickable = namedtuple('Pickable', ('model', 'picker', 'filterset', 'factory'))
+
+
 class PickerTemplateAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Designation', {'fields': ['name']}),
-        ('HTML Links', {'fields': ('stylesheet', 'javascript')}), 
+        ('HTML Links', {'fields': ('stylesheet', 'javascript')}),
         (None, {'fields': ['content']}),
     )
     save_as = True
     save_on_top = True
-    
+
+
 class DynamicPickerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count','template')
+    list_display = ('name', 'keyname', 'active', 'commune', 'content', 'max_count', 'template')
     list_editable = ('max_count', 'template')
     list_filter = (ContentTypeListFilter, 'commune', 'active')
+    list_select_related = ('commune', 'template', 'content')
     search_fields = ('commune__name',)
-    
+
     fieldsets = (
-        #('Designation', {'fields': ('name', 'display_name', 'active', ('keyname', 'commune'))}), # TO DO enable display_name
-        ('Designation', {'fields': ('name', 'active', ('keyname', 'commune'))}), # TO DO enable display_name
+        ('Designation', {'fields': ('name', 'active', ('keyname', 'commune'))}),  # TODO enable display_name
         ('Display', {'fields': ('template',)}),
-        ('Picking', {'fields': ('content', 'max_count')}), 
+        ('Picking', {'fields': ('content', 'max_count')}),
     )
-    
+
     add_fieldsets = (
-        (_('Designation'), {'fields': ('name','active','keyname')}),
-        (_('Display'), {'fields': ('template', )}),
+        (_('Designation'), {'fields': ('name', 'active', 'keyname')}),
+        (_('Display'), {'fields': ('template',)}),
         (_('Picking'), {'fields': ('content', 'max_count')}),
     )
-    
+
     save_on_top = True
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -55,11 +63,6 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             kwargs["widget"] = ForeignKeyRawIdWidget(db_field.rel, admin_site=self.admin_site, using=db)
         return super(DynamicPickerAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def queryset(self, request):
-        qs = super(DynamicPickerAdmin, self).queryset(request)
-
-        return qs.prefetch_related('template','commune')
-    
     def get_readonly_fields(self, request, obj=None):
         """
         commune can only be edited by super users
@@ -74,48 +77,46 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         else:
             return 'active',
 
-        
-        #return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
-    
-    #provide the JS for the picking filter magic
+        # return super(DynamicPickerAdmin, self).get_readonly_fields(request, obj)
+
+    # provide the JS for the picking filter magic
     class Media:
         js = (
             "admin/js/core.js",
             "admin/js/SelectBox.js",
             "admin/js/SelectFilter2.js",
-            'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js',
             'admin/js/conduit.pickers.js',
         )
 
-    #we have the "adding a picker" form and the "changing the picker" form
+    # we have the "adding a picker" form and the "changing the picker" form
     def get_fieldsets(self, request, obj=None):
         if not obj:
             return self.add_fieldsets
         return super(DynamicPickerAdmin, self).get_fieldsets(request, obj)
 
-    #again, special form for creating vs changing
+    # again, special form for creating vs changing
     def get_form(self, request, obj=None, **kwargs):
         if not obj:
             self.form = DynamicPickerInitialForm
         else:
             self.form = DynamicPickerForm
-            
+
         return super(DynamicPickerAdmin, self).get_form(request, obj, **kwargs)
-        
-    #provide the serialization of the inclusion and exclusion filters
+
+    # provide the serialization of the inclusion and exclusion filters
     def save_model(self, request, obj, form, change):
         logger.debug("saving %s [%s]" % (obj.name, obj.keyname))
-        
+
         has_pickers = request.POST.get("includes-pickers", False)
-        
-        #basically only do something if we are "changing" e.g. the picking fields are available
+
+        # basically only do something if we are "changing" e.g. the picking fields are available
         if change and has_pickers:
             logger.debug("changing {0:>s} [{1:>s}]".format(obj.name, obj.keyname))
-            
+
             content_model = obj.content.model_class()
-        
+
             picking_filterset = manifest.get_registration_info(content_model)()
-            
+
             factory = formset_factory(picking_filterset.form.__class__)
             inclusion = factory(request.POST, prefix="incl")
             exclusion = factory(request.POST, prefix="excl")
@@ -133,7 +134,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             else:
                 logger.debug("{0:>s} - inclusion was invalid: {1:>s}".format(obj.keyname, inclusion.errors))
                 messages.error(request,
-                    "There was an issue with the inclusion filters: {0:>s}".format(inclusion.errors))
+                               "There was an issue with the inclusion filters: {0:>s}".format(inclusion.errors))
 
             if exclusion.is_valid():
                 for form in exclusion:
@@ -145,17 +146,16 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             else:
                 logger.debug("{0:>s} - exclusion was invalid: {1:>s}".format(obj.keyname, inclusion.errors))
                 messages.error(request,
-                    "There was an issue with the exclusion filters: {0:>s}".format(exclusion.errors))
+                               "There was an issue with the exclusion filters: {0:>s}".format(exclusion.errors))
 
             logger.debug("[{0:>s}] final inclusion: {1:>s}".format(obj.name, inclusion_fs))
             logger.debug("[{0:>s}] final exclusion: {1:>s}".format(obj.name, exclusion_fs))
 
             obj.include_filters = inclusion_fs or False
             obj.exclude_filters = exclusion_fs or False
-            
-        
+
         obj.save()
-        
+
     def response_add(self, request, obj, post_url_continue='../%s'):
         """
         This method provides similar functionality to the User admin in django
@@ -163,24 +163,27 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         """
         if '_addanother' not in request.POST and '_popup' not in request.POST:
             request.POST['_continue'] = 1
-        
+
         return super(DynamicPickerAdmin, self).response_add(request, obj, post_url_continue)
-        
-    #override the urls method to add our picking form fields return
+
+    # override the urls method to add our picking form fields return
     def get_urls(self):
-        from django.conf.urls import patterns, url
+
         urls = super(DynamicPickerAdmin, self).get_urls()
-        
-        my_urls = patterns('',
-            url(r'^p/formfields/$', self.admin_site.admin_view(self.picking_filters_fields), name="conduit-picking-filters-fields"),
-            url(r'^p/preview-objects/$', self.admin_site.admin_view(self.preview_picked_objects), name="conduit-picking-preview-picked"),
-        )
+
+        my_urls = [
+            url(r'^p/formfields/$', self.admin_site.admin_view(self.picking_filters_fields),
+                name="conduit-picking-filters-fields"),
+            url(r'^p/preview-objects/$', self.admin_site.admin_view(self.preview_picked_objects),
+                name="conduit-picking-preview-picked"),
+        ]
 
         return my_urls + urls
 
-    def preview_picked_objects(self, request, *args, **kwargs):
-        content_id = request.REQUEST.get('content_id', None)
-        picker_id = request.REQUEST.get('picker_id', None)
+    @staticmethod
+    def get_pickable(request):
+        content_id = request.GET.get('content_id', None)
+        picker_id = request.GET.get('picker_id', None)
 
         try:
             content_model = ContentType.objects.get(pk=content_id)
@@ -202,6 +205,12 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             raise Http404("Picking Filterset not found")
 
         factory = formset_factory(picking_filterset.form.__class__)
+
+        return Pickable(model, picker, picking_filterset, factory)
+
+    def preview_picked_objects(self, request, *args, **kwargs):
+        model, picker, picking_filterset, factory = self.get_pickable(request)
+
         inclusion = factory(request.GET, prefix="incl")
         exclusion = factory(request.GET, prefix="excl")
 
@@ -231,22 +240,22 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             messages.error(request, "There was an issue with the exclusion filters: {0:>s}".format(exclusion.errors))
 
         qs = model.objects.all()
-        #first we handle any static defers - performance optimisation
+        # first we handle any static defers - performance optimisation
         if hasattr(picking_filterset, 'static_defer'):
             defer = picking_filterset.static_defer()
             qs = qs.defer(*defer)
 
-        #second we handle any static select_related fields - performance optimisation
+        # second we handle any static select_related fields - performance optimisation
         if hasattr(picking_filterset, 'static_select_related'):
             select_related = picking_filterset.static_select_related()
             qs = qs.select_related(*select_related)
 
-        #third we handle any static prefetch_related fields - performance optimisation
+        # third we handle any static prefetch_related fields - performance optimisation
         if hasattr(picking_filterset, 'static_prefetch_related'):
             prefetch_related = picking_filterset.static_prefetch_related()
             qs = qs.prefetch_related(*prefetch_related)
 
-        #fourth we apply our inclusion filters
+        # fourth we apply our inclusion filters
         if inclusion_fs:
             for f in inclusion_fs:
                 if not f:
@@ -254,7 +263,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 coerce_filters(f)
                 qs = qs.filter(**f)
 
-        #fifth we apply our exclusion filters
+        # fifth we apply our exclusion filters
         if exclusion_fs:
             for f in exclusion_fs:
                 if not f:
@@ -262,7 +271,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
                 coerce_filters(f)
                 qs = qs.exclude(**f)
 
-        #before we limit the qs we let the picking filter set apply any last minute operations
+        # before we limit the qs we let the picking filter set apply any last minute operations
         if hasattr(picking_filterset, 'static_chain') and callable(picking_filterset.static_chain):
             qs = picking_filterset.static_chain(qs)
 
@@ -274,117 +283,87 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         ids = list(qs.values_list('id', flat=True)[:limit])
 
         picked = model.objects.filter(id__in=ids)
-        #picked = model.objects.order_by('pk').in_bulk(ids)
+        # picked = model.objects.order_by('pk').in_bulk(ids)
 
         for_json = []
         for item in picked:
             for_json.append((item.pk, escape(repr(item))))
 
-        response = HttpResponse(simplejson.dumps(for_json),content_type="application/json")
+        response = HttpResponse(json.dumps(for_json), content_type="application/json")
 
         return response
 
-    def picking_filters_fields(self, request, *args, **kwargs):            
-        content_id = request.REQUEST.get('content_id', None)       
-        picker_id = request.REQUEST.get('picker_id', None)
-        
-        try:
-            content_model = ContentType.objects.get(pk=content_id)
-        except ContentType.DoesNotExist:
-            raise Http404
-          
-        try:
-            picker = DynamicPicker.objects.get(pk=picker_id)
-        except DynamicPicker.DoesNotExist:
-            raise Http404
-        
-        if not manifest.is_registered(content_model.model_class()):
-            raise Http404
-        
-        picking_filterset = manifest.get_registration_info(content_model.model_class())()
-        
-        factory = formset_factory(picking_filterset.form.__class__)
+    def picking_filters_fields(self, request, *args, **kwargs):
+        model, picker, picking_filterset, factory = self.get_pickable(request)
+
         clean_produced = factory()
         clean_form = clean_produced[0]
-        
-        returns = {'existing': {}, 'filters': []}
-        
-        base_fields = []
-        for field in clean_form:
-            base_fields.append(field.name)
-            returns['filters'].append((field.name, field.label, field.__unicode__()))
-            
+
+        returns = {
+            'existing': {},
+            'filters': [(f.name, f.label, f.as_widget()) for f in clean_form],
+        }
+        base_fields = [f.name for f in clean_form]
+
         field_matcher = re.compile("^(%s)?" % "|".join(base_fields))
         incl = picker.include_filters
         excl = picker.exclude_filters
-        
-        incl_picking_fields = []
-        if incl:
-            incl_sets = len(incl)
-            for i in range(0, incl_sets):
-                incl_picking_fields.append({})
-                for key, val in incl[i].iteritems():
-                    m = field_matcher.match(key)
-                    if m is not None:
-                        incl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
-        
-        excl_picking_fields = []
-        if excl:
-            excl_sets = len(excl)
-            for i in range(0, excl_sets):
-                excl_picking_fields.append({})
-                for key, val in excl[i].iteritems():
-                    m = field_matcher.match(key)
-                    if m is not None:
-                        excl_picking_fields[i].update({m.group(): uncoerce_pickled_value(val)})
-                    
-        saved_inclusion = []
-        saved_exclusion = []
-        
-        produced = factory(initial=incl_picking_fields)
-        for i in range(0, len(produced)-1):
-            form = produced[i]
-            saved_inclusion.append([])
-            for field in form:
-                if field.name in incl_picking_fields[i]:
-                    saved_inclusion[i].append((field.name, field.label, field.__unicode__()))
 
+        def build_picking_fields(haystack):
+            picking_fields = []
+            for i, items in enumerate(haystack):
+                picking_fields.append({})
+                for key, val in items.iteritems():
+                    match = field_matcher.match(key)
+                    if match is not None:
+                        picking_fields[i].update({match.group(): uncoerce_pickled_value(val)})
+            return picking_fields
 
-        produced = factory(initial=excl_picking_fields)
-        for i in range(0, len(produced)-1):
-            form = produced[i]
-            saved_exclusion.append([])
-            for field in form:
-                if field.name in excl_picking_fields[i]:
-                    saved_exclusion[i].append((field.name, field.label, field.__unicode__()))    
-        
+        incl_picking_fields = build_picking_fields(incl or [])
+        excl_picking_fields = build_picking_fields(excl or [])
+
+        def serialize_picking_fields(haystack):
+            produced = factory(initial=haystack)
+            serialized = []
+            for i in range(len(produced) - 1):
+                form = produced[i]
+                serialized.append([])
+                for field in form:
+                    if field.name in haystack[i]:
+                        serialized[i].append((field.name, field.label, field.__unicode__()))
+            return serialized
+
+        saved_inclusion = serialize_picking_fields(incl_picking_fields)
+        saved_exclusion = serialize_picking_fields(excl_picking_fields)
+
         returns['existing'] = {'incl': saved_inclusion, 'excl': saved_exclusion}
-            
-        response = HttpResponse(simplejson.dumps(returns), content_type="application/json")
-        
+
+        response = HttpResponse(json.dumps(returns), content_type="application/json")
+
         return response
-        
+
+
 class StaticPickerAdmin(admin.ModelAdmin):
     list_display = ('name', 'namedbox')
     fieldsets = (
         (None, {'fields': ('name', 'content')}),
         ('Information', {'fields': ('namedbox', 'commune')}),
-        ('HTML Links', {'fields': ('stylesheet', 'javascript')}), 
+        ('HTML Links', {'fields': ('stylesheet', 'javascript')}),
     )
     save_on_top = True
-    
+
     def get_readonly_fields(self, request, obj=None):
         """
         commune is always readonly
         content can only be set once
         """
-        
+
         if obj:
             return 'commune', 'namedbox'
         else:
             return 'commune',
 
-                                        
+
 class StaticPickerInlineAdmin(admin.StackedInline):
     fieldsets = (
         (None, {'fields': ('name', 'content')}),
@@ -394,7 +373,8 @@ class StaticPickerInlineAdmin(admin.StackedInline):
     extra = 0
     verbose_name = "Static Content"
     verbose_name_plural = "Static Content"
-    
+
+
 admin.site.register(DynamicPicker, DynamicPickerAdmin)
 admin.site.register(StaticPicker, StaticPickerAdmin)
 admin.site.register(PickerTemplate, PickerTemplateAdmin)

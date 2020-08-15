@@ -1,1 +1,0 @@
-from libscampi.contrib.cms.sites import site

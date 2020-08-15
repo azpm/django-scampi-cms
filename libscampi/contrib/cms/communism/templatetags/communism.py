@@ -1,12 +1,13 @@
-from django.template import Library
-from classytags.core import Tag, Options
 from classytags.arguments import Argument
+from classytags.core import Tag, Options
 from classytags.helpers import InclusionTag
+from django import template
 from django.contrib.sites.models import Site
 
-from libscampi.contrib.cms.communism.models import Theme, Javascript, StyleSheet
+from libscampi.contrib.cms.communism import models
 
-register = Library()
+register = template.Library()
+
 
 class ThemeScripts(InclusionTag):
     name = "render_theme_scripts"
@@ -29,14 +30,15 @@ class ThemeScripts(InclusionTag):
                 return {}
         else:
             try:
-                theme = Theme.objects.get_by_natural_key(keyname)
-            except Theme.DoesNotExist:
+                theme = models.Theme.objects.get_by_natural_key(keyname)
+            except models.Theme.DoesNotExist:
                 # invalid theme argument, empty context
                 return {}
 
-        scripts = Javascript.base_active.for_theme(theme)
+        scripts = theme.Javascript.base_active.for_theme(theme)
 
         return {'scripts': scripts}
+
 
 class ThemeStyles(InclusionTag):
     name = "render_theme_styles"
@@ -57,14 +59,15 @@ class ThemeStyles(InclusionTag):
                 return {}
         else:
             try:
-                theme = Theme.objects.get_by_natural_key(keyname)
-            except Theme.DoesNotExist:
+                theme = models.Theme.objects.get_by_natural_key(keyname)
+            except models.Theme.DoesNotExist:
                 # invalid theme argument, empty context
                 return {}
 
-        styles = StyleSheet.base_active.for_theme(theme)
+        styles = models.StyleSheet.base_active.for_theme(theme)
 
         return {'styles': styles}
+
 
 class ThemePage(Tag):
     name = "get_themed_page"
@@ -80,11 +83,11 @@ class ThemePage(Tag):
         if cms_page is not None:
             return ''
 
-        cms_page = {'theme': Theme.objects.none()}
+        cms_page = {'theme': models.Theme.objects.none()}
 
         try:
-            theme = Theme.objects.get_by_natural_key(keyname)
-        except Theme.DoesNotExist:
+            theme = models.Theme.objects.get_by_natural_key(keyname)
+        except models.Theme.DoesNotExist:
             # invalid theme argument, empty context
             pass
         else:
@@ -94,11 +97,12 @@ class ThemePage(Tag):
 
         return u''
 
+
 class LocalRealm(Tag):
     name = "get_current_realm"
 
     def render_tag(self, context, **kwargs):
-        cms_realm = context.get('cms_realm',None)
+        cms_realm = context.get('cms_realm', None)
 
         if cms_realm is not None:
             return ''

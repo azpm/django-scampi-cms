@@ -5,11 +5,12 @@ from classytags.arguments import Argument
 
 register = template.Library()
 
+
 class Urchin(Tag):
     name = "urchin"
 
     options = Options(
-        Argument('google_id',required=True, resolve=True)
+        Argument('google_id', required=True, resolve=True)
     )
 
     def render_tag(self, context, **kwargs):
@@ -26,6 +27,7 @@ class Urchin(Tag):
                 pageTracker._initData();
                 pageTracker._trackPageview();
             </script>""" % (google_id,)
-        return force_unicode(string+string2)
+        return force_unicode(string + string2)
+
 
 register.tag(Urchin)

@@ -1,32 +1,42 @@
 from django.views.generic import TemplateView
 
-from libscampi.contrib.cms.communism.views.mixins import SectionMixin, ApplicationMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin
+from libscampi.contrib.cms.communism.views import mixins
 
-from .mixins import PageMixin
 
-class Page(SectionMixin, ApplicationMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
+class Page(mixins.ApplicationMixin, TemplateView):
     """
-    Implements an un-managed page with a  templateview that integrates with the CMS without having a commune, e.g.
+    Implements an un-managed page with a TemplateView that integrates with the CMS without having a commune, e.g.
     if you are using a custom django application and want to integrate it with scampi cms
     """
     pass
 
-class PageNoView(SectionMixin, ApplicationMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
+
+class PageNoView(mixins.ApplicationMixin):
     """
-    Implements an un-managed page that has no view, you must provide the proper response mixin
+    Implements an un-managed page that has no GET/POST/etc handlers, you must provide the proper response mixin
     """
     pass
 
-class CMSPage(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin, TemplateView):
+
+class CMSPage(mixins.CommuneMixin, TemplateView):
     """
-    Implements a canonical Commune based CMS Page
+    Fully manage paged
+
+    Includes the following mixins
+
+    1. libscampi.contrib.cms.communism.views.mixins.CacheMixin
+    2. libscampi.contrib.cms.communism.views.mixins.PageMixin
+    3. libscampi.contrib.cms.communism.views.mixins.SectionMixin
+    4. libscampi.contrib.cms.communism.views.mixins.CommuneMixin
+
+    and inherits from TemplateView to provide template rendering for a GET request
     """
     pass
 
-class CMSPageNoView(SectionMixin, CommuneMixin, ThemeMixin, CSSMixin, JScriptMixin, PageMixin):
+
+class CMSPageNoView(mixins.CommuneMixin):
     """
     Implements a CMS page that has no view
     e.g. you must provide an alternative View mixin
-    """    
+    """
     pass
-    

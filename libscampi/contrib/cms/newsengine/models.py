@@ -41,7 +41,7 @@ class ArticleTranslation(models.Model):
         verbose_name_plural = 'Article Translations'
 
     def __unicode__(self):
-        return u"{0:>s}".format(self.headline)
+        return u"{1} (pk={0})".format(self.pk, self.headline)
 
 
 class Article(MultilingualModel):

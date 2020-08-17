@@ -1,5 +1,5 @@
 from django import template
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from classytags.core import Tag, Options
 from classytags.arguments import Argument
 
@@ -27,7 +27,7 @@ class Urchin(Tag):
                 pageTracker._initData();
                 pageTracker._trackPageview();
             </script>""" % (google_id,)
-        return force_unicode(string + string2)
+        return force_text(string + string2)
 
 
 register.tag(Urchin)

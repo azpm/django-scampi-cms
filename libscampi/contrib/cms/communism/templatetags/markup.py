@@ -1,7 +1,7 @@
 import markdown as _markdown
 from django import template
 from django.template.defaultfilters import stringfilter
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
 register = template.Library()
@@ -13,5 +13,5 @@ def markdown(value):
     extensions = ["nl2br", ]
 
     return mark_safe(
-        _markdown.markdown(force_unicode(value), extensions=extensions, safe_mode=False, enable_attributes=False)
+        _markdown.markdown(force_text(value), extensions=extensions, safe_mode=False, enable_attributes=False)
     )

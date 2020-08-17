@@ -132,11 +132,9 @@ class DynamicPicker(PickerBase):
             except ValueError as e:
                 logger.error(
                     "Value Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                return model.objects.None()
             except FieldError as e:
                 logger.error(
                     "Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                return model.objects.None()
             except Exception as e:
                 logger.error("failure to coerce include filters on [%d] %s. %s" % (self.pk, self.name, e))
 
@@ -151,11 +149,9 @@ class DynamicPicker(PickerBase):
             except ValueError as e:
                 logger.error(
                     "Value Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                return model.objects.None()
             except FieldError as e:
                 logger.error(
                     "Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
-                return model.objects.None()
             except Exception as e:
                 logger.error("failure to coerce exclude filters on [%d] %s. %s" % (self.pk, self.name, e))
 

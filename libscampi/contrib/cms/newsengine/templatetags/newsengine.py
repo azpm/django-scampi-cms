@@ -1,4 +1,5 @@
 import logging
+import warnings
 from datetime import datetime
 
 from django import template
@@ -375,3 +376,15 @@ def dechain_archival_categories(needle, haystack):
         url = "?c={0:>s}".format(category_path)
 
     return url
+
+
+@register.simple_tag()
+def get_xsite_comment_count(*args):
+    warnings.warn(DeprecationWarning('Comment Functionality has been outsourced, but legacy templates use this tag'))
+    return 0
+
+
+@register.simple_tag()
+def get_xsite_comment_list(*args):
+    warnings.warn(DeprecationWarning('Comment Functionality has been outsourced, but legacy templates use this tag'))
+    return []

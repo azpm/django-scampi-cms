@@ -62,8 +62,8 @@ class SliceAdmin(admin.ModelAdmin):
 
     ordering = ('commune', 'display_order')
 
-    def queryset(self, request):
-        qs = super(SliceAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(SliceAdmin, self).get_queryset(request)
 
         return qs.select_related('commune__section__realm', 'commune')
 
@@ -109,8 +109,8 @@ class BoxAdmin(admin.ModelAdmin):
     list_per_page = 20
     save_on_top = True
 
-    def queryset(self, request):
-        qs = super(BoxAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(BoxAdmin, self).get_queryset(request)
 
         return qs.select_related('slice').prefetch_related('template')
 

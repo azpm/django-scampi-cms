@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import Q, Count
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, force_text
 from django.template.defaultfilters import slugify
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -247,25 +247,8 @@ class Publish(models.Model):
         return "{0:d}/{1:d}/{2:d}/{3:>s}/".format(self.start.year, self.start.month, self.start.day, self.slug)
 
 
-class PublishQueue(Publish):
-    class Meta:
-        proxy = True
-        verbose_name = "Publish Queue"
-        verbose_name_plural = "Publish Queue"
-
-
 @receiver(post_save, sender=Publish)
 def slug_for_publish(sender, instance, created, raw, **kwargs):
-    if instance.slug == '' or not instance.slug and instance.story is not None:
-        # this publish needs a slug
-        slugged_headline = slugify(instance.story.article.headline)
-        slug = "%d-%s" % (instance.pk, slugged_headline)
-        instance.slug = slug[:255]
-        instance.save()
-
-
-@receiver(post_save, sender=PublishQueue)
-def slug_for_publish_queue(sender, instance, created, raw, **kwargs):
     if instance.slug == '' or not instance.slug and instance.story is not None:
         # this publish needs a slug
         slugged_headline = slugify(instance.story.article.headline)

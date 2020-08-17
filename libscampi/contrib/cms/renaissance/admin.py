@@ -22,6 +22,7 @@ class MediaAdmin(object):
     save_on_top = True
 
 
+@admin.register(models.Image, models.Audio, models.Object, models.Document)
 class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
     fieldsets = MediaAdmin.fieldsets + (('Classification', {'fields': ('file', 'type')}),)
     list_filter = MediaAdmin.list_filter + ['type']
@@ -38,12 +39,14 @@ class FileBasedMediaAdmin(MediaAdmin, admin.ModelAdmin):
 
     def popover(self, cls):
         args = {'url': cls.file.url, 'name': cls.title, 'preview': _("I")}
-        return mark_safe(u"<a class='popover web-symbol' href='%(url)s' target='_blank' rel='%(url)s' title='%(name)s'>%(preview)s</a>" % args)
+        return mark_safe(
+            u"<a class='popover web-symbol' href='%(url)s' target='_blank' rel='%(url)s' title='%(name)s'>%(preview)s</a>" % args)
 
     popover.short_description = u"Preview"
     popover.allow_tags = True
 
 
+@admin.register(models.Video)
 class VideoMediaAdmin(MediaAdmin, admin.ModelAdmin):
     fieldsets = MediaAdmin.fieldsets + (('Classification', {'fields': ('file', 'thumbnail', 'type', 'url')}),)
     list_filter = MediaAdmin.list_filter + ['type']
@@ -51,6 +54,7 @@ class VideoMediaAdmin(MediaAdmin, admin.ModelAdmin):
     raw_id_fields = ['thumbnail']
 
 
+@admin.register(models.External)
 class ExternalAdmin(admin.ModelAdmin):
     pass
 
@@ -94,27 +98,33 @@ class RankedObjectInline(RankedItemInline, admin.TabularInline):
 
 
 # each media type as a playlist
+@admin.register(models.ImagePlaylist)
 class ImagePlaylistAdmin(PlaylistAdmin, admin.ModelAdmin):
     inlines = [RankedImageInline, ]
 
 
+@admin.register(models.VideoPlaylist)
 class VideoPlaylistAdmin(PlaylistAdmin, admin.ModelAdmin):
     inlines = [RankedVideoInline, ]
 
 
+@admin.register(models.AudioPlaylist)
 class AudioPlaylistAdmin(PlaylistAdmin, admin.ModelAdmin):
     inlines = [RankedAudioInline, ]
 
 
+@admin.register(models.DocumentPlaylist)
 class DocumentPlaylistAdmin(PlaylistAdmin, admin.ModelAdmin):
     inlines = [RankedDocumentInline, ]
 
 
+@admin.register(models.ObjectPlaylist)
 class ObjectPlaylistAdmin(PlaylistAdmin, admin.ModelAdmin):
     inlines = [RankedObjectInline, ]
 
 
 # media typing config
+@admin.register(models.AudioType, models.DocumentType)
 class MediaTypeAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Designation', {'fields': ('title', 'keyname', 'description')}),
@@ -125,33 +135,15 @@ class MediaTypeAdmin(admin.ModelAdmin):
     save_on_top = True
 
 
+@admin.register(models.ImageType, models.VideoType, models.ObjectType)
 class DimensionalMediaTypeAdmin(MediaTypeAdmin, admin.ModelAdmin):
     fieldsets = MediaTypeAdmin.fieldsets + (('Attributes', {'fields': ('width', 'height')}),)
     list_display = MediaTypeAdmin.list_display + ('width', 'height')
 
 
+@admin.register(models.MediaInlineTemplate)
 class InlineTemplateAdmin(admin.ModelAdmin):
     list_display = ('title',)
 
 
-admin.site.register(models.Image, FileBasedMediaAdmin)
-admin.site.register(models.Video, VideoMediaAdmin)
-admin.site.register(models.Audio, FileBasedMediaAdmin)
-admin.site.register(models.Document, FileBasedMediaAdmin)
-admin.site.register(models.Object, FileBasedMediaAdmin)
-admin.site.register(models.External, ExternalAdmin)
-
-admin.site.register(models.ImagePlaylist, ImagePlaylistAdmin)
-admin.site.register(models.VideoPlaylist, VideoPlaylistAdmin)
-admin.site.register(models.AudioPlaylist, AudioPlaylistAdmin)
-admin.site.register(models.DocumentPlaylist, DocumentPlaylistAdmin)
-admin.site.register(models.ObjectPlaylist, ObjectPlaylistAdmin)
-
-admin.site.register(models.ImageType, DimensionalMediaTypeAdmin)
-admin.site.register(models.VideoType, DimensionalMediaTypeAdmin)
-admin.site.register(models.ObjectType, DimensionalMediaTypeAdmin)
-admin.site.register(models.AudioType, MediaTypeAdmin)
-admin.site.register(models.DocumentType, MediaTypeAdmin)
-
-admin.site.register(models.MediaInlineTemplate, InlineTemplateAdmin)
 admin.site.register(models.MediaPlaylistTemplate)

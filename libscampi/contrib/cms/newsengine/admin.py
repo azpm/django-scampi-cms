@@ -1,5 +1,6 @@
 import logging
 import json
+import operator
 from datetime import datetime
 
 from django.core.exceptions import PermissionDenied
@@ -60,8 +61,8 @@ class ArticleAdmin(admin.ModelAdmin):
     inlines = [ArticleTranslationInline]
     save_on_top = True
 
-    def queryset(self, request):
-        qs = super(ArticleAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(ArticleAdmin, self).get_queryset(request)
 
         return qs.select_related('author').annotate(languages=Count('translations__headline'))
 
@@ -166,7 +167,6 @@ class ArticleAdmin(admin.ModelAdmin):
 
         modelForm = self.get_form(request)
         formsets = []
-        inline_instances = self.get_inline_instances(request)
         if request.method == 'POST':
             form = modelForm(request.POST, request.FILES)
             if not form.is_valid():
@@ -182,7 +182,7 @@ class ArticleAdmin(admin.ModelAdmin):
             }
 
             prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request), inline_instances):
+            for FormSet, inline in self.get_formsets_with_inlines(request):
                 prefix = FormSet.get_default_prefix()
                 prefixes[prefix] = prefixes.get(prefix, 0) + 1
                 if prefixes[prefix] != 1 or not prefix:
@@ -190,7 +190,7 @@ class ArticleAdmin(admin.ModelAdmin):
                 formset = FormSet(data=request.POST, files=request.FILES,
                                   instance=self.model(),
                                   save_as_new=True,
-                                  prefix=prefix, queryset=inline.queryset(request))
+                                  prefix=prefix, queryset=inline.get_queryset(request))
                 formsets.append(formset)
             if all_valid(formsets):
                 translations = formsets[0].cleaned_data
@@ -199,7 +199,9 @@ class ArticleAdmin(admin.ModelAdmin):
                                         "admin/newsengine/article/preview.html",
                                         {'article': article, 'translations': translations})
             else:
-                raise Http404("Invalid Article to Preview. Translation Form")
+                errors = reduce(operator.iadd, [fset.errors for fset in formsets])
+
+                raise Http404("Invalid Article to Preview: {}".format(errors))
         else:
             raise PermissionDenied
 
@@ -245,8 +247,8 @@ class StoryAdmin(admin.ModelAdmin):
 
         return u"%s" % truncatewords(val.headline, '10')
 
-    def queryset(self, request):
-        qs = super(StoryAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(StoryAdmin, self).get_queryset(request)
 
         return qs.select_related('article', 'author')
 
@@ -311,11 +313,10 @@ class PublishStoryAdmin(admin.ModelAdmin):
 
         return u"%s" % truncatewords(val.headline, 5)
 
-    def queryset(self, request):
-        qs = super(PublishStoryAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(PublishStoryAdmin, self).get_queryset(request)
 
-        return qs.select_related('site', 'approved_by__username', 'category__keyname', 'category__title',
-                                 'story__article_id')
+        return qs.select_related('site', 'approved_by__person', 'category', 'story__article')
 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.start is not None and obj.start < datetime.now():
@@ -332,14 +333,6 @@ class PublishStoryAdmin(admin.ModelAdmin):
             obj.save()
         except IntegrityError:
             logger.critical("couldn't publish a story", "%s" % locals())
-
-
-class PublishQueueAdmin(PublishStoryAdmin):
-    list_filter = (filtering.ArticleAuthorListFilter, filtering.PublishTypeListFilter)
-
-    def queryset(self, request):
-        qs = super(PublishQueueAdmin, self).queryset(request)
-        return qs.filter(seen=False, published=False)
 
 
 class StoryCategoryAdmin(admin.ModelAdmin):
@@ -360,4 +353,3 @@ admin.site.register(models.StoryCategory, StoryCategoryAdmin)
 admin.site.register(models.Story, StoryAdmin)
 admin.site.register(models.PublishCategory, PublishCategoryAdmin)
 admin.site.register(models.Publish, PublishStoryAdmin)
-admin.site.register(models.PublishQueue, PublishQueueAdmin)

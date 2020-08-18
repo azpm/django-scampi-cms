@@ -7,9 +7,11 @@ from libscampi.contrib.cms.newsengine.models import Publish, StoryCategory
 class PublishPicking(django_filters.FilterSet):
     start = django_filters.filters.DateRangeFilter(lookup_expr=('lt', 'gt', 'lte', 'gte'))
     end = django_filters.filters.DateRangeFilter(name="end", lookup_expr=('lt', 'gt', 'lte', 'gte'))
-    story__categories = django_filters.filters.ModelMultipleChoiceFilter(queryset=StoryCategory.objects.all(),
-                                                                         widget=FilteredSelectMultiple(
-                                                                             "Story Categories", False, {'class': 'selectfilter'}))
+    story__categories = django_filters.filters\
+        .ModelMultipleChoiceFilter(label='Story Categories',
+                                   lookup_expr='in',
+                                   queryset=StoryCategory.objects.all(),
+                                   widget=FilteredSelectMultiple("Story Categories", False, {'class': 'selectfilter'}))
 
     class Meta:
         model = Publish

@@ -180,8 +180,7 @@ class DynamicPickerAdmin(admin.ModelAdmin):
 
         return my_urls + urls
 
-    @staticmethod
-    def get_pickable(request):
+    def get_pickable(self, request):
         content_id = request.GET.get('content_id', None)
         picker_id = request.GET.get('picker_id', None)
 
@@ -193,11 +192,19 @@ class DynamicPickerAdmin(admin.ModelAdmin):
         try:
             picker = DynamicPicker.objects.get(pk=picker_id)
         except DynamicPicker.DoesNotExist:
-            raise Http404
+            picker = DynamicPicker.objects.none()
 
         model = content_model.model_class()
         if not manifest.is_registered(model):
             raise Http404
+
+        if picker:
+            form = self.get_form(request, picker)(request.POST, instance=picker)
+        else:
+            form = self.get_form(request)(request.POST)
+
+        if not form.is_valid():
+            raise Http404(form.errors)
 
         try:
             picking_filterset = manifest.get_registration_info(model)()
@@ -206,13 +213,13 @@ class DynamicPickerAdmin(admin.ModelAdmin):
 
         factory = formset_factory(picking_filterset.form.__class__)
 
-        return Pickable(model, picker, picking_filterset, factory)
+        return Pickable(model, form.instance, picking_filterset, factory)
 
     def preview_picked_objects(self, request, *args, **kwargs):
         model, picker, picking_filterset, factory = self.get_pickable(request)
 
-        inclusion = factory(request.GET, prefix="incl")
-        exclusion = factory(request.GET, prefix="excl")
+        inclusion = factory(request.POST, prefix="incl")
+        exclusion = factory(request.POST, prefix="excl")
 
         inclusion_fs = []
         exclusion_fs = []
@@ -256,20 +263,12 @@ class DynamicPickerAdmin(admin.ModelAdmin):
             qs = qs.prefetch_related(*prefetch_related)
 
         # fourth we apply our inclusion filters
-        if inclusion_fs:
-            for f in inclusion_fs:
-                if not f:
-                    continue
-                coerce_filters(f)
-                qs = qs.filter(**f)
+        for f in coerce_filters(inclusion_fs):
+            qs = qs.filter(**f)
 
         # fifth we apply our exclusion filters
-        if exclusion_fs:
-            for f in exclusion_fs:
-                if not f:
-                    continue
-                coerce_filters(f)
-                qs = qs.exclude(**f)
+        for f in coerce_filters(exclusion_fs):
+            qs = qs.exclude(**f)
 
         # before we limit the qs we let the picking filter set apply any last minute operations
         if hasattr(picking_filterset, 'static_chain') and callable(picking_filterset.static_chain):

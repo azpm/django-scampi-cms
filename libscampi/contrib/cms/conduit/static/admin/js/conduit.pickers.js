@@ -196,42 +196,30 @@ class Pickers {
     }
 
     process_available(data) {
-        const html = django.jQuery('<fieldset class="module aligned" id="picked-objects"><h2>Preview Picker <a class="refresh-icon web-symbol" id="refresh-picked" href="#refresh-picked">V</a></h2><div class="form-row" id="picked-objects"></div></fieldset>');
-        html.hide();
-        django.jQuery("fieldset").filter(":last").after(html);
+        this.available_pickers = data.filters.map(([id, name, html]) => ({
+            name: name,
+            id: id,
+            html: html
+        }));
 
-        html.slideDown("fast", () => {
-            data.filters.forEach((value) => {
-                const picker = {
-                    name: value[1],
-                    id: value[0],
-                    html: value[2]
-                };
+        this.create_fieldsets();
 
-                this.available_pickers.push(picker);
+        const process = (haystack, idx, val) => {
+            if (idx > 0) {
+                this.create_fieldset(haystack, 0);
+            }
+
+            val.forEach((prop) => {
+                this.add_filter(haystack.prefix, '_group_' + idx, prop)
             });
+        };
 
-            this.create_fieldsets();
+        data.existing.incl.forEach((val, idx) => {
+            process(this.incl, idx, val);
+        });
 
-            const process = (haystack, idx, val) => {
-                if (idx > 0) {
-                    this.create_fieldset(haystack, 0);
-                }
-
-                val.forEach((prop) => {
-                    this.add_filter(haystack.prefix, '_group_' + idx, prop)
-                });
-            };
-
-            data.existing.incl.forEach((val, idx) => {
-                process(this.incl, idx, val);
-            });
-
-            data.existing.excl.forEach((val, idx) => {
-                process(this.excl, idx, val);
-            });
-
-            django.jQuery("a#refresh-picked").delay(800).click();
+        data.existing.excl.forEach((val, idx) => {
+            process(this.excl, idx, val);
         });
     }
 }

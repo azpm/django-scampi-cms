@@ -122,38 +122,32 @@ class DynamicPicker(PickerBase):
             return qs
 
         # fourth we apply our inclusion filters
-        if self.include_filters:
-            try:
-                for f in self.include_filters:
-                    if not f:
-                        continue
-                    coerce_filters(f)
-                    qs = qs.filter(**f)
-            except ValueError as e:
-                logger.error(
-                    "Value Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
-            except FieldError as e:
-                logger.error(
-                    "Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
-            except Exception as e:
-                logger.error("failure to coerce include filters on [%d] %s. %s" % (self.pk, self.name, e))
+        # if self.include_filters:
+        try:
+            for f in coerce_filters(self.include_filters):
+                qs = qs.filter(**f)
+        except ValueError as e:
+            logger.error(
+                "Value Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
+        except FieldError as e:
+            logger.error(
+                "Field Error. Failure to apply include filters on on [%d] %s. %s" % (self.pk, self.name, e))
+        except Exception as e:
+            logger.error("failure to coerce include filters on [%d] %s. %s" % (self.pk, self.name, e))
 
         # fifth we apply our exclusion filters
-        if self.exclude_filters:
-            try:
-                for f in self.exclude_filters:
-                    if not f:
-                        continue
-                    coerce_filters(f)
-                    qs = qs.exclude(**f)
-            except ValueError as e:
-                logger.error(
-                    "Value Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
-            except FieldError as e:
-                logger.error(
-                    "Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
-            except Exception as e:
-                logger.error("failure to coerce exclude filters on [%d] %s. %s" % (self.pk, self.name, e))
+        # if self.exclude_filters:
+        try:
+            for f in coerce_filters(self.exclude_filters):
+                qs = qs.exclude(**f)
+        except ValueError as e:
+            logger.error(
+                "Value Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
+        except FieldError as e:
+            logger.error(
+                "Field Error. Failure to apply exclude filters on on [%d] %s. %s" % (self.pk, self.name, e))
+        except Exception as e:
+            logger.error("failure to coerce exclude filters on [%d] %s. %s" % (self.pk, self.name, e))
 
         # before we limit the qs we let the picking filterset apply any last minute operations
         if fs and hasattr(fs, 'static_chain') and callable(fs.static_chain):

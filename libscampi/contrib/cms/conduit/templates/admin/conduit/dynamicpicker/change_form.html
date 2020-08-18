@@ -4,41 +4,39 @@
 {{ block.super }}
 {% if object_id and original %}
 <script type="text/javascript">
-    django.jQuery(document).ready(function() {
-        const picker_id = "{{ object_id }}";
-        const content_id = "{{ original.content.id }}";
+    const picker_id = "{{ object_id }}";
+    const content_id = "{{ original.content.id }}";
+    const load_filters_url = "{% url 'admin:conduit-picking-filters-fields' %}";
+    const get_args = {'content_id': content_id, 'picker_id': picker_id};
 
-        const load_filters_url = "{% url 'admin:conduit-picking-filters-fields' %}";
-        const preview_url = "{% url 'admin:conduit-picking-preview-picked' %}";
-        const get_args = {'content_id': content_id, 'picker_id': picker_id};
+    django.jQuery(document).ready(() => {
+        const previewUrl = new URL("{{ request.scheme }}://{{ request.get_host }}{% url 'admin:conduit-picking-preview-picked' %}");
+        previewUrl.searchParams.append('content_id', content_id);
+        previewUrl.searchParams.append('picker_id', picker_id);
+        const fieldsUrl = new URL("{{ request.scheme }}://{{ request.get_host }}{% url 'admin:conduit-picking-filters-fields' %}")
+        fieldsUrl.searchParams.append('content_id', content_id)
+        fieldsUrl.searchParams.append('picker_id', picker_id)
+        const pickerForm = new Pickers();
 
-        const picker_form = new Pickers();
-
-        //load the appropriate filter sets
-        django.jQuery.getJSON(load_filters_url, get_args, (data) => { picker_form.process_available(data); });
-        django.jQuery("form#dynamicpicker_form").bind("submit", () => { picker_form.bundle_filters(); });
-
-        django.jQuery(document).bind('filter_id_update', (e, id, formrow) => {
-            "use strict";
-            const form_field = django.jQuery("#" + id);
-            if (form_field.is('select') && form_field.attr('multiple') === 'multiple' && form_field.attr('class') === 'selectfilter')
+        django.jQuery("form#dynamicpicker_form").on("submit", () => { pickerForm.bundle_filters(); });
+        django.jQuery(document).on('filter_id_update', (e, id, formrow) => {
+            const formField = django.jQuery("#" + id);
+            if (formField.is('select') && formField.attr('multiple') === 'multiple' && formField.attr('class') === 'selectfilter')
             {
-                SelectFilter.init(id, form_field.attr('name') , 0, "{{ STATIC_URL}}admin/");
+                SelectFilter.init(id, formField.attr('name') , 0, "{{ STATIC_URL}}admin/");
 
                 //clean up labels
-                const proper_label = formrow.find("label").html();
-                const replace_me = new RegExp("(" + id.replace('id_', '') + ")+");
+                const properLabel = formrow.find("label").html();
+                const replaceMe = new RegExp("(" + id.replace('id_', '') + ")+");
 
-                formrow.find("h2").html(function(index, oldHtml){
-                    return oldHtml.replace(replace_me, proper_label);
+                formrow.find("h2").html((index, oldHtml) => {
+                    return oldHtml.replace(replaceMe, properLabel);
                 });
-                formrow.find("h2 > img").attr("title", formrow.find("h2 > img").attr("title").replace(replace_me, proper_label));
             }
         });
-
-        django.jQuery(document).on("click", "#refresh-picked", function(e){
-            "use strict";
-            picker_form.bundle_filters();
+        django.jQuery(document).on("click", "#refresh-picked", (event) => {
+            event.stopPropagation();
+            pickerForm.bundle_filters();
             const div = django.jQuery("div#picked-objects").empty();
 
             django.jQuery("form#dynamicpicker_form select[multiple='multiple'][class='filtered']:not([id$='_from'])").each(function(elem,val){
@@ -47,7 +45,8 @@
                 SelectBox.select_all(target);
             });
 
-            django.jQuery.getJSON(preview_url + "?" + django.jQuery("form#dynamicpicker_form").serialize(), get_args, function(data){
+            const formBody = django.jQuery("form#dynamicpicker_form").serialize();
+            django.jQuery.ajax(previewUrl.toString(), { data: formBody, method: 'POST' }).done((data) => {
                 django.jQuery.each(data, function(index, value){
 
                     const html = django.jQuery("<div><label>pk: " + value[0] + "</label><p>" + value[1] + "</p></div>");
@@ -55,8 +54,23 @@
                 });
             });
         });
+
+        const initialFormBody = django.jQuery("form#dynamicpicker_form").serialize();
+        //load the appropriate filter sets
+        django.jQuery.ajax(fieldsUrl.toString(), { data: initialFormBody, method: 'POST' }).done((data) => {
+            pickerForm.process_available(data);
+            // get the initial set of preview objects for the picker
+            django.jQuery("#refresh-picked").trigger('click');
+        });
     });
 
 </script>
 {% endif %}
+{% endblock %}
+
+{% block after_field_sets %}{% if object_id and original %}
+    <fieldset class="module aligned" id="picked-objects">
+        <h2>Preview Picker <button class="refresh-icon web-symbol" id="refresh-picked" type="button">V</button></h2>
+        <div class="form-row" id="picked-objects"></div>
+    </fieldset>{% endif %}
 {% endblock %}

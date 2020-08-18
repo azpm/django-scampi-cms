@@ -1,6 +1,7 @@
 import os
 
 from django.utils.translation import ugettext_lazy as _
+from django.utils.deconstruct import deconstructible
 from django.core.exceptions import ValidationError
 
 from .settings import valid_extensions
@@ -12,6 +13,9 @@ class ExtValidator(object):
     extension = None
     message = _("Uploaded file must have valid extension: %(exts)s")
     valid_key = None
+
+    def __eq__(self, other):
+        return self.extension == other.extension and self.valid_key == other.valid_key
 
     def get_extension(self, fname):
         ext = None
@@ -32,26 +36,31 @@ class ExtValidator(object):
             raise ValidationError(self.message % params)
 
 
+@deconstructible
 class ValidImgExtension(ExtValidator):
     code = "img_ext"
     valid_key = "img"
 
 
+@deconstructible
 class ValidVidExtension(ExtValidator):
     code = "vid_ext"
     valid_key = "vid"
 
 
+@deconstructible
 class ValidDocExtension(ExtValidator):
     code = "doc_ext"
     valid_key = "doc"
 
 
+@deconstructible
 class ValidAudExtension(ExtValidator):
     code = "aud_ext"
     valid_key = "aud"
 
 
+@deconstructible
 class ValidObjExtension(ExtValidator):
     code = "obj_ext"
     valid_key = "obj"

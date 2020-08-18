@@ -104,7 +104,7 @@ def build_filters(fs):
             value = picking_form.fields[name].clean(data)
 
             # see if the instance has a lookup associated with it
-            if isinstance(value, (list, tuple)) and len(value) > 0:
+            if isinstance(value, (list, tuple)) and len(value) > 1:
                 lookup = str(value[1])
                 if not lookup:
                     lookup = 'exact'
@@ -154,14 +154,19 @@ def build_filters(fs):
 
 
 def coerce_filters(filters):
-    for key, value in filters.iteritems():
-        if isinstance(value, tuple) and value[0] == 'coerce-datetime':
-            try:
-                new_filter = DATE_RANGE_COERCION[value[2]](key, value[1])
-                del (filters[key])
-                filters.update(new_filter)
-            except (ValueError, KeyError, TypeError):
-                continue
+    # type: (List[Dict[str, any]]) -> dict
+    if not filters:
+        return
+
+    for filter_ in filters:
+        for key, value in filter_.iteritems():
+            if isinstance(value, tuple) and value[0] == 'coerce-datetime':
+                try:
+                    yield DATE_RANGE_COERCION[value[2]](key, value[1])
+                except (ValueError, KeyError, TypeError):
+                    continue
+            else:
+                yield {key: value}
 
 
 def uncoerce_pickled_value(value):

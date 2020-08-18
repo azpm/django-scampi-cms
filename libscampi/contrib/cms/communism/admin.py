@@ -2,10 +2,12 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 
 from libscampi.contrib.cms.communism import models
+from libscampi.contrib.cms.communism import filtering
 from libscampi.contrib.cms.communism.utils import section_path_up
 from libscampi.contrib.cms.conduit.admin import StaticPickerInlineAdmin
 
 
+@admin.register(models.Realm)
 class RealmAdmin(admin.ModelAdmin):
     list_display = (
         'site',
@@ -28,12 +30,14 @@ class RealmAdmin(admin.ModelAdmin):
     save_on_top = True
 
 
+@admin.register(models.RealmNotification)
 class RealmNotificationAdmin(admin.ModelAdmin):
     list_display = ('realm', 'name', 'display_start', 'display_end')
     list_filter = ('realm',)
     save_on_top = True
 
 
+@admin.register(models.Section)
 class SectionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'realm', 'keyname', 'extends', 'active', 'display_order', 'generates_navigation')
     list_editable = ('active', 'display_order', 'generates_navigation')
@@ -46,6 +50,7 @@ class SectionInline(GenericTabularInline):
     ct_field = 'element_type'
     ct_fk_field = 'element_id'
     model = models.Section
+    raw_id_fields = ('extends', 'realm', )
     fieldsets = (
         ('Hierarchy Data',
          {'fields': ('realm', 'keyname', 'display_order', 'extends', 'active', 'generates_navigation')}),
@@ -54,9 +59,11 @@ class SectionInline(GenericTabularInline):
     extra = 1
 
 
+@admin.register(models.Slice)
 class SliceAdmin(admin.ModelAdmin):
     list_display = ('name', 'my_location', 'display_order')
     list_editable = ('display_order',)
+    list_filter = (filtering.SliceRealmFilter, filtering.SliceCommuneFilter,)
     search_fields = ('name', 'commune__name')
     save_on_top = True
 
@@ -65,7 +72,7 @@ class SliceAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(SliceAdmin, self).get_queryset(request)
 
-        return qs.select_related('commune__section__realm', 'commune')
+        return qs.select_related('commune')
 
     def my_location(self, cls):
         return "{0:>s} -> {1:>s}".format(cls.commune.realm, cls.commune.name)
@@ -86,18 +93,20 @@ class SliceInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(models.NamedBoxTemplate)
 class NamedBoxTemplateAdmin(admin.ModelAdmin):
     list_display = ('name',)
     fields = ('name', 'description', 'content')
     save_on_top = True
 
 
+@admin.register(models.NamedBox)
 class BoxAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
     list_display = ('name', 'template', 'slice', 'gridx', 'gridy', 'display_order')
     list_editable = ('template', 'gridx', 'gridy', 'display_order')
     raw_id_fields = ['slice', 'content']
-    list_filter = ('slice__commune',)
+    list_filter = (filtering.NamedBoxRealmFilter, filtering.NamedBoxCommuneFilter)
     fieldsets = (
         ('General', {'fields': ('slice', ('name', 'keyname', 'active'))}),
         ('Display', {'fields': ('display_name', 'template')}),
@@ -121,17 +130,18 @@ class BaseHierarchyElementAdmin(admin.ModelAdmin):
     search_fields = ['name', 'section__realm__name', ]
     save_on_top = True
 
-    def traverse_up(self, cls):
-        return section_path_up([cls.container], " > ")
+    def traverse_up(self, obj):
+        return section_path_up([obj.container], " > ")
 
     traverse_up.short_description = "Section Hierarchy"
 
-    def my_order(self, cls):
-        return cls.container.display_order
+    def my_order(self, obj):
+        return obj.container.display_order
 
     my_order.short_description = "Display Order"
 
 
+@admin.register(models.Commune)
 class CommuneAdmin(BaseHierarchyElementAdmin):
     fieldsets = (
         ('General', {'fields': ('name', 'description', 'theme')}),
@@ -139,6 +149,7 @@ class CommuneAdmin(BaseHierarchyElementAdmin):
     inlines = (SectionInline, SliceInline)
 
 
+@admin.register(models.Application)
 class ApplicationAdmin(BaseHierarchyElementAdmin):
     fieldsets = (
         ('General', {'fields': ('name', 'description')}),
@@ -147,6 +158,7 @@ class ApplicationAdmin(BaseHierarchyElementAdmin):
     inlines = (SectionInline,)
 
 
+@admin.register(models.StyleSheet, models.Javascript)
 class GenericDOMElementAdmin(admin.ModelAdmin):
     list_display = ('name', 'precedence', 'active', 'base', 'theme')
     list_editable = ('precedence', 'active', 'base')
@@ -155,13 +167,3 @@ class GenericDOMElementAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Theme)
-admin.site.register(models.StyleSheet, GenericDOMElementAdmin)
-admin.site.register(models.Javascript, GenericDOMElementAdmin)
-admin.site.register(models.Realm, RealmAdmin)
-admin.site.register(models.RealmNotification, RealmNotificationAdmin)
-admin.site.register(models.Section, SectionAdmin)
-admin.site.register(models.Slice, SliceAdmin)
-admin.site.register(models.NamedBox, BoxAdmin)
-admin.site.register(models.NamedBoxTemplate, NamedBoxTemplateAdmin)
-admin.site.register(models.Commune, CommuneAdmin)
-admin.site.register(models.Application, ApplicationAdmin)

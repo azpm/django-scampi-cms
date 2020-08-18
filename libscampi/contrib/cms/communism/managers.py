@@ -4,13 +4,13 @@ from django.contrib.contenttypes.models import ContentType
 
 
 class LocalizedSectionManager(models.Manager):
-    def get_query_set(self):
-        return super(LocalizedSectionManager, self).get_query_set().filter(realm__site=Site.objects.get_current())
+    def get_queryset(self):
+        return super(LocalizedSectionManager, self).get_queryset().filter(realm__site=Site.objects.get_current())
 
 
 class LocalizedElementManager(models.Manager):
-    def get_query_set(self):
-        return super(LocalizedElementManager, self).get_query_set().filter(
+    def get_queryset(self):
+        return super(LocalizedElementManager, self).get_queryset().filter(
             section__realm__site=Site.objects.get_current())
 
 
@@ -20,11 +20,11 @@ class ThemeManager(models.Manager):
 
 
 class BaseActiveLinkRefs(models.Manager):
-    def get_query_set(self):
-        return super(BaseActiveLinkRefs, self).get_query_set().filter(base=True, active=True)
+    def get_queryset(self):
+        return super(BaseActiveLinkRefs, self).get_queryset().filter(base=True, active=True)
 
     def for_theme(self, theme):
-        return self.get_query_set().filter(theme=theme).order_by('precedence')
+        return self.get_queryset().filter(theme=theme).order_by('precedence')
 
 
 class RealmManager(models.Manager):
@@ -38,8 +38,8 @@ class SectionManager(models.Manager):
 
 
 class CommuneManager(models.Manager):
-    def get_query_set(self):
-        qs = super(CommuneManager, self).get_query_set()
+    def get_queryset(self):
+        qs = super(CommuneManager, self).get_queryset()
 
         c_type = ContentType.objects.get_for_model(self.model)
 
@@ -74,8 +74,8 @@ class NamedBoxManager(models.Manager):
 
 
 class ApplicationManager(models.Manager):
-    def get_query_set(self):
-        qs = super(ApplicationManager, self).get_query_set()
+    def get_queryset(self):
+        qs = super(ApplicationManager, self).get_queryset()
 
         c_type = ContentType.objects.get_for_model(self.model)
 

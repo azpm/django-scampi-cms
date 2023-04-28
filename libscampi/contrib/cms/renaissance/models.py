@@ -112,7 +112,7 @@ class Media(models.Model):
     author = models.ForeignKey(User, limit_choices_to={'is_staff':True}, blank = True, null = True)
     creation_date = models.DateTimeField(auto_now_add=True)    
     credit = models.CharField(max_length=150, blank=True)
-    reproduction_allowed = models.BooleanField("we have reproduction rights for this media", default=True)
+    reproduction_allowed = models.BooleanField("reproduction rights?", default=True)
     modified = models.DateTimeField(auto_now=True)
     
     mime_type = models.CharField(max_length=150, blank=True)

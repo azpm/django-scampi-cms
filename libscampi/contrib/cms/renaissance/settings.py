@@ -6,8 +6,8 @@ valid_extensions = {
     'img': getattr(settings, 'VALID_IMG_EXT', ('.gif', '.jpg', '.jpeg', '.png')),
     'vid': getattr(settings, 'VALID_VID_EXT', ('.mov', '.mp4', '.m4v', '.flv', '.webm')),
     'aud': getattr(settings, 'VALID_AUD_EXT', ('.mp3', '.m4a')),
-    'obj': getattr(settings, 'VALID_OBJ_EXT', ('.swf', '.xml')),
-    'doc': getattr(settings, 'VALID_DOC_EXT', ('.doc', '.pdf', '.ppt')),
+    'obj': getattr(settings, 'VALID_OBJ_EXT', ('.swf', '.xml', '.vtt', '.srt')),
+    'doc': getattr(settings, 'VALID_DOC_EXT', ('.doc', '.pdf', '.docx', '.ppt')),
 }
                                                                                                                         
 # Information quality for parsing metadata (0.0=fastest, 1.0=best, and default is 0.5)

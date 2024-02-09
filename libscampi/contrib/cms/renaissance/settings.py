@@ -22,5 +22,7 @@ EXTRA_MIME_TYPES = getattr(settings, 'EXTRA_MIME_TYPES', {
     '.7z':'application/x-7z-compressed',
     '.m4v': 'video/mp4',
     '.mp4': 'video/mp4',
+    '.vtt': 'VTT',
+    '.srt': 'SRT',
     
 })

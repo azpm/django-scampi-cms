@@ -115,7 +115,8 @@ class RenderArticle(Tag):
             second_pass = first_pass
 
         final = markdown(second_pass)
-        return final
+        final_2 = final + request.GET.lang
+        return final_2
 
 register.tag(RenderArticle)
 

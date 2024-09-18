@@ -87,6 +87,7 @@ class RenderArticle(Tag):
 
     def render_tag(self, context, **kwargs):
         article = kwargs.pop('article', None)
+        p_lang = kwargs.get('lang', None)
 
         if not article:
             return ''

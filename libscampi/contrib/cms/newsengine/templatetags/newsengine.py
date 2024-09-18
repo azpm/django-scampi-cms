@@ -120,7 +120,7 @@ class RenderArticle(Tag):
 
 
         final = markdown(second_pass)
-        return context
+        return context[8]
 
 register.tag(RenderArticle)
 

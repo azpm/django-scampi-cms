@@ -143,7 +143,7 @@ class CommuneMixin(object):
 
     #overrides base page title functionality
     def get_page_title(self):
-        return "{0:>s} | {1:>s}".format(self.realm.name, self.commune.name)
+        return self.commune.name
 
     def get_template_names(self):
         tpl_list = (

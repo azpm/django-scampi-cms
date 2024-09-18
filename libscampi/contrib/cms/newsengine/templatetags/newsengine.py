@@ -114,6 +114,7 @@ class RenderArticle(Tag):
         else:
             second_pass = first_pass
 
+
         final = markdown(second_pass)
         final_2 = final + request.GET.lang
         return final_2

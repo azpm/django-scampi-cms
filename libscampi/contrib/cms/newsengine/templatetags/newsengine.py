@@ -97,10 +97,10 @@ class RenderArticle(Tag):
             lang = "en"
 
         #override the language from the URL, if specified
-        if context.GET.lang:
-            lang = context.GET.lang
+        if context.GET["lang"]:
+            lang = context.GET["lang"]
 
-        # try to get the article in the correct language, default to RANDOM language if not available
+        # try to get the article in the correct language default to RANDOM language if not available
         body = getattr(article, "body_%s" % lang, None)
         if not body:
             body = article.body

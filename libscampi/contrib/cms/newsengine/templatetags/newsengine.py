@@ -83,10 +83,12 @@ class RenderArticle(Tag):
 
     options = Options(
         Argument('article', required=True, resolve=True),
+        Argument('pref_lang', required=False, resolve=False),
     )
 
     def render_tag(self, context, **kwargs):
-        article = kwargs.pop('article', None)
+        article = kwargs.pop('article', None),
+        pref_lang = kwargs.pop('pref_lang', None)
 
         if not article:
             return ''
@@ -96,6 +98,11 @@ class RenderArticle(Tag):
         except KeyError:
             lang = "en"
 
+        #override the lang if it's been specified in the URL
+
+        if pref_lang:
+            lang = pref_lang
+        
         # try to get the article in the correct language, default to RANDOM language if not available
         body = getattr(article, "body_%s" % lang, None)
         if not body:

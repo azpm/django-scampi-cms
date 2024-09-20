@@ -86,6 +86,7 @@ class RenderArticle(Tag):
     )
 
     def render_tag(self, context, **kwargs):
+        org_kwargs = kwargs
         article = kwargs.pop('article', None)
         p_lang = kwargs.get('lang', None)
 
@@ -121,7 +122,7 @@ class RenderArticle(Tag):
 
 
         final = markdown(second_pass)
-        return kwargs
+        return org_kwargs
 
 register.tag(RenderArticle)
 

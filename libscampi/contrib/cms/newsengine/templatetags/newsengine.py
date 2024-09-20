@@ -83,7 +83,7 @@ class RenderArticle(Tag):
 
     options = Options(
         Argument('article', required=True, resolve=True),
-        Argument('pref_lang', required=True, resolve=True),
+        Argument('pref_lang', required=False, resolve=False),
     )
 
     def render_tag(self, context, **kwargs):

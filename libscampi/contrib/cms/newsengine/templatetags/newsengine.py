@@ -88,9 +88,10 @@ class RenderArticle(Tag):
 
     def render_tag(self, context, **kwargs):
 
+        """
         article = kwargs.pop('article', None)
         p_lang = kwargs.pop('pref_lang', None)
-        """
+
         if not article:
             return ''
 
@@ -124,7 +125,7 @@ class RenderArticle(Tag):
 
         final = markdown(second_pass)
         """
-        return p_lang
+        return kwargs
 
 register.tag(RenderArticle)
 

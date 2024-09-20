@@ -91,7 +91,7 @@ class RenderArticle(Tag):
 
         article = kwargs.pop('article', None)
         p_lang = kwargs.pop('pref_lang', None)
-        """
+
         if not article:
             return ''
 
@@ -101,8 +101,8 @@ class RenderArticle(Tag):
             lang = "en"
 
         #override the language from the URL, if specified
-        #if context["GET"]["lang"]:
-        #    lang = context["GET"]["lang"]
+        if p_lang:
+            lang = p_lang
 
         # try to get the article in the correct language default to RANDOM language if not available
         body = getattr(article, "body_%s" % lang, None)
@@ -124,8 +124,7 @@ class RenderArticle(Tag):
 
 
         final = markdown(second_pass)
-        """
-        return p_lang
+        return final
 
 register.tag(RenderArticle)
 

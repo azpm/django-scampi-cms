@@ -83,12 +83,13 @@ class RenderArticle(Tag):
 
     options = Options(
         Argument('article', required=True, resolve=True),
+        Argument('pref_lang', required=False, resolve=False),
     )
 
     def render_tag(self, context, **kwargs):
         org_kwargs = kwargs
         article = kwargs.pop('article', None)
-        p_lang = kwargs.get('lang', None)
+        p_lang = kwargs.get('pref_lang', None)
 
         if not article:
             return ''

@@ -124,7 +124,7 @@ class RenderArticle(Tag):
 
         final = markdown(second_pass)
         """
-        return article
+        return p_lang
 
 register.tag(RenderArticle)
 

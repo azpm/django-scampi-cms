@@ -122,7 +122,7 @@ class RenderArticle(Tag):
 
 
         final = markdown(second_pass)
-        return org_kwargs
+        return article
 
 register.tag(RenderArticle)
 

@@ -61,10 +61,7 @@ class PublishedStoryFeed(Feed):
         return item.story.article.headline
 
     def item_description(self, item):
-        if item.story.article.synopsis:
-            return item.story.article.synopsis
-        else:
-            return item.story.article.sub_headline
+        return item.story.article.sub_headline
 
     def item_author_name(self, item):
         return item.story.author.get_full_name()
